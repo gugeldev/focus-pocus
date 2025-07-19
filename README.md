@@ -88,5 +88,7 @@ A big thank you to everyone who contributed to FocusPocus
 <a href="https://github.com/jotavetech" target="_blank"><img src="https://avatars.githubusercontent.com/u/92704272?v=4" alt="jotavetech picture" style="width: 80px" /></a>
 <a href="https://github.com/Ryrden" target="_blank"><img src="https://avatars.githubusercontent.com/u/76923948?v=4" alt="ryrden picture" style="width: 80px" /></a>
 <a href="https://github.com/gabireze" target="_blank"><img src="https://avatars.githubusercontent.com/u/31194373?v=4" alt="gabizere picture" style="width: 80px" /></a>
+<a href="https://github.com/fatekkl" target="_blank"><img src="https://avatars.githubusercontent.com/u/111793799?v=4" alt="gabizere picture" style="width: 80px" /></a>
+
 
 [Support Me 💛](https://www.pixme.bio/jotavetech)
