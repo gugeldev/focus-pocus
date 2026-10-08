@@ -44,11 +44,8 @@ function handleStartTimer() {
   });
 }
 
-function changeSelectedTime(seconds: number, label: string) {
-  setStorage({
-    selectedTime: seconds,
-    timeLabel: label,
-  });
+function changeSelectedTime(seconds: number) {
+  setStorage({ selectedTime: seconds });
 }
 
 function checkAndStopTimer() {

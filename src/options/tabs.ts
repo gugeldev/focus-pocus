@@ -1,26 +1,26 @@
-import { pages, tabs } from './elements';
+import { nav, pages, tabs } from './elements';
 
-tabs.forEach((tab) => {
-  tab.addEventListener('click', () => {
-    tabs.forEach((tab) => {
-      tab.classList.remove('active-tab');
-    });
-    tab.classList.add('active-tab');
+// Each tab names its page with aria-controls and its location hash with
+// data-hash, so "#blocklist" opens the blocklist directly.
+function selectTab(tab: HTMLButtonElement) {
+  const index = Array.from(tabs).indexOf(tab);
 
-    checkHiddenPagesAndShowCurrent(tab.id);
-  });
-});
+  for (const other of tabs) {
+    if (other === tab) other.setAttribute('aria-current', 'page');
+    else other.removeAttribute('aria-current');
+  }
 
-function checkHiddenPagesAndShowCurrent(tabId: string) {
-  pages.forEach((page) => {
-    page.classList.add('hidden-page');
-  });
+  for (const page of pages) {
+    page.hidden = page.id !== tab.getAttribute('aria-controls');
+  }
 
-  pages.forEach((page) => {
-    if (page.id === 'main-page' && tabId === 'tab-main') page.classList.remove('hidden-page');
-    if (page.id === 'blocklist-page' && tabId === 'tab-blocklist')
-      page.classList.remove('hidden-page');
-    if (page.id === 'allowlist-page' && tabId === 'tab-allowlist')
-      page.classList.remove('hidden-page');
-  });
+  nav.style.setProperty('--active-tab', index.toString());
+  history.replaceState(null, '', `#${tab.dataset.hash}`);
 }
+
+for (const tab of tabs) {
+  tab.addEventListener('click', () => selectTab(tab));
+}
+
+const initialTab = Array.from(tabs).find((tab) => `#${tab.dataset.hash}` === location.hash);
+selectTab(initialTab ?? tabs[0]);

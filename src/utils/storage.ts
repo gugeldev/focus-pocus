@@ -10,7 +10,6 @@ interface SeededState {
 
 // Shape of browser.storage.local. Keys outside SeededState only exist once set.
 interface StorageState extends SeededState {
-  timeLabel?: string;
   blocklist?: string[];
   allowlist?: string[];
   options?: Record<string, boolean>;

@@ -1,192 +1,154 @@
-import {
-  allowlistButton,
-  allowlistForm,
-  allowlistInput,
-  allowlistList,
-  blocklistButton,
-  blocklistForm,
-  blocklistInput,
-  blocklistList,
-  streakCounter,
-} from './elements';
-
 import './tabs';
 import './options';
-import './streak';
 
-import { getStorage, onStorageChanged, setStorage } from '../utils/storage';
+import bindStreakButton from '../utils/share-streak';
+import { getStorage, setStorage } from '../utils/storage';
 import toast from '../utils/toast';
+import { streakButton, streakCounter } from './elements';
+import { isSessionRunning, makeLockable } from './session-lock';
 
-let blocklist: string[] = [];
-let allowlist: string[] = [];
+type ListType = 'blocklist' | 'allowlist';
 
-let isRunning = false;
-
-function checkIfUrlExists(url: string, type: 'blocklist' | 'allowlist') {
-  if (type === 'blocklist') {
-    return blocklist.includes(url);
-  } else {
-    return allowlist.includes(url);
-  }
+interface SiteList {
+  form: HTMLFormElement;
+  input: HTMLInputElement;
+  list: HTMLUListElement;
+  count: HTMLSpanElement;
+  urls: string[];
 }
 
-function disableListsWhileRunning() {
-  blocklistButton.disabled = true;
-  allowlistButton.disabled = true;
-  blocklistInput.disabled = true;
-  allowlistInput.disabled = true;
+const STAGGER_MS = 30;
+
+bindStreakButton(streakButton, streakCounter);
+
+// Each list's elements follow one id pattern: #<type>-form, -input, -list and
+// -count.
+function createSiteList(type: ListType): SiteList {
+  const byId = <T extends HTMLElement>(part: string) =>
+    document.querySelector(`#${type}-${part}`) as T;
+
+  return {
+    form: byId<HTMLFormElement>('form'),
+    input: byId<HTMLInputElement>('input'),
+    list: byId<HTMLUListElement>('list'),
+    count: byId<HTMLSpanElement>('count'),
+    urls: [],
+  };
 }
 
-function enableListsWhileNotRunning() {
-  blocklistButton.disabled = false;
-  allowlistButton.disabled = false;
-  blocklistInput.disabled = false;
-  allowlistInput.disabled = false;
+const siteLists: Record<ListType, SiteList> = {
+  blocklist: createSiteList('blocklist'),
+  allowlist: createSiteList('allowlist'),
+};
+
+// The host part of an entry, without the scheme or "www.". Entries are free
+// substrings, so this is a best guess.
+function getHost(url: string) {
+  return url
+    .trim()
+    .replace(/^[a-z]+:\/\//i, '')
+    .replace(/^www\./i, '')
+    .split(/[/?#]/)[0];
 }
 
-getStorage(['blocklist', 'allowlist', 'isRunning', 'options', 'streak']).then((data) => {
-  if (data.isRunning) {
-    isRunning = true;
-    disableListsWhileRunning();
+// The row's tile: the first letter of the host, covered by the site's own
+// /favicon.ico when the entry looks like a domain and the icon loads.
+function createSiteIcon(url: string) {
+  const host = getHost(url);
+  const icon = document.createElement('span');
+  icon.className = 'site-monogram';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.textContent = host.charAt(0) || '?';
+
+  if (/^[a-z0-9-]+(\.[a-z0-9-]+)+(:\d+)?$/i.test(host)) {
+    const favicon = document.createElement('img');
+    favicon.className = 'site-favicon';
+    favicon.alt = '';
+    favicon.referrerPolicy = 'no-referrer';
+    favicon.addEventListener('load', () => icon.classList.add('has-favicon'), { once: true });
+    favicon.src = `https://${host}/favicon.ico`;
+    icon.append(favicon);
   }
 
-  if (data.blocklist) {
-    blocklist = data.blocklist;
-    blocklist.forEach((url) => {
-      addUrlListElement(url, blocklistList, 'blocklist');
-    });
-  }
-
-  if (data.allowlist) {
-    allowlist = data.allowlist;
-    allowlist.forEach((url) => {
-      addUrlListElement(url, allowlistList, 'allowlist');
-    });
-  }
-
-  if (data.streak) {
-    streakCounter.textContent = data.streak.toString();
-  }
-});
-
-onStorageChanged((changes) => {
-  if (changes.isRunning?.newValue) {
-    isRunning = true;
-    disableListsWhileRunning();
-  }
-
-  if (changes.isRunning && !changes.isRunning.newValue) {
-    isRunning = false;
-    enableListsWhileNotRunning();
-  }
-
-  if (changes.streak?.newValue) {
-    streakCounter.textContent = changes.streak.newValue.toString();
-  }
-
-  if (changes.streak && changes.streak.newValue === 0) {
-    streakCounter.textContent = '0';
-  }
-});
-
-blocklistForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  if (isRunning) return toast("You can't add a website while the focus mode is running.", true);
-
-  if (!blocklistInput.value) return toast('Please, enter a URL.', true);
-
-  if (checkIfUrlExists(blocklistInput.value, 'blocklist'))
-    return toast('This URL already exists in the blocklist.', true);
-
-  blocklist.push(blocklistInput.value);
-
-  setStorage({ blocklist });
-
-  addUrlListElement(blocklistInput.value, blocklistList, 'blocklist');
-
-  blocklistInput.value = '';
-});
-
-allowlistForm.addEventListener('submit', (e) => {
-  e.preventDefault();
-  if (isRunning) return toast("You can't add a website while the focus mode is running.", true);
-
-  if (!allowlistInput.value) return toast('Please enter a URL.', true);
-
-  if (checkIfUrlExists(allowlistInput.value, 'allowlist'))
-    return toast('This URL already exists in the allowlist.', true);
-
-  allowlist.push(allowlistInput.value);
-
-  setStorage({ allowlist });
-
-  addUrlListElement(allowlistInput.value, allowlistList, 'allowlist');
-
-  allowlistInput.value = '';
-});
-
-function createUrlListElement(url: string, type: 'blocklist' | 'allowlist') {
-  const li = document.createElement('li');
-
-  li.innerHTML = `
-    <span>${url}</span>
-    <button class="remove-button-${type}">
-      <img src="../assets/img/remove.svg" alt="remove icon" />
-    </button>
-  `;
-
-  return li;
+  return icon;
 }
 
-function addUrlListElement(url: string, list: HTMLUListElement, type: 'blocklist' | 'allowlist') {
-  const li = createUrlListElement(url, type);
-  list.appendChild(li);
+function saveList(type: ListType) {
+  const siteList = siteLists[type];
+  siteList.count.textContent = siteList.urls.length.toString();
+  setStorage({ [type]: siteList.urls });
 }
 
-document.addEventListener('click', (e) => {
-  const target = e.target as HTMLElement;
+function removeSite(type: ListType, url: string, item: HTMLLIElement) {
+  if (isSessionRunning())
+    return toast("You can't remove a website while a focus session is running.", true);
 
-  if (
-    target.classList.contains('remove-button-blocklist') ||
-    target.parentElement?.classList.contains('remove-button-blocklist')
-  ) {
-    const url = target.parentElement?.parentElement?.querySelector('span')?.textContent;
-    if (url) {
-      removeBlocklistElement(url);
-    }
-  }
+  const siteList = siteLists[type];
+  siteList.urls = siteList.urls.filter((u) => u !== url);
+  saveList(type);
 
-  if (
-    target.classList.contains('remove-button-allowlist') ||
-    target.parentElement?.classList.contains('remove-button-allowlist')
-  ) {
-    const url = target.parentElement?.parentElement?.querySelector('span')?.textContent;
-    if (url) {
-      removeAllowlistElement(url);
-    }
-  }
-});
-
-function removeBlocklistElement(url: string) {
-  if (isRunning) return toast("You can't remove a website while the focus mode is running.", true);
-  blocklist = blocklist.filter((u) => u !== url);
-  setStorage({ blocklist });
-
-  blocklistList.innerHTML = '';
-
-  blocklist.forEach((url) => {
-    addUrlListElement(url, blocklistList, 'blocklist');
+  // Freeze the row at its real height so the exit animation can collapse it.
+  item.style.height = `${item.offsetHeight}px`;
+  item.classList.add('leaving');
+  item.addEventListener('animationend', (event) => {
+    if (event.target === item) item.remove();
   });
 }
 
-function removeAllowlistElement(url: string) {
-  if (isRunning) return toast("You can't remove a website while the focus mode is running.", true);
-  allowlist = allowlist.filter((u) => u !== url);
-  setStorage({ allowlist });
+function createSiteItem(type: ListType, url: string, delay = 0) {
+  const item = document.createElement('li');
+  item.className = 'site';
+  if (delay) item.style.animationDelay = `${delay}ms`;
 
-  allowlistList.innerHTML = '';
+  const label = document.createElement('span');
+  label.className = 'site-url';
+  label.textContent = url;
+  label.title = url;
 
-  allowlist.forEach((url) => {
-    addUrlListElement(url, allowlistList, 'allowlist');
+  const removeButton = document.createElement('button');
+  removeButton.type = 'button';
+  removeButton.className = 'icon-btn';
+  removeButton.setAttribute('aria-label', `Remove ${url}`);
+  removeButton.innerHTML = '<i class="ph ph-x" aria-hidden="true"></i>';
+  makeLockable(removeButton);
+  removeButton.addEventListener('click', () => removeSite(type, url, item));
+
+  item.append(createSiteIcon(url), label, removeButton);
+  return item;
+}
+
+function renderList(type: ListType, urls: string[]) {
+  const siteList = siteLists[type];
+  siteList.urls = urls;
+  siteList.count.textContent = urls.length.toString();
+  siteList.list.replaceChildren(
+    ...urls.map((url, index) => createSiteItem(type, url, index * STAGGER_MS)),
+  );
+}
+
+function addSite(type: ListType) {
+  const siteList = siteLists[type];
+  const url = siteList.input.value.trim();
+
+  if (isSessionRunning())
+    return toast("You can't add a website while a focus session is running.", true);
+  if (!url) return toast('Enter a website first.', true);
+  if (siteList.urls.includes(url)) return toast(`This website is already in your ${type}.`, true);
+
+  siteList.urls = [...siteList.urls, url];
+  saveList(type);
+  siteList.list.appendChild(createSiteItem(type, url));
+  siteList.input.value = '';
+}
+
+for (const type of Object.keys(siteLists) as ListType[]) {
+  siteLists[type].form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    addSite(type);
   });
 }
+
+getStorage(['blocklist', 'allowlist']).then((data) => {
+  renderList('blocklist', data.blocklist ?? []);
+  renderList('allowlist', data.allowlist ?? []);
+});

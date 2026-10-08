@@ -19,6 +19,11 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
+      {
+        // CSS imported from src/ is bundled as a string (see src/types/css.d.ts).
+        test: /\.css$/,
+        type: 'asset/source',
+      },
     ],
   },
   resolve: {
@@ -27,6 +32,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, `dist/${browser}`),
+    clean: true,
   },
   watch: true,
   plugins: [
@@ -34,7 +40,20 @@ module.exports = {
       'process.env.BROWSER_TARGET': JSON.stringify(browser),
     }),
     new CopyWebpackPlugin({
-      patterns: [{ from: `./manifest.${browser}.json`, to: 'manifest.json' }, { from: 'static' }],
+      patterns: [
+        { from: `./manifest.${browser}.json`, to: 'manifest.json' },
+        { from: 'static' },
+        {
+          from: 'node_modules/@fontsource-variable/plus-jakarta-sans/files/plus-jakarta-sans-latin{,-ext}-wght-normal.woff2',
+          to: 'assets/fonts/[name][ext]',
+        },
+        {
+          // Phosphor icons: <i class="ph ph-gear"> (regular) and <i class="ph-fill ph-gear">.
+          from: 'node_modules/@phosphor-icons/web/src/{regular,fill}/{style.css,*.woff2}',
+          to: ({ absoluteFilename }) =>
+            `assets/phosphor/${path.basename(path.dirname(absoluteFilename))}/[name][ext]`,
+        },
+      ],
     }),
   ],
 };

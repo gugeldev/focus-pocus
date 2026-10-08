@@ -25,8 +25,14 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "css": ["content/styles.css"]
+      "js": ["content.js"]
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["assets/fonts/*", "assets/logo/*"],
+      "matches": ["<all_urls>"]
     }
   ],
 
