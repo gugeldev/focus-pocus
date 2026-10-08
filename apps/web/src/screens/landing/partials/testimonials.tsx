@@ -61,19 +61,30 @@ export function Testimonials() {
   );
 }
 
-/** One row, its cards twice over so the slide loops without a seam; the copy is hidden from readers. */
+/**
+ * Each half of a row repeats its reviews this many times, so a half is wider
+ * than any screen and the loop never shows an end.
+ */
+const REPEATS_PER_HALF = 2;
+
+/**
+ * One row: two identical halves, each its reviews repeated, sliding by one
+ * half per turn. Only the first pass is read out; the repeats are hidden.
+ */
 function ReviewRow({ row, reverse }: { row: Review[]; reverse: boolean }) {
+  const passes = Array.from({ length: REPEATS_PER_HALF * 2 }, (_, pass) => pass);
+
   return (
     <div className="overflow-x-auto [scrollbar-width:none] motion-safe:overflow-hidden [&::-webkit-scrollbar]:hidden">
       <ul
         className={cx(
-          'flex w-max motion-safe:animate-marquee hover:[animation-play-state:paused]',
-          reverse && '[animation-direction:reverse]',
+          'flex w-max hover:[animation-play-state:paused]',
+          reverse ? 'motion-safe:animate-marquee-reverse' : 'motion-safe:animate-marquee',
         )}
       >
-        {[false, true].map((isCopy) =>
+        {passes.map((pass) =>
           row.map((review) => (
-            <li aria-hidden={isCopy || undefined} className="pr-3" key={`${isCopy}-${review.name}`}>
+            <li aria-hidden={pass > 0 || undefined} className="pr-3" key={`${pass}-${review.name}`}>
               <ReviewCard review={review} />
             </li>
           )),

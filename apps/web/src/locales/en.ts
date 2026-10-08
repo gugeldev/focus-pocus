@@ -21,12 +21,10 @@ export const en = {
     firefox: 'Add to Firefox',
   },
   hero: {
-    badge: 'Free and open source',
     /** The title's two lines; the second is set in the accent gradient. */
     titleLead: 'Stay focused as if',
     titleAccent: 'under a magical spell',
     lead: 'A browser extension that blocks distracting sites while your focus timer runs.',
-    github: 'View the code on GitHub',
   },
   focusScreen: {
     eyebrow: 'Focus screen',

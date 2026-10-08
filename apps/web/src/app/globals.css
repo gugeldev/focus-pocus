@@ -33,7 +33,7 @@
   /* The 1px outline of the drawn windows: just enough to lift them off the page. */
   --color-hairline: rgb(255 255 255 / 0.04);
   /* The dots of the page's background pattern. */
-  --color-dot: rgb(255 255 255 / 0.13);
+  --color-dot: rgb(255 255 255 / 0.05);
   /* A drawn window's corners, rounder than the extension's own cards. */
   --radius-window: 24px;
   /* macOS's window buttons: close, minimize, zoom. */
@@ -58,11 +58,21 @@
     }
   }
 
-  /* A row of reviews sliding by: the row holds its cards twice, so half a turn loops. */
-  --animate-marquee: marquee 70s linear infinite;
+  /*
+   * A row of reviews sliding by, either way: the row holds its cards in two
+   * identical halves, so moving by one half loops without a seam.
+   */
+  --animate-marquee: marquee 90s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 90s linear infinite;
 
   @keyframes marquee {
     to {
+      translate: -50% 0;
+    }
+  }
+
+  @keyframes marquee-reverse {
+    from {
       translate: -50% 0;
     }
   }

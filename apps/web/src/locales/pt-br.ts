@@ -19,11 +19,9 @@ export const ptBR: SiteCopy = {
     firefox: 'Adicionar ao Firefox',
   },
   hero: {
-    badge: 'Gratuita e open source',
     titleLead: 'Mantenha o foco como se',
     titleAccent: 'estivesse sob um feitiço',
     lead: 'Uma extensão que bloqueia os sites que te distraem enquanto o timer de foco roda.',
-    github: 'Ver o código no GitHub',
   },
   focusScreen: {
     eyebrow: 'Tela de foco',

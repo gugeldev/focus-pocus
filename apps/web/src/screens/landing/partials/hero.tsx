@@ -1,10 +1,8 @@
 'use client';
 
-import { IconExternal, IconGithub } from '@/components/icons';
 import { StoreButtons } from '@/components/store-buttons';
 import { Rise } from '@/components/ui/rise';
 import { useCopy } from '@/lib/i18n-provider';
-import { links } from '@/lib/links';
 import { anchors } from '@/lib/routes';
 import { OptionsMock } from '../mocks/options-mock';
 import { PopupMock } from '../mocks/popup-mock';
@@ -19,17 +17,8 @@ export function Hero() {
   const { site } = useCopy();
 
   return (
-    <Section className="flex flex-col items-center pt-10 text-center md:pt-16">
-      <Rise>
-        <p className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 py-1.5 pr-3.5 pl-2.5 text-sm text-text-muted backdrop-blur">
-          <span aria-hidden="true" className="relative flex size-2">
-            <span className="absolute inset-0 animate-ripple rounded-full bg-accent" />
-            <span className="relative size-2 rounded-full bg-accent" />
-          </span>
-          {site.hero.badge}
-        </p>
-      </Rise>
-      <Rise className="mt-7 max-w-4xl" order={1}>
+    <Section className="flex flex-col items-center pt-16 text-center md:pt-24">
+      <Rise className="max-w-4xl">
         <h1 className="text-balance text-hero font-medium tracking-hero">
           {site.hero.titleLead}{' '}
           <span className="bg-linear-100 from-accent via-lilac to-accent bg-clip-text pr-[0.06em] text-transparent">
@@ -37,27 +26,13 @@ export function Hero() {
           </span>
         </h1>
       </Rise>
-      <Rise className="mt-6 max-w-2xl" order={2}>
+      <Rise className="mt-6 max-w-2xl" order={1}>
         <p className="text-pretty text-lead text-text-muted">{site.hero.lead}</p>
       </Rise>
-      <Rise className="mt-9 flex flex-wrap justify-center gap-3" order={3}>
+      <Rise className="mt-9 flex flex-wrap justify-center gap-3" order={2}>
         <StoreButtons />
       </Rise>
-      <Rise className="mt-6" order={4}>
-        <a
-          className="focus-ring group inline-flex items-center gap-2 rounded-sm text-base text-text-muted transition-colors duration-(--duration) ease-fluid hover:text-text"
-          href={links.github}
-        >
-          <IconGithub aria-hidden="true" size={18} />
-          {site.hero.github}
-          <IconExternal
-            aria-hidden="true"
-            className="text-text-faint transition-[color,translate] duration-(--duration) ease-fluid group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-text"
-            size={14}
-          />
-        </a>
-      </Rise>
-      <Rise className="mt-16 w-full text-left md:mt-20" order={5}>
+      <Rise className="mt-16 w-full text-left md:mt-20" order={3}>
         <Demo />
       </Rise>
     </Section>
