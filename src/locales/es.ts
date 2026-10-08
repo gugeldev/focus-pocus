@@ -10,34 +10,34 @@ export const es: Messages = {
     customTimeTitle: 'Definir un tiempo personalizado',
     customTimeLabel: 'Tiempo personalizado, como hh:mm:ss, mm:ss o segundos',
     customTimeHint: 'Haz clic para personalizar',
-    customTimeEditingHint: 'Enter para guardar · Esc para cancelar',
+    customTimeEditingHint: 'Enter guarda · Esc cancela',
     sessionSettings: 'Configuración de la sesión',
-    modes: { blocklist: 'Bloqueo', allowlist: 'Permitidos' },
-    start: 'Empezar a enfocarme',
+    modes: { blocklist: 'Bloqueados', allowlist: 'Permitidos' },
+    start: 'Empezar a concentrarme',
     giveUp: 'Rendirme',
     encouragements: [
       '¡Sigue así!',
       '¡Nunca te rindas!',
-      '¡Mantén el foco!',
+      '¡Sigue concentrado!',
       '¡Tú puedes!',
       '¡No te rindas!',
-      '¡Alcanza tus metas!',
+      '¡Por tus metas!',
       '¡Mantente motivado!',
-      '¡Lo tienes!',
+      '¡Vas muy bien!',
     ],
   },
   options: {
     pageTitle: 'FocusPocus · Configuración',
     sections: 'Secciones de la configuración',
     streakTitle: 'Copia tu racha para compartirla',
-    inARow: 'seguidas',
+    inARow: 'al hilo',
     support: 'Apoya a FocusPocus',
     general: {
       title: 'General',
       description:
-        'Elige el idioma, los sonidos, las notificaciones y el bloqueo mientras te enfocas.',
+        'Elige el idioma, los sonidos, las notificaciones y el bloqueo mientras te concentras.',
       locked:
-        'Hay una sesión de enfoque en curso. La configuración de bloqueo se desbloquea cuando termine.',
+        'Hay una sesión de concentración en curso. La configuración de bloqueo se desbloquea cuando termine.',
       language: {
         title: 'Idioma',
         description: 'Automático sigue el idioma de tu navegador.',
@@ -51,7 +51,7 @@ export const es: Messages = {
         },
         victory: {
           label: 'Victoria',
-          description: 'Suena cuando una sesión termina con el popup abierto.',
+          description: 'Suena cuando una sesión termina con la ventana de la extensión abierta.',
         },
         giveUp: {
           label: 'Rendirse',
@@ -70,13 +70,13 @@ export const es: Messages = {
         allowlistMode: {
           label: 'Modo de sitios permitidos',
           description:
-            'Bloquea todos los sitios excepto los de tu lista de permitidos, en lugar de solo los de tu lista de bloqueo.',
+            'Bloquea todos los sitios excepto los sitios permitidos, en lugar de solo los sitios bloqueados.',
         },
       },
     },
     siteList: {
       activeMode: 'Modo activo',
-      locked: 'Hay una sesión de enfoque en curso. Esta lista se desbloquea cuando termine.',
+      locked: 'Hay una sesión de concentración en curso. Esta lista se desbloquea cuando termine.',
       emptyEntry: 'Escribe un sitio primero.',
       remove: (url: string) => `Quitar ${url}`,
     },
@@ -84,7 +84,7 @@ export const es: Messages = {
       blocklist: {
         title: 'Sitios bloqueados',
         description:
-          'Mientras te enfocas, toda página cuya dirección contenga uno de estos queda cubierta por la pantalla de enfoque.',
+          'Mientras te concentras, toda página cuya dirección contenga uno de estos términos queda cubierta por la pantalla de concentración.',
         inputLabel: 'Sitio para bloquear',
         placeholder: 'youtube.com',
         addLabel: 'Bloquear',
@@ -92,12 +92,12 @@ export const es: Messages = {
         emptyTitle: 'Nada bloqueado todavía',
         emptyText:
           'Agrega los sitios que te roban la atención, como redes sociales o plataformas de video.',
-        duplicate: 'Este sitio ya está en tu lista de bloqueo.',
+        duplicate: 'Este sitio ya está en tus sitios bloqueados.',
       },
       allowlist: {
         title: 'Sitios permitidos',
         description:
-          'En el modo de sitios permitidos, solo las páginas cuya dirección contenga uno de estos siguen accesibles mientras te enfocas.',
+          'En el modo de sitios permitidos, solo las páginas cuya dirección contenga uno de estos términos siguen accesibles mientras te concentras.',
         inputLabel: 'Sitio para permitir',
         placeholder: 'docs.google.com',
         addLabel: 'Permitir',
@@ -105,7 +105,7 @@ export const es: Messages = {
         emptyTitle: 'Nada permitido todavía',
         emptyText:
           'Agrega las herramientas que necesitas para trabajar, como tus documentos, tu editor o tu plataforma de cursos.',
-        duplicate: 'Este sitio ya está en tu lista de permitidos.',
+        duplicate: 'Este sitio ya está en tus sitios permitidos.',
       },
     },
   },
@@ -118,8 +118,8 @@ export const es: Messages = {
     copyFailed: 'No se pudo copiar tu racha.',
   },
   overlay: {
-    eyebrow: 'Modo enfoque',
-    title: 'Este sitio está bajo un hechizo de enfoque',
+    eyebrow: 'Modo concentración',
+    title: 'Este sitio está bajo un hechizo de concentración',
     lead: 'Volverá cuando termine tu sesión. Hasta entonces, el trabajo que tienes delante merece tu atención.',
     timeLabel: 'restantes en esta sesión',
     warning: 'Rendirte reinicia tu racha.',

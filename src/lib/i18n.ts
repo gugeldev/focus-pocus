@@ -8,44 +8,47 @@ import { getStorage } from './storage';
 // background) reads the copy through here, in the language stored under
 // `language`, or the browser's own when that is "auto" or unset.
 
-const dictionaries = { en, 'pt-BR': ptBR, es } satisfies Record<string, Messages>;
+/**
+ * One row per language: its copy, its name in its own words (for the picker,
+ * never translated) and the browser language prefix it answers to.
+ */
+const languages = {
+  en: { messages: en, nativeName: 'English', browserPrefix: 'en' },
+  'pt-BR': { messages: ptBR, nativeName: 'Português', browserPrefix: 'pt' },
+  es: { messages: es, nativeName: 'Español', browserPrefix: 'es' },
+} satisfies Record<string, { messages: Messages; nativeName: string; browserPrefix: string }>;
 
-type Locale = keyof typeof dictionaries;
+type Locale = keyof typeof languages;
 type LanguageSetting = 'auto' | Locale;
 
-const LOCALES = Object.keys(dictionaries) as Locale[];
-
-/** Each language in its own words, for the picker: they are never translated. */
-const LANGUAGE_NAMES: Record<Locale, string> = {
-  en: 'English',
-  'pt-BR': 'Português',
-  es: 'Español',
-};
+const LOCALES = Object.keys(languages) as Locale[];
 
 function isLocale(value: unknown): value is Locale {
-  return LOCALES.includes(value as Locale);
+  return typeof value === 'string' && Object.hasOwn(languages, value);
 }
 
 // "pt-PT" and "es-419" get the closest language we have; anything else, English.
 function getBrowserLocale(): Locale {
   const language = browser.i18n.getUILanguage().toLowerCase();
-  if (language.startsWith('pt')) return 'pt-BR';
-  if (language.startsWith('es')) return 'es';
-  return 'en';
+  return LOCALES.find((locale) => language.startsWith(languages[locale].browserPrefix)) ?? 'en';
 }
 
 function resolveLocale(setting: LanguageSetting | undefined): Locale {
   return isLocale(setting) ? setting : getBrowserLocale();
 }
 
-function getMessages(setting: LanguageSetting | undefined) {
-  return dictionaries[resolveLocale(setting)];
+function getMessages(locale: Locale): Messages {
+  return languages[locale].messages;
+}
+
+function getNativeName(locale: Locale) {
+  return languages[locale].nativeName;
 }
 
 /** The copy in the stored language, for the contexts outside React. */
 function loadMessages() {
-  return getStorage('language').then((res) => getMessages(res.language));
+  return getStorage('language').then((res) => getMessages(resolveLocale(res.language)));
 }
 
 export type { LanguageSetting, Locale, Messages };
-export { getMessages, LANGUAGE_NAMES, LOCALES, loadMessages, resolveLocale };
+export { getMessages, getNativeName, LOCALES, loadMessages, resolveLocale };

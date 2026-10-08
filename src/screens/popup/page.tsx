@@ -63,7 +63,7 @@ export default function PopupScreen() {
   const isRunning = Boolean(state?.isRunning);
   // A new one each time a session starts, or when the popup opens mid-session
   // (or the language changes).
-  // biome-ignore lint/correctness/useExhaustiveDependencies: isRunning is what picks a new message
+  // biome-ignore lint/correctness/useExhaustiveDependencies: isRunning and the language pick a new message
   const runningCaption = useMemo(() => pickRandom(t.popup.encouragements), [isRunning, t]);
   const [isCelebrating, endCelebration] = useCelebration(state?.streak);
   useWakeBackground(state?.isRunning);

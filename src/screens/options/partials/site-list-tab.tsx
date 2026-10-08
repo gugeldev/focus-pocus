@@ -1,3 +1,4 @@
+import { type ListType, siteListIcons } from '@/components/site-lists';
 import { toast } from '@/lib/toast';
 import { useMessages } from '@/lib/use-messages';
 import { ActiveModeBadge } from '@/screens/options/partials/active-mode-badge';
@@ -6,7 +7,6 @@ import { EmptyList } from '@/screens/options/partials/empty-list';
 import { LockedNotice } from '@/screens/options/partials/locked-notice';
 import { SiteList } from '@/screens/options/partials/site-list';
 import { TabPage } from '@/screens/options/partials/tab-page';
-import { type ListType, siteListIcons } from '@/screens/options/site-lists';
 
 type Props = {
   type: ListType;

@@ -1,9 +1,8 @@
 import { createContext, type ReactNode, useContext, useEffect } from 'react';
-import { getMessages, resolveLocale } from '@/lib/i18n';
+import { getMessages, type Messages, resolveLocale } from '@/lib/i18n';
 import { useStorage } from '@/lib/use-storage';
-import { en, type Messages } from '@/locales/en';
 
-const MessagesContext = createContext<Messages>(en);
+const MessagesContext = createContext<Messages>(getMessages('en'));
 
 /**
  * Provides the copy in the stored language to every component below it, and
@@ -18,9 +17,9 @@ export function MessagesProvider({ children }: { children: ReactNode }) {
     if (locale) document.documentElement.lang = locale;
   }, [locale]);
 
-  if (!state) return null;
+  if (!locale) return null;
 
-  return <MessagesContext value={getMessages(state.language)}>{children}</MessagesContext>;
+  return <MessagesContext value={getMessages(locale)}>{children}</MessagesContext>;
 }
 
 /** The copy in the user's language (src/locales/). */

@@ -5,14 +5,14 @@ export const ptBR: Messages = {
     settings: 'Configurações',
     streakTitle: 'Copiar sua sequência',
     streakLabel: 'sessões seguidas, copiar para compartilhar',
-    timer: 'Cronômetro',
+    timer: 'Temporizador',
     customSession: 'Sessão personalizada',
     customTimeTitle: 'Definir um tempo personalizado',
     customTimeLabel: 'Tempo personalizado, como hh:mm:ss, mm:ss ou segundos',
     customTimeHint: 'Clique para personalizar',
-    customTimeEditingHint: 'Enter para salvar · Esc para cancelar',
+    customTimeEditingHint: 'Enter salva · Esc cancela',
     sessionSettings: 'Configurações da sessão',
-    modes: { blocklist: 'Bloqueio', allowlist: 'Permitidos' },
+    modes: { blocklist: 'Bloqueados', allowlist: 'Permitidos' },
     start: 'Começar a focar',
     giveUp: 'Desistir',
     encouragements: [
@@ -21,7 +21,7 @@ export const ptBR: Messages = {
       'Mantenha o foco!',
       'Você consegue!',
       'Não desista!',
-      'Alcance seus objetivos!',
+      'Foco nos objetivos!',
       'Mantenha-se motivado!',
       'Você dá conta!',
     ],
@@ -30,13 +30,13 @@ export const ptBR: Messages = {
     pageTitle: 'FocusPocus · Configurações',
     sections: 'Seções das configurações',
     streakTitle: 'Copie sua sequência para compartilhar',
-    inARow: 'seguidas',
+    inARow: 'em sequência',
     support: 'Apoie o FocusPocus',
     general: {
       title: 'Geral',
       description: 'Escolha o idioma, os sons, as notificações e o bloqueio enquanto você foca.',
       locked:
-        'Uma sessão de foco está em andamento. As configurações de bloqueio liberam quando ela terminar.',
+        'Uma sessão de foco está em andamento. As configurações de bloqueio são liberadas quando ela terminar.',
       language: {
         title: 'Idioma',
         description: 'Automático segue o idioma do seu navegador.',
@@ -50,7 +50,7 @@ export const ptBR: Messages = {
         },
         victory: {
           label: 'Vitória',
-          description: 'Toca quando uma sessão termina com o popup aberto.',
+          description: 'Toca quando uma sessão termina com a janela da extensão aberta.',
         },
         giveUp: {
           label: 'Desistência',
@@ -69,13 +69,14 @@ export const ptBR: Messages = {
         allowlistMode: {
           label: 'Modo de sites permitidos',
           description:
-            'Bloqueia todos os sites, exceto os da lista de permitidos, em vez de só os da lista de bloqueio.',
+            'Bloqueia todos os sites, exceto os sites permitidos, em vez de só os sites bloqueados.',
         },
       },
     },
     siteList: {
       activeMode: 'Modo ativo',
-      locked: 'Uma sessão de foco está em andamento. Esta lista libera quando ela terminar.',
+      locked:
+        'Uma sessão de foco está em andamento. Esta lista é liberada quando a sessão terminar.',
       emptyEntry: 'Digite um site primeiro.',
       remove: (url: string) => `Remover ${url}`,
     },
@@ -83,7 +84,7 @@ export const ptBR: Messages = {
       blocklist: {
         title: 'Sites bloqueados',
         description:
-          'Enquanto você foca, toda página cujo endereço contém um destes é coberta pela tela de foco.',
+          'Enquanto você foca, toda página cujo endereço contenha um destes termos é coberta pela tela de foco.',
         inputLabel: 'Site para bloquear',
         placeholder: 'youtube.com',
         addLabel: 'Bloquear',
@@ -91,12 +92,12 @@ export const ptBR: Messages = {
         emptyTitle: 'Nada bloqueado ainda',
         emptyText:
           'Adicione os sites que roubam sua atenção, como redes sociais ou plataformas de vídeo.',
-        duplicate: 'Este site já está na sua lista de bloqueio.',
+        duplicate: 'Este site já está nos seus sites bloqueados.',
       },
       allowlist: {
         title: 'Sites permitidos',
         description:
-          'No modo de sites permitidos, só as páginas cujo endereço contém um destes continuam acessíveis enquanto você foca.',
+          'No modo de sites permitidos, só as páginas cujo endereço contenha um destes termos continuam acessíveis enquanto você foca.',
         inputLabel: 'Site para permitir',
         placeholder: 'docs.google.com',
         addLabel: 'Permitir',
@@ -104,7 +105,7 @@ export const ptBR: Messages = {
         emptyTitle: 'Nada permitido ainda',
         emptyText:
           'Adicione as ferramentas de que você precisa para trabalhar, como seus documentos, editor ou plataforma de cursos.',
-        duplicate: 'Este site já está na sua lista de permitidos.',
+        duplicate: 'Este site já está nos seus sites permitidos.',
       },
     },
   },

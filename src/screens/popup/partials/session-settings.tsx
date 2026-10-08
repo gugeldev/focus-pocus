@@ -1,18 +1,14 @@
-import { IconAllowlist, IconBlocklist } from '@/components/ui/icons';
+import { type ListType, siteListIcons } from '@/components/site-lists';
 import { Segmented } from '@/components/ui/segmented';
 import { useMessages } from '@/lib/use-messages';
 import { presets } from '@/screens/popup/presets';
 
-type Mode = 'blocklist' | 'allowlist';
-
-const modeIcons = { blocklist: IconBlocklist, allowlist: IconAllowlist };
-
 type Props = {
-  mode: Mode;
+  mode: ListType;
   selectedTime: number;
   /** Both controls lock during a session. */
   disabled: boolean;
-  onModeChange: (mode: Mode) => void;
+  onModeChange: (mode: ListType) => void;
   onTimeChange: (seconds: number) => void;
 };
 
@@ -28,7 +24,7 @@ export function SessionSettings({
   const modes = (['blocklist', 'allowlist'] as const).map((value) => ({
     value,
     label: t.popup.modes[value],
-    icon: modeIcons[value],
+    icon: siteListIcons[value],
   }));
 
   return (

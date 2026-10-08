@@ -36,19 +36,36 @@ export function GeneralTab({ options, onChange, language, onLanguageChange, isRu
       </SettingsSection>
 
       <SettingsSection title={copy.sounds.title}>
-        <SettingRow {...bind('button-sound')} {...copy.sounds.button} />
-        <SettingRow {...bind('victorious-sound')} {...copy.sounds.victory} />
-        <SettingRow {...bind('give-up-sound')} {...copy.sounds.giveUp} />
+        <SettingRow
+          {...bind('button-sound')}
+          label={copy.sounds.button.label}
+          description={copy.sounds.button.description}
+        />
+        <SettingRow
+          {...bind('victorious-sound')}
+          label={copy.sounds.victory.label}
+          description={copy.sounds.victory.description}
+        />
+        <SettingRow
+          {...bind('give-up-sound')}
+          label={copy.sounds.giveUp.label}
+          description={copy.sounds.giveUp.description}
+        />
       </SettingsSection>
 
       <SettingsSection title={copy.notifications.title}>
-        <SettingRow {...bind('victorious-notification')} {...copy.notifications.finished} />
+        <SettingRow
+          {...bind('victorious-notification')}
+          label={copy.notifications.finished.label}
+          description={copy.notifications.finished.description}
+        />
       </SettingsSection>
 
       <SettingsSection title={copy.blocking.title}>
         <SettingRow
           {...bind('allowlist-mode')}
-          {...copy.blocking.allowlistMode}
+          label={copy.blocking.allowlistMode.label}
+          description={copy.blocking.allowlistMode.description}
           disabled={isRunning}
         />
       </SettingsSection>

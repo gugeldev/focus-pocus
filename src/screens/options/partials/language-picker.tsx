@@ -1,5 +1,5 @@
 import { Segmented } from '@/components/ui/segmented';
-import { LANGUAGE_NAMES, type LanguageSetting, LOCALES } from '@/lib/i18n';
+import { getNativeName, type LanguageSetting, LOCALES } from '@/lib/i18n';
 import { useMessages } from '@/lib/use-messages';
 
 type Props = {
@@ -13,7 +13,7 @@ export function LanguagePicker({ language, onChange }: Props) {
   const copy = t.options.general.language;
   const options = [
     { value: 'auto' as const, label: copy.auto },
-    ...LOCALES.map((locale) => ({ value: locale, label: LANGUAGE_NAMES[locale] })),
+    ...LOCALES.map((locale) => ({ value: locale, label: getNativeName(locale) })),
   ];
 
   return (

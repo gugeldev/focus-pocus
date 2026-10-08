@@ -85,7 +85,7 @@ Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in
   - Outside React: the content script keeps the resolved `Locale` and passes it to `showOverlay()`; the background calls `loadMessages()` for the notification.
   - Lib helpers that show text take the copy as an argument (`shareStreak(streak, t.share)`) instead of reading the language themselves.
 - **The manifest** name and description come from `static/_locales/<en|pt_BR|es>/messages.json` (`__MSG_extName__`, `__MSG_extDescription__`, `default_locale: "en"`), so the browser and the stores show them in the browser's language. That follows the browser, not the in-app setting.
-- **Adding a language:** add `src/locales/<code>.ts` typed `Messages`, register it in `dictionaries` and `LANGUAGE_NAMES` (`src/lib/i18n.ts`), map its browser codes in `getBrowserLocale()`, and add `static/_locales/<code>/messages.json`.
+- **Adding a language:** add `src/locales/<code>.ts` typed `Messages`, add one row to `languages` in `src/lib/i18n.ts` (its copy, its native name and the browser language prefix it answers to), and add `static/_locales/<code>/messages.json`.
 
 ---
 
@@ -112,12 +112,11 @@ src/
 │   └── options/
 │       ├── page.tsx      # OptionsScreen: tab state + location hash, sidebar + the open tab
 │       ├── tabs.ts       # the tabs and getTabFromHash
-│       ├── site-lists.ts # ListType and the icon of the blocklist and allowlist tabs
 │       └── partials/     # sidebar, nav-tabs, nav-item, sidebar-footer, tab-page, settings-section,
 │                         # setting-row, locked-notice, active-mode-badge, general-tab,
 │                         # language-picker, site-list-tab, add-site-form, site-list, site-row,
 │                         # site-icon, empty-list
-├── components/           # used by two or more screens: brand, toaster
+├── components/           # used by two or more screens: brand, toaster, site-lists (ListType, list icons)
 │   └── ui/               # the design-system kit: button, icon-button, input, switch, segmented, icons.ts
 ├── locales/              # the UI copy: en.ts (source + Messages type), pt-br.ts, es.ts (see 2.6)
 ├── styles/theme.css      # Tailwind entry: design tokens (@theme), font, base styles (see 5.1)
@@ -287,7 +286,7 @@ The look is dark, violet and **minimal**, modeled on the maintainer's heysusi se
 
 Same rules as the maintainer's `obd` project.
 
-- **An entry file only mounts.** `src/popup/index.tsx` and `src/options/index.tsx` are `mount(<XScreen />)` and nothing else. The page lives in `src/screens/<name>/page.tsx` (default export `XScreen`), with `partials/` for the components only that screen uses. Screen-only helpers and config (`tabs.ts`, `site-lists.ts`, `parse-custom-time.ts`) sit next to `page.tsx`.
+- **An entry file only mounts.** `src/popup/index.tsx` and `src/options/index.tsx` are `mount(<XScreen />)` and nothing else. The page lives in `src/screens/<name>/page.tsx` (default export `XScreen`), with `partials/` for the components only that screen uses. Screen-only helpers and config (`tabs.ts`, `parse-custom-time.ts`) sit next to `page.tsx`.
 - **`src/components/ui/` is the design-system kit; `src/components/` is only what two or more screens use** (`Brand`, `Toaster`). When a partial gains a second user, move it up rather than importing across screen folders.
 - **Logic and hooks live in `src/lib/`** (`useStorage`, `toast`, `shareStreak`, `formatTime`…). A hook only one file needs lives in that file (`useCelebration` in the popup's `page.tsx`, `useTimeEditor` in `time-field.tsx`).
 - **Icons come from `src/components/ui/icons.ts`, never from the package directly.** Add one there with a domain name (`IconBlocklist`, not `Prohibit`), deep-imported per glyph (`@phosphor-icons/react/dist/csr/<Name>`): the package's root re-exports ~1500 icons and a development build bundles them all.

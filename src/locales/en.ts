@@ -111,9 +111,9 @@ export const en = {
   },
   share: {
     starting:
-      "I'm starting my streak on the FocusPocus extension now! 🚀\n\nTry it at Google Web Store or Firefox Store",
+      "I'm starting my streak on the FocusPocus extension now! 🚀\n\nTry it at Chrome Web Store or Firefox Store",
     current: (streak: number) =>
-      `My current streak on the FocusPocus extension is ${streak}! 🎯\n\nTry it at Google Web Store or Firefox Store`,
+      `My current streak on the FocusPocus extension is ${streak}! 🎯\n\nTry it at Chrome Web Store or Firefox Store`,
     copied: 'Streak copied to your clipboard',
     copyFailed: "Couldn't copy your streak.",
   },

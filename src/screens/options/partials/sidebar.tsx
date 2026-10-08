@@ -1,8 +1,8 @@
 import { Brand } from '@/components/brand';
+import type { ListType } from '@/components/site-lists';
 import { useMessages } from '@/lib/use-messages';
 import { NavTabs } from '@/screens/options/partials/nav-tabs';
 import { SidebarFooter } from '@/screens/options/partials/sidebar-footer';
-import type { ListType } from '@/screens/options/site-lists';
 import type { TabId } from '@/screens/options/tabs';
 
 type Props = {

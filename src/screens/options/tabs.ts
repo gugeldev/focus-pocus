@@ -1,6 +1,6 @@
+import { type ListType, siteListIcons } from '@/components/site-lists';
 import { type IconComponent, IconGeneral } from '@/components/ui/icons';
 import type { Messages } from '@/lib/i18n';
-import { type ListType, siteListIcons } from '@/screens/options/site-lists';
 
 export type TabId = 'general' | ListType;
 

@@ -1,8 +1,8 @@
 import type { CSSProperties } from 'react';
+import type { ListType } from '@/components/site-lists';
 import { cx } from '@/lib/cx';
 import { useMessages } from '@/lib/use-messages';
 import { NavLabel, navItemClasses } from '@/screens/options/partials/nav-item';
-import type { ListType } from '@/screens/options/site-lists';
 import { getTabLabel, type Tab, type TabId, tabs } from '@/screens/options/tabs';
 
 type Props = {
