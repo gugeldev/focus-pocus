@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
-import formatTime from '../utils/format-time';
-import overlayStyles from './overlay.css';
+import { formatTime } from '@/lib/format-time';
+import overlayStyles from './overlay.css?raw';
 
 // The focus screen. It is a shadow root on a host appended to <html>, so the
 // page's styles cannot restyle it and its styles cannot leak into the page.

@@ -1,93 +1,14 @@
 <!doctype html>
-<html lang="en" style="background: #0b0a10">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark" />
     <title>FocusPocus</title>
-    <link rel="stylesheet" href="../assets/phosphor/regular/style.css" />
-    <link rel="stylesheet" href="../assets/phosphor/fill/style.css" />
-    <link rel="stylesheet" href="../shared/base.css" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="../popup.css" />
   </head>
-  <body data-state="idle">
-    <header class="topbar">
-      <div class="brand">
-        <img class="brand-logo" src="../assets/logo/icon-64.png" alt="" />
-        <span class="brand-name">FocusPocus</span>
-      </div>
-
-      <div class="topbar-actions">
-        <button type="button" class="streak pill focus-ring" id="streak-button" title="Copy your streak">
-          <i class="ph-fill ph-flame" aria-hidden="true"></i>
-          <span id="streak-counter">0</span>
-          <span class="visually-hidden">sessions in a row, copy to share</span>
-        </button>
-        <button type="button" class="icon-btn pill" id="config" aria-label="Settings" title="Settings">
-          <i class="ph ph-gear-six" aria-hidden="true"></i>
-        </button>
-      </div>
-    </header>
-
-    <main class="content">
-      <section class="dial" aria-label="Timer">
-        <svg class="ring" viewBox="0 0 200 200" aria-hidden="true">
-          <circle class="ring-track" cx="100" cy="100" r="94" />
-          <circle class="ring-progress" id="ring-progress" cx="100" cy="100" r="94" />
-        </svg>
-
-        <div class="dial-center">
-          <p class="dial-caption" id="dial-caption"></p>
-          <button type="button" class="time focus-ring" id="timer-counter" title="Set a custom time">
-            15:00
-          </button>
-          <input
-            class="time time-input"
-            id="custom-input"
-            type="text"
-            inputmode="numeric"
-            placeholder="mm:ss"
-            maxlength="8"
-            aria-label="Custom time, as hh:mm:ss, mm:ss or seconds"
-            hidden
-          />
-          <p class="dial-hint" id="dial-hint">Click to customize</p>
-        </div>
-      </section>
-
-      <fieldset class="controls" id="controls">
-        <legend class="visually-hidden">Session settings</legend>
-
-        <div class="segmented pill mode" id="mode" style="--segments: 2">
-          <span class="segmented-thumb" aria-hidden="true"></span>
-          <label class="segmented-option">
-            <input type="radio" name="mode" value="blocklist" checked />
-            <i class="ph ph-prohibit" aria-hidden="true"></i>
-            Blocklist
-          </label>
-          <label class="segmented-option">
-            <input type="radio" name="mode" value="allowlist" />
-            <i class="ph ph-check-circle" aria-hidden="true"></i>
-            Allowlist
-          </label>
-        </div>
-
-        <div class="segmented pill presets" id="presets" style="--segments: 6">
-          <span class="segmented-thumb" aria-hidden="true"></span>
-          <label class="segmented-option"><input type="radio" name="duration" value="60" />1m</label>
-          <label class="segmented-option"><input type="radio" name="duration" value="900" />15m</label>
-          <label class="segmented-option"><input type="radio" name="duration" value="1500" />25m</label>
-          <label class="segmented-option"><input type="radio" name="duration" value="1800" />30m</label>
-          <label class="segmented-option"><input type="radio" name="duration" value="2700" />45m</label>
-          <label class="segmented-option"><input type="radio" name="duration" value="3600" />1h</label>
-        </div>
-      </fieldset>
-
-      <button type="button" class="btn btn-primary pill start-button" id="start">
-        <span id="start-label">Start focusing</span>
-      </button>
-    </main>
-
+  <body class="w-80">
+    <div id="root"></div>
     <script src="../popup.js"></script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 /* The focus screen drawn over blocked pages. It lives in a shadow root
    (src/content/overlay.ts), so the host page's CSS cannot reach it and these
-   rules cannot leak into the page. Colors mirror static/shared/base.css. */
+   rules cannot leak into the page. Colors mirror src/styles/theme.css. */
 
 /* A page rule that matches the host (div { position: relative }) beats a
    normal :host rule; an !important :host rule beats the page. */

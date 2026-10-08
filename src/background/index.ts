@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
-import { onTimerMessage } from '../utils/messages';
-import { getStorage, seedStorageDefaults, setStorage } from '../utils/storage';
+import { onTimerMessage } from '@/lib/messages';
+import { getStorage, seedStorageDefaults, setStorage } from '@/lib/storage';
 import { getStreakAndIncrement } from './services/streak';
 import { checkAndStopTimer } from './services/timer';
 

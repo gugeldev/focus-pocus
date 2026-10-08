@@ -1,5 +1,5 @@
 import browser from 'webextension-polyfill';
-import { getStorage, setStorage } from '../../utils/storage';
+import { getStorage, setStorage } from '@/lib/storage';
 
 function pushFinishedSessionNotification() {
   browser.notifications.create({
