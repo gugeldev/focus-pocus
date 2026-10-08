@@ -1,85 +1,49 @@
 import { getStorage, onStorageChanged } from '../utils/storage';
+import { hideOverlay, showOverlay, updateOverlayTime } from './overlay';
 
 let blocklist: string[] = [];
 let allowlist: string[] = [];
-
 let allowlistMode = false;
+let selectedTime = 0;
+
+function shouldBlock() {
+  const url = window.location.href;
+  return allowlistMode
+    ? !allowlist.some((entry) => url.includes(entry))
+    : blocklist.some((entry) => url.includes(entry));
+}
+
+function applyFocusMode(timer: number) {
+  if (shouldBlock()) showOverlay(selectedTime - timer);
+  else hideOverlay();
+}
 
 function initialize() {
-  getStorage(['blocklist', 'allowlist', 'isRunning', 'options']).then((res) => {
-    blocklist = res.blocklist || [];
-    allowlist = res.allowlist || [];
+  getStorage(['blocklist', 'allowlist', 'isRunning', 'options', 'selectedTime', 'timer']).then(
+    (res) => {
+      blocklist = res.blocklist ?? [];
+      allowlist = res.allowlist ?? [];
+      allowlistMode = Boolean(res.options?.['allowlist-mode']);
+      selectedTime = res.selectedTime;
 
-    if (res.options?.['allowlist-mode']) {
-      allowlistMode = true;
-    }
-
-    if (res.isRunning) {
-      checkFocusPage();
-    }
-  });
+      if (res.isRunning) applyFocusMode(res.timer);
+    },
+  );
 }
 
 onStorageChanged((changes) => {
-  if (changes.blocklist) blocklist = changes.blocklist.newValue || [];
-  if (changes.allowlist) allowlist = changes.allowlist.newValue || [];
-
-  if (changes.options) {
-    if (changes.options.newValue?.['allowlist-mode']) {
-      allowlistMode = true;
-    } else {
-      allowlistMode = false;
-    }
-  }
+  if (changes.blocklist) blocklist = changes.blocklist.newValue ?? [];
+  if (changes.allowlist) allowlist = changes.allowlist.newValue ?? [];
+  if (changes.options) allowlistMode = Boolean(changes.options.newValue?.['allowlist-mode']);
+  if (changes.selectedTime?.newValue) selectedTime = changes.selectedTime.newValue;
 
   if (changes.isRunning) {
-    if (changes.isRunning.newValue) {
-      checkFocusPage();
-    } else {
-      removeFocusPage();
-    }
+    if (changes.isRunning.newValue) applyFocusMode(0);
+    else hideOverlay();
   }
+
+  if (changes.timer?.newValue !== undefined)
+    updateOverlayTime(selectedTime - changes.timer.newValue);
 });
-
-function checkFocusPage() {
-  removeFocusPage();
-  checkMode();
-}
-
-function checkMode() {
-  if (allowlistMode) {
-    for (const url of allowlist) {
-      if (window.location.href.includes(url)) return;
-    }
-    addFocusPage();
-  } else {
-    for (const url of blocklist) {
-      if (window.location.href.includes(url)) {
-        addFocusPage();
-        return;
-      }
-    }
-  }
-}
-
-function addFocusPage() {
-  const body = document.querySelector('body');
-  const focusPage = document.createElement('div');
-  focusPage.id = 'focus-page';
-  focusPage.innerHTML = `
-    <div id="focus-page-content">
-      <h1>Focus Mode</h1>
-      <p>Time to focus on your work.</p>
-      <p>If you give up, your streak will be reset.</p>
-    </div>
-  `;
-
-  if (body) body.appendChild(focusPage);
-}
-
-function removeFocusPage() {
-  const focusPage = document.querySelector('#focus-page');
-  if (focusPage) focusPage.remove();
-}
 
 initialize();

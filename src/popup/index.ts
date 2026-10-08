@@ -1,240 +1,184 @@
 import browser from 'webextension-polyfill';
-import { sendTimerMessage } from '../utils/messages';
-import { getStorage, onStorageChanged, setStorage } from '../utils/storage';
-import './streak';
-
 import { changeSelectedTime, handleStartTimer } from '../background/services/timer';
-import changePopupColor from '../utils/change-popup-color';
 import getDoNotGiveUpMessage from '../utils/do-not-giveup';
+import formatTime from '../utils/format-time';
+import { sendTimerMessage } from '../utils/messages';
 import playSound from '../utils/play-popup-sounds';
+import { checkSegmentedValue, syncSegmented } from '../utils/segmented';
+import bindStreakButton from '../utils/share-streak';
+import { getStorage, onStorageChanged, setStorage } from '../utils/storage';
 
 import {
   configButton,
+  controls,
   customInput,
-  doNotGiveUpMessage,
-  focusMode,
-  selectTime,
+  dialCaption,
+  dialHint,
+  modeControl,
+  presets,
+  ringProgress,
   startButton,
+  startLabel,
+  streakButton,
   streakCounter,
   timerDisplay,
 } from './elements';
 
+const CUSTOM_CAPTION = 'Custom session';
+const SHORT_TIME_LENGTH = 5; // "mm:ss"
+
 let isTimerRunning = false;
 
-function changeAppStyleMode(isRunning: boolean) {
-  changePopupColor(isRunning);
-  startButton.innerHTML = isRunning ? 'GIVE UP!' : 'START FOCUSING';
-  timerDisplay.style.pointerEvents = isRunning ? 'none' : 'auto';
-  doNotGiveUpMessage.style.display = isRunning ? 'block' : 'none';
-  selectTime.disabled = isRunning;
-  focusMode.disabled = isRunning;
-  customInput.disabled = isRunning;
+// Parses "ss", "mm:ss" or "hh:mm:ss" into seconds. Returns null for anything
+// that is not a positive duration.
+function parseCustomTime(value: string) {
+  const units = [1, 60, 3600];
+  const parts = value.trim().split(':').reverse();
+  if (parts.length > units.length) return null;
+
+  let totalSeconds = 0;
+  for (const [index, part] of parts.entries()) {
+    if (!/^\d+$/.test(part)) return null;
+    totalSeconds += parseInt(part, 10) * units[index];
+  }
+
+  return totalSeconds > 0 ? totalSeconds : null;
 }
 
-function updateFocusModeButton(isAllowlistMode: boolean) {
-  focusMode.textContent = isAllowlistMode ? 'Allowlist Mode' : 'Blocklist Mode';
+function fitTime(element: HTMLElement, text: string) {
+  element.classList.toggle('time-long', text.length > SHORT_TIME_LENGTH);
 }
 
-function getRandomDoNotGiveUpMessage() {
-  doNotGiveUpMessage.textContent = getDoNotGiveUpMessage();
+function renderRunningState(isRunning: boolean) {
+  const changed = isRunning !== isTimerRunning;
+  isTimerRunning = isRunning;
+  document.body.dataset.state = isRunning ? 'running' : 'idle';
+
+  controls.disabled = isRunning;
+  timerDisplay.disabled = isRunning;
+  startButton.classList.toggle('btn-primary', !isRunning);
+  startButton.classList.toggle('btn-danger', isRunning);
+
+  if (!changed) return;
+
+  startLabel.textContent = isRunning ? 'Give up' : 'Start focusing';
+  startButton.classList.remove('swap');
+  // Restart the label animation on the next frame.
+  requestAnimationFrame(() => startButton.classList.add('swap'));
+
+  if (isRunning) {
+    closeCustomInput();
+    dialCaption.textContent = getDoNotGiveUpMessage();
+  }
 }
 
-function updateTimer() {
-  getStorage(['timer', 'selectedTime', 'timeLabel', 'isRunning', 'streak', 'options']).then(
-    (res) => {
-      const { timer, selectedTime, timeLabel, isRunning, streak, options: settings } = res;
+function render() {
+  getStorage(['timer', 'selectedTime', 'isRunning', 'options']).then((res) => {
+    const { timer, selectedTime, isRunning, options } = res;
 
-      selectTime.value = selectedTime.toString() || '60';
-      streakCounter.innerHTML = streak.toString() || '0';
+    const isPreset = checkSegmentedValue(presets, selectedTime.toString());
+    checkSegmentedValue(modeControl, options?.['allowlist-mode'] ? 'allowlist' : 'blocklist');
 
-      const options = Array.from(selectTime.options);
-      const matchingOption = options.find((option) => option.value === selectedTime.toString());
-      if (matchingOption) {
-        matchingOption.selected = true;
-      } else {
-        updateSelectOption(selectedTime, timeLabel || 'Custom Time');
-      }
+    const secondsLeft = isRunning ? Math.max(selectedTime - timer, 0) : selectedTime;
+    timerDisplay.textContent = formatTime(secondsLeft);
+    fitTime(timerDisplay, timerDisplay.textContent);
+    ringProgress.style.setProperty('--progress', (secondsLeft / selectedTime).toString());
 
-      const totalSecondsLeft = selectedTime - timer;
-      if (totalSecondsLeft <= 0) {
-        handleTimerEnd();
-      } else {
-        timerDisplay.innerHTML = formatTime(totalSecondsLeft);
-      }
-      isTimerRunning = isRunning;
+    renderRunningState(isRunning);
 
-      if (settings) updateFocusModeButton(settings['allowlist-mode']);
-
-      changeAppStyleMode(isRunning);
-    },
-  );
-}
-
-function checkIfIsRunningAndSendAMessage() {
-  getStorage(['isRunning']).then((res) => {
-    if (res.isRunning) {
-      sendTimerMessage('TIMER_STARTED');
+    if (!isRunning) {
+      dialCaption.textContent = isPreset ? '' : CUSTOM_CAPTION;
     }
   });
 }
 
-checkIfIsRunningAndSendAMessage();
+function openCustomInput() {
+  if (isTimerRunning) return;
 
-function formatTime(totalSeconds: number): string {
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  const parts = [
-    hours > 0 ? `${hours < 10 ? `0${hours}` : hours}` : '00',
-    `${minutes < 10 ? `0${minutes}` : minutes}`,
-    `${seconds < 10 ? `0${seconds}` : seconds}`,
-  ];
-
-  return parts.join(':');
+  customInput.value = timerDisplay.textContent ?? '';
+  fitTime(customInput, customInput.value);
+  customInput.hidden = false;
+  timerDisplay.hidden = true;
+  dialHint.textContent = 'Enter to save · Esc to cancel';
+  customInput.focus();
+  customInput.select();
 }
 
-function handleStartTimerButton() {
-  playSound('button');
-  const customTime = parseCustomTime();
-  if (customTime !== null) {
-    changeSelectedTime(customTime.totalSeconds, customTime.label);
-    updateSelectOption(customTime.totalSeconds, customTime.label);
-  }
-  handleStartTimer();
-}
+function closeCustomInput() {
+  if (customInput.hidden) return;
 
-const TIME_UNITS = [
-  { seconds: 1, label: (n: number) => `${n} S` },
-  { seconds: 60, label: (n: number) => `${n} MIN` },
-  { seconds: 3600, label: (n: number) => `${n} HOUR${n > 1 ? 'S' : ''}` },
-];
-
-// Parses "ss", "mm:ss" or "hh:mm:ss" into seconds and a label like "1 HOUR 30 MIN".
-function parseCustomTime() {
-  if (customInput.style.display === 'none') return null;
-
-  const timeParts = customInput.value.split(':').reverse();
-  let totalSeconds = 0;
-  const labelParts: string[] = [];
-
-  TIME_UNITS.forEach((unit, index) => {
-    const value = parseInt(timeParts[index], 10);
-    if (Number.isNaN(value)) return;
-
-    totalSeconds += value * unit.seconds;
-    if (value > 0) labelParts.unshift(unit.label(value));
-  });
-
-  return totalSeconds > 0 ? { totalSeconds, label: labelParts.join(' ') } : null;
-}
-
-function handleTimerSelect(e: Event) {
-  const selectElement = e.target as HTMLSelectElement;
-  const totalSeconds = parseInt(selectElement.value, 10);
-  const option = selectElement.options[selectElement.selectedIndex];
-  const label = option.textContent || '';
-
-  timerDisplay.innerHTML = formatTime(totalSeconds);
-  changeSelectedTime(totalSeconds, label);
+  customInput.hidden = true;
+  timerDisplay.hidden = false;
+  dialHint.textContent = 'Click to customize';
 }
 
 function applyCustomTime() {
-  const timeData = parseCustomTime();
-  if (timeData) {
-    const { totalSeconds, label } = timeData;
-    timerDisplay.innerHTML = formatTime(totalSeconds);
-    updateSelectOption(totalSeconds, label);
-    changeSelectedTime(totalSeconds, label);
-  }
-  customInput.style.display = 'none';
-  timerDisplay.style.display = 'block';
+  if (customInput.hidden) return;
+
+  const totalSeconds = parseCustomTime(customInput.value);
+  closeCustomInput();
+  if (totalSeconds !== null) changeSelectedTime(totalSeconds);
 }
 
-function updateSelectOption(seconds: number, label: string) {
-  let options = Array.from(selectTime.options).map((option) => ({
-    value: parseInt(option.value, 10),
-    label: option.textContent || '',
-  }));
+function celebrate() {
+  streakButton.classList.remove('bump');
+  requestAnimationFrame(() => streakButton.classList.add('bump'));
+}
 
-  const newOption = { value: seconds, label };
-  options = options.filter((option) => option.value !== newOption.value);
-  options.push(newOption);
-  options.sort((a, b) => a.value - b.value);
-
-  selectTime.innerHTML = '';
-  options.forEach((option) => {
-    const optionElement = document.createElement('option') as HTMLOptionElement;
-    optionElement.value = option.value.toString();
-    optionElement.textContent = option.label;
-    selectTime.appendChild(optionElement);
+function checkIfIsRunningAndSendAMessage() {
+  getStorage(['isRunning']).then((res) => {
+    if (res.isRunning) sendTimerMessage('TIMER_STARTED');
   });
-
-  selectTime.value = seconds.toString();
-}
-
-function handleTimerEnd() {
-  isTimerRunning = false;
-  startButton.textContent = 'START FOCUSING';
-  selectTime.disabled = false;
-  focusMode.disabled = false;
-  customInput.disabled = false;
-  customInput.style.display = 'none';
-  timerDisplay.style.display = 'block';
-  timerDisplay.style.pointerEvents = 'auto';
 }
 
 onStorageChanged((changes) => {
   const { oldValue, newValue } = changes.streak ?? {};
   if (oldValue !== undefined && newValue !== undefined && oldValue < newValue) {
     playSound('finished');
+    celebrate();
   }
-  if (changes.timer && changes.timer.oldValue !== changes.timer.newValue) {
-    updateTimer();
-  }
-});
 
-startButton.addEventListener('click', handleStartTimerButton);
-selectTime.addEventListener('change', handleTimerSelect);
-configButton.addEventListener('click', () => browser.runtime.openOptionsPage());
-
-focusMode.addEventListener('click', () => {
-  getStorage('options').then((res) => {
-    if (res.options?.['allowlist-mode']) {
-      setStorage({
-        options: { ...res.options, 'allowlist-mode': false },
-      });
-      updateFocusModeButton(false);
-    } else {
-      setStorage({
-        options: { ...res.options, 'allowlist-mode': true },
-      });
-      updateFocusModeButton(true);
-    }
-  });
-});
-
-timerDisplay.addEventListener('click', () => {
-  if (!isTimerRunning) {
-    customInput.style.display = 'block';
-    timerDisplay.style.display = 'none';
-    customInput.value = timerDisplay.textContent || '00:00';
-    customInput.focus();
-  }
-});
-
-customInput.addEventListener('blur', applyCustomTime);
-customInput.addEventListener('keypress', (event) => {
-  if (event.key === 'Enter') {
-    applyCustomTime();
+  if (changes.timer || changes.isRunning || changes.selectedTime || changes.options) {
+    render();
   }
 });
 
 startButton.addEventListener('click', () => {
-  isTimerRunning = !isTimerRunning;
-  startButton.textContent = isTimerRunning ? 'GIVE UP!' : 'START FOCUSING';
-  timerDisplay.style.pointerEvents = isTimerRunning ? 'none' : 'auto';
-  getRandomDoNotGiveUpMessage();
+  playSound('button');
+  applyCustomTime();
+  handleStartTimer();
 });
 
-updateTimer();
+presets.addEventListener('change', (event) => {
+  const input = event.target as HTMLInputElement;
+  syncSegmented(presets);
+  changeSelectedTime(parseInt(input.value, 10));
+});
+
+modeControl.addEventListener('change', () => {
+  syncSegmented(modeControl);
+  const allowlistMode =
+    modeControl.querySelector<HTMLInputElement>('input:checked')?.value === 'allowlist';
+  getStorage('options').then((res) => {
+    setStorage({ options: { ...res.options, 'allowlist-mode': allowlistMode } });
+  });
+});
+
+timerDisplay.addEventListener('click', openCustomInput);
+customInput.addEventListener('input', () => fitTime(customInput, customInput.value));
+customInput.addEventListener('blur', applyCustomTime);
+customInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') applyCustomTime();
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeCustomInput();
+    timerDisplay.focus();
+  }
+});
+
+configButton.addEventListener('click', () => browser.runtime.openOptionsPage());
+
+bindStreakButton(streakButton, streakCounter);
+
+checkIfIsRunningAndSendAMessage();
+render();

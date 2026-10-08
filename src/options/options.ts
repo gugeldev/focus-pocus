@@ -1,49 +1,25 @@
 import { getStorage, onStorageChanged, setStorage } from '../utils/storage';
 
-import { focusSettings, options } from './elements';
+import { options } from './elements';
 
-getStorage(['options', 'isRunning']).then((data) => {
-  const settings = data.options;
-  if (settings) {
-    options.forEach((option) => {
-      option.checked = settings[option.id];
-    });
+// Every switch's input id is its key in `options` (AGENTS.md section 2.4).
+function renderOptions(settings: Record<string, boolean>) {
+  for (const option of options) {
+    option.checked = Boolean(settings[option.id]);
   }
-
-  hiddenFocusSettings(data.isRunning);
-});
-
-function hiddenFocusSettings(isRunning: boolean) {
-  if (isRunning) {
-    focusSettings.style.display = 'none';
-  } else {
-    focusSettings.style.display = 'block';
-  }
+  document.body.classList.toggle('allowlist-mode', Boolean(settings['allowlist-mode']));
 }
 
-options.forEach((option) => {
+getStorage(['options']).then((data) => renderOptions(data.options ?? {}));
+
+for (const option of options) {
   option.addEventListener('change', () => {
     getStorage('options').then((data) => {
-      const options = data.options || {};
-      options[option.id] = option.checked;
-      setStorage({ options });
+      setStorage({ options: { ...data.options, [option.id]: option.checked } });
     });
   });
-});
+}
 
 onStorageChanged((changes) => {
-  if (changes.isRunning?.newValue) {
-    hiddenFocusSettings(true);
-  }
-
-  if (changes.isRunning && !changes.isRunning.newValue) {
-    hiddenFocusSettings(false);
-  }
-
-  const settings = changes.options?.newValue;
-  if (settings) {
-    options.forEach((option) => {
-      option.checked = settings[option.id];
-    });
-  }
+  if (changes.options?.newValue) renderOptions(changes.options.newValue);
 });

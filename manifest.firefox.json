@@ -32,8 +32,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "css": ["/content/styles.css"]
+      "js": ["content.js"]
     }
   ],
 
@@ -45,5 +44,5 @@
 
   "content_security_policy": "script-src 'self'; object-src 'self'",
 
-  "web_accessible_resources": ["/assets/logo/*", "/popup/*", "/options/*", "/content/*"]
+  "web_accessible_resources": ["/assets/logo/*", "/assets/fonts/*", "/popup/*", "/options/*"]
 }

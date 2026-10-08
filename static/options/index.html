@@ -1,122 +1,230 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" style="background: #0b0a10">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="dark" />
+    <title>FocusPocus · Settings</title>
+    <link rel="icon" href="../assets/logo/icon-32.png" />
+    <link rel="stylesheet" href="../assets/phosphor/regular/style.css" />
+    <link rel="stylesheet" href="../assets/phosphor/fill/style.css" />
+    <link rel="stylesheet" href="../shared/base.css" />
     <link rel="stylesheet" href="styles.css" />
-    <title>FocusPocus | Settings</title>
   </head>
   <body>
-    <main id="app">
-      <header>
-        <div class="logo">
-          <div class="logo-bg">
-            <img src="../assets/img/clock.svg" alt="FocusPocus clock logo" />
-          </div>
-          <h1>FocusPocus</h1>
+    <div class="shell">
+      <nav class="sidebar" aria-label="Settings sections">
+        <div class="brand">
+          <img class="brand-logo" src="../assets/logo/icon-64.png" alt="" />
+          <span class="brand-name">FocusPocus</span>
         </div>
 
-        <div class="header-buttons">
-          <div class="stats-button" id="streak-button">
-            <div class="streak-tt tooltip">Copy streak</div>
-            <span id="streak-status">0</span>
-            <img src="../assets/img/flame.svg" alt="Flame icon" />
-          </div>
+        <ul class="nav" id="tabs">
+          <li class="nav-indicator" aria-hidden="true"></li>
+          <li>
+            <button type="button" class="nav-item tab focus-ring" id="tab-main" aria-controls="main-page" data-hash="general" aria-current="page">
+              <i class="ph ph-sliders-horizontal" aria-hidden="true"></i>
+              <span class="nav-label">General</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="nav-item tab focus-ring" id="tab-blocklist" aria-controls="blocklist-page" data-hash="blocklist">
+              <i class="ph ph-prohibit" aria-hidden="true"></i>
+              <span class="nav-label">Blocklist</span>
+              <span class="nav-count" id="blocklist-count">0</span>
+            </button>
+          </li>
+          <li>
+            <button type="button" class="nav-item tab focus-ring" id="tab-allowlist" aria-controls="allowlist-page" data-hash="allowlist">
+              <i class="ph ph-check-circle" aria-hidden="true"></i>
+              <span class="nav-label">Allowlist</span>
+              <span class="nav-count" id="allowlist-count">0</span>
+            </button>
+          </li>
+        </ul>
 
-          <div class="stats-button" id="pix-me-button">
-            <div class="donate-tt tooltip">Donate</div>
-            <a href="https://www.pixme.bio/jotavetech" target="_blank">
-              <img src="../assets/img/heart-handshake.svg" alt="Heart icon" />
-            </a>
-          </div>
+        <div class="sidebar-foot">
+          <button type="button" class="nav-item focus-ring" id="streak-button" title="Copy your streak to share it">
+            <i class="ph ph-flame" aria-hidden="true"></i>
+            <span class="nav-label"><span id="streak-status">0</span> in a row</span>
+            <i class="ph ph-copy nav-hint" aria-hidden="true"></i>
+          </button>
+          <a class="nav-item focus-ring" href="https://www.pixme.bio/jotavetech" target="_blank" rel="noreferrer">
+            <i class="ph ph-heart" aria-hidden="true"></i>
+            <span class="nav-label">Support FocusPocus</span>
+            <i class="ph ph-arrow-up-right nav-hint" aria-hidden="true"></i>
+          </a>
         </div>
-      </header>
-      <nav id="tabs">
-        <button type="button" class="tab active-tab" id="tab-main">Main</button>
-        <button type="button" class="tab" id="tab-blocklist">Blocklist</button>
-        <button type="button" class="tab" id="tab-allowlist">Allowlist</button>
       </nav>
 
-      <!-- MAIN -->
+      <main class="pane">
+        <!-- GENERAL -->
 
-      <div class="page" id="main-page">
-        <div id="options">
-          <p class="title">Alerts</p>
-          <div class="option">
-            <label class="switch" aria-label="Give Up Sound">
-              <input type="checkbox" id="give-up-sound" />
-              <span class="slider round"></span>
-            </label>
-            <p>Give Up Sound</p>
-          </div>
-          <div class="option">
-            <label class="switch" aria-label="Victory Sound">
-              <input type="checkbox" id="victorious-sound" />
-              <span class="slider round"></span>
-            </label>
-            <p>Victory Sound</p>
-          </div>
-          <div class="option">
-            <label class="switch" aria-label="Victory Notification">
-              <input type="checkbox" id="victorious-notification" />
-              <span class="slider round"></span>
-            </label>
-            <p>Victory Notification</p>
-          </div>
-          <div class="option">
-            <label class="switch" aria-label="Start Button Sound">
-              <input type="checkbox" id="button-sound" />
-              <span class="slider round"></span>
-            </label>
-            <p>Start Button Sound</p>
-          </div>
-          <div id="focus-settings">
-            <p class="title">Focus Settings</p>
-            <div class="option">
-              <label class="switch" aria-label="Allowlist Mode">
-                <input type="checkbox" id="allowlist-mode" />
-                <span class="slider round"></span>
-              </label>
-              <p>Allowlist Mode</p>
+        <section class="page" id="main-page" aria-labelledby="main-title">
+          <header class="page-header">
+            <h1 id="main-title">General</h1>
+            <p>Choose how FocusPocus sounds, notifies and blocks while you focus.</p>
+          </header>
+
+          <div class="locked-notice" role="status">
+            <div class="locked-notice-inner">
+              <span class="live-dot" aria-hidden="true"></span>
+              A focus session is running. Blocking settings unlock when it ends.
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- BLOCKLIST -->
+          <section class="section" aria-labelledby="sounds-title">
+            <h2 class="section-title" id="sounds-title">Sounds</h2>
+            <div class="rows">
+              <label class="row">
+                <span class="row-text">
+                  <span class="row-label">Start and give up</span>
+                  <span class="row-description">A soft click when you start or stop a session.</span>
+                </span>
+                <span class="switch">
+                  <input type="checkbox" id="button-sound" />
+                  <span class="switch-track"></span>
+                </span>
+              </label>
+              <label class="row">
+                <span class="row-text">
+                  <span class="row-label">Victory</span>
+                  <span class="row-description">Plays when a session finishes while the popup is open.</span>
+                </span>
+                <span class="switch">
+                  <input type="checkbox" id="victorious-sound" />
+                  <span class="switch-track"></span>
+                </span>
+              </label>
+              <label class="row">
+                <span class="row-text">
+                  <span class="row-label">Giving up</span>
+                  <span class="row-description">A reminder that quitting costs your streak.</span>
+                </span>
+                <span class="switch">
+                  <input type="checkbox" id="give-up-sound" />
+                  <span class="switch-track"></span>
+                </span>
+              </label>
+            </div>
+          </section>
 
-      <div class="page list-page" id="blocklist-page">
-        <p>All the websites bellow will be blocked in blocklist mode.</p>
-        <form id="blocklist-form" class="form">
-          <input
-            type="text"
-            placeholder="Enter a url to block"
-            id="blocklist-input"
-          />
-          <button type="submit" id="blocklist-button">
-            <img src="../assets/img/plus.svg" alt="plus icon" />
-          </button>
-        </form>
-        <ul class="website-list" id="blocklist-list"></ul>
-      </div>
+          <section class="section" aria-labelledby="notifications-title">
+            <h2 class="section-title" id="notifications-title">Notifications</h2>
+            <div class="rows">
+              <label class="row">
+                <span class="row-text">
+                  <span class="row-label">Session finished</span>
+                  <span class="row-description">A system notification telling you it's time for a break.</span>
+                </span>
+                <span class="switch">
+                  <input type="checkbox" id="victorious-notification" />
+                  <span class="switch-track"></span>
+                </span>
+              </label>
+            </div>
+          </section>
 
-      <!-- ALLOWLIST -->
+          <section class="section" aria-labelledby="blocking-title">
+            <h2 class="section-title" id="blocking-title">Blocking</h2>
+            <div class="rows">
+              <label class="row">
+                <span class="row-text">
+                  <span class="row-label">Allowlist mode</span>
+                  <span class="row-description">
+                    Block every site except the ones on your allowlist, instead of only the ones on
+                    your blocklist.
+                  </span>
+                </span>
+                <span class="switch">
+                  <input type="checkbox" id="allowlist-mode" data-locks-while-running />
+                  <span class="switch-track"></span>
+                </span>
+              </label>
+            </div>
+          </section>
+        </section>
 
-      <div class="page list-page" id="allowlist-page">
-        <p>Only the websites bellow will be enabled in allowlist mode.</p>
-        <form id="allowlist-form" class="form">
-          <input
-            type="text"
-            placeholder="Enter a url to allow"
-            id="allowlist-input"
-          />
-          <button type="submit" id="allowlist-button">
-            <img src="../assets/img/plus.svg" alt="plus icon" />
-          </button>
-        </form>
-        <ul class="website-list" id="allowlist-list"></ul>
-      </div>
-    </main>
+        <!-- BLOCKLIST -->
+
+        <section class="page list-page" id="blocklist-page" aria-labelledby="blocklist-title" hidden>
+          <header class="page-header">
+            <div class="page-header-row">
+              <h1 id="blocklist-title">Blocklist</h1>
+              <span class="mode-badge" data-mode="blocklist">Active mode</span>
+            </div>
+            <p>
+              While you focus, any page whose address contains one of these is covered by the focus
+              screen.
+            </p>
+          </header>
+
+          <div class="locked-notice" role="status">
+            <div class="locked-notice-inner">
+              <span class="live-dot" aria-hidden="true"></span>
+              A focus session is running. This list unlocks when it ends.
+            </div>
+          </div>
+
+          <form id="blocklist-form" class="add-form">
+            <label class="visually-hidden" for="blocklist-input">Website to block</label>
+            <input class="input" type="text" placeholder="youtube.com" id="blocklist-input" autocomplete="off" data-locks-while-running />
+            <button type="submit" class="btn btn-secondary" id="blocklist-button" data-locks-while-running>
+              <i class="ph ph-plus" aria-hidden="true"></i>
+              Block
+            </button>
+          </form>
+
+          <ul class="site-list" id="blocklist-list" aria-label="Blocked websites"></ul>
+
+          <div class="empty-state">
+            <span class="empty-mark"><i class="ph ph-prohibit" aria-hidden="true"></i></span>
+            <strong>Nothing blocked yet</strong>
+            <p>Add the sites that steal your attention, like social feeds or video platforms.</p>
+          </div>
+        </section>
+
+        <!-- ALLOWLIST -->
+
+        <section class="page list-page" id="allowlist-page" aria-labelledby="allowlist-title" hidden>
+          <header class="page-header">
+            <div class="page-header-row">
+              <h1 id="allowlist-title">Allowlist</h1>
+              <span class="mode-badge" data-mode="allowlist">Active mode</span>
+            </div>
+            <p>
+              In allowlist mode, only pages whose address contains one of these stay reachable while
+              you focus.
+            </p>
+          </header>
+
+          <div class="locked-notice" role="status">
+            <div class="locked-notice-inner">
+              <span class="live-dot" aria-hidden="true"></span>
+              A focus session is running. This list unlocks when it ends.
+            </div>
+          </div>
+
+          <form id="allowlist-form" class="add-form">
+            <label class="visually-hidden" for="allowlist-input">Website to allow</label>
+            <input class="input" type="text" placeholder="docs.google.com" id="allowlist-input" autocomplete="off" data-locks-while-running />
+            <button type="submit" class="btn btn-secondary" id="allowlist-button" data-locks-while-running>
+              <i class="ph ph-plus" aria-hidden="true"></i>
+              Allow
+            </button>
+          </form>
+
+          <ul class="site-list" id="allowlist-list" aria-label="Allowed websites"></ul>
+
+          <div class="empty-state">
+            <span class="empty-mark"><i class="ph ph-check-circle" aria-hidden="true"></i></span>
+            <strong>Nothing allowed yet</strong>
+            <p>Add the tools you need to work, like your docs, editor or course platform.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
     <script src="../options.js"></script>
   </body>
 </html>
