@@ -1,40 +1,38 @@
-import browser from "webextension-polyfill";
-import "./streak";
+import browser from 'webextension-polyfill';
+import { sendTimerMessage } from '../utils/messages';
+import { getStorage, onStorageChanged, setStorage } from '../utils/storage';
+import './streak';
 
-import {
-  changeSelectedTime,
-  handleStartTimer,
-} from "../background/services/timer";
-
-import getDoNotGiveUpMessage from "../utils/do-not-giveup";
-import changePopupColor from "../utils/change-popup-color";
-import playSound from "../utils/play-popup-sounds";
+import { changeSelectedTime, handleStartTimer } from '../background/services/timer';
+import changePopupColor from '../utils/change-popup-color';
+import getDoNotGiveUpMessage from '../utils/do-not-giveup';
+import playSound from '../utils/play-popup-sounds';
 
 import {
   configButton,
+  customInput,
+  doNotGiveUpMessage,
+  focusMode,
   selectTime,
-  timerDisplay,
   startButton,
   streakCounter,
-  customInput,
-  focusMode,
-  doNotGiveUpMessage,
-} from "./elements";
+  timerDisplay,
+} from './elements';
 
 let isTimerRunning = false;
 
 function changeAppStyleMode(isRunning: boolean) {
   changePopupColor(isRunning);
-  startButton.innerHTML = isRunning ? "GIVE UP!" : "START FOCUSING";
-  timerDisplay.style.pointerEvents = isRunning ? "none" : "auto";
-  doNotGiveUpMessage.style.display = isRunning ? "block" : "none";
+  startButton.innerHTML = isRunning ? 'GIVE UP!' : 'START FOCUSING';
+  timerDisplay.style.pointerEvents = isRunning ? 'none' : 'auto';
+  doNotGiveUpMessage.style.display = isRunning ? 'block' : 'none';
   selectTime.disabled = isRunning;
   focusMode.disabled = isRunning;
   customInput.disabled = isRunning;
 }
 
 function updateFocusModeButton(isAllowlistMode: boolean) {
-  focusMode.textContent = isAllowlistMode ? "Allowlist Mode" : "Blocklist Mode";
+  focusMode.textContent = isAllowlistMode ? 'Allowlist Mode' : 'Blocklist Mode';
 }
 
 function getRandomDoNotGiveUpMessage() {
@@ -42,36 +40,19 @@ function getRandomDoNotGiveUpMessage() {
 }
 
 function updateTimer() {
-  browser.storage.local
-    .get([
-      "timer",
-      "selectedTime",
-      "timeLabel",
-      "isRunning",
-      "streak",
-      "options",
-    ])
-    .then((res) => {
-      const {
-        timer,
-        selectedTime,
-        timeLabel,
-        isRunning,
-        streak,
-        options: settings,
-      } = res;
+  getStorage(['timer', 'selectedTime', 'timeLabel', 'isRunning', 'streak', 'options']).then(
+    (res) => {
+      const { timer, selectedTime, timeLabel, isRunning, streak, options: settings } = res;
 
-      selectTime.value = selectedTime.toString() || "60";
-      streakCounter.innerHTML = streak.toString() || "0";
+      selectTime.value = selectedTime.toString() || '60';
+      streakCounter.innerHTML = streak.toString() || '0';
 
       const options = Array.from(selectTime.options);
-      const matchingOption = options.find(
-        (option) => option.value === selectedTime.toString()
-      );
+      const matchingOption = options.find((option) => option.value === selectedTime.toString());
       if (matchingOption) {
         matchingOption.selected = true;
       } else {
-        updateSelectOption(selectedTime, timeLabel || "Custom Time");
+        updateSelectOption(selectedTime, timeLabel || 'Custom Time');
       }
 
       const totalSecondsLeft = selectedTime - timer;
@@ -82,16 +63,17 @@ function updateTimer() {
       }
       isTimerRunning = isRunning;
 
-      if (settings) updateFocusModeButton(settings["allowlist-mode"]);
+      if (settings) updateFocusModeButton(settings['allowlist-mode']);
 
       changeAppStyleMode(isRunning);
-    });
+    },
+  );
 }
 
 function checkIfIsRunningAndSendAMessage() {
-  browser.storage.local.get(["isRunning"]).then((res) => {
+  getStorage(['isRunning']).then((res) => {
     if (res.isRunning) {
-      browser.runtime.sendMessage({ type: "TIMER_STARTED" });
+      sendTimerMessage('TIMER_STARTED');
     }
   });
 }
@@ -104,16 +86,16 @@ function formatTime(totalSeconds: number): string {
   const seconds = totalSeconds % 60;
 
   const parts = [
-    hours > 0 ? `${hours < 10 ? "0" + hours : hours}` : "00",
-    `${minutes < 10 ? "0" + minutes : minutes}`,
-    `${seconds < 10 ? "0" + seconds : seconds}`,
+    hours > 0 ? `${hours < 10 ? `0${hours}` : hours}` : '00',
+    `${minutes < 10 ? `0${minutes}` : minutes}`,
+    `${seconds < 10 ? `0${seconds}` : seconds}`,
   ];
 
-  return parts.join(":");
+  return parts.join(':');
 }
 
 function handleStartTimerButton() {
-  playSound("button");
+  playSound('button');
   const customTime = parseCustomTime();
   if (customTime !== null) {
     changeSelectedTime(customTime.totalSeconds, customTime.label);
@@ -122,49 +104,36 @@ function handleStartTimerButton() {
   handleStartTimer();
 }
 
+const TIME_UNITS = [
+  { seconds: 1, label: (n: number) => `${n} S` },
+  { seconds: 60, label: (n: number) => `${n} MIN` },
+  { seconds: 3600, label: (n: number) => `${n} HOUR${n > 1 ? 'S' : ''}` },
+];
+
+// Parses "ss", "mm:ss" or "hh:mm:ss" into seconds and a label like "1 HOUR 30 MIN".
 function parseCustomTime() {
-  if (customInput.style.display !== "none") {
-    const timeParts = customInput.value.split(":").reverse();
-    let totalSeconds = 0;
-    const labelParts = [];
+  if (customInput.style.display === 'none') return null;
 
-    if (timeParts.length >= 1 && !isNaN(parseInt(timeParts[0]))) {
-      const seconds = parseInt(timeParts[0]);
-      totalSeconds += seconds;
-      if (seconds > 0) {
-        labelParts.push(seconds + " S");
-      }
-    }
+  const timeParts = customInput.value.split(':').reverse();
+  let totalSeconds = 0;
+  const labelParts: string[] = [];
 
-    if (timeParts.length >= 2 && !isNaN(parseInt(timeParts[1]))) {
-      const minutes = parseInt(timeParts[1]);
-      totalSeconds += minutes * 60;
-      if (minutes > 0) {
-        labelParts.unshift(minutes + " MIN");
-      }
-    }
+  TIME_UNITS.forEach((unit, index) => {
+    const value = parseInt(timeParts[index], 10);
+    if (Number.isNaN(value)) return;
 
-    if (timeParts.length >= 3 && !isNaN(parseInt(timeParts[2]))) {
-      const hours = parseInt(timeParts[2]);
-      totalSeconds += hours * 3600;
-      if (hours > 0) {
-        labelParts.unshift(hours + " HOUR" + (hours > 1 ? "S" : ""));
-      }
-    }
+    totalSeconds += value * unit.seconds;
+    if (value > 0) labelParts.unshift(unit.label(value));
+  });
 
-    const label = labelParts.join(" ");
-    if (totalSeconds > 0) {
-      return { totalSeconds, label };
-    }
-  }
-  return null;
+  return totalSeconds > 0 ? { totalSeconds, label: labelParts.join(' ') } : null;
 }
 
 function handleTimerSelect(e: Event) {
   const selectElement = e.target as HTMLSelectElement;
-  const totalSeconds = parseInt(selectElement.value);
+  const totalSeconds = parseInt(selectElement.value, 10);
   const option = selectElement.options[selectElement.selectedIndex];
-  const label = option.textContent || "";
+  const label = option.textContent || '';
 
   timerDisplay.innerHTML = formatTime(totalSeconds);
   changeSelectedTime(totalSeconds, label);
@@ -178,14 +147,14 @@ function applyCustomTime() {
     updateSelectOption(totalSeconds, label);
     changeSelectedTime(totalSeconds, label);
   }
-  customInput.style.display = "none";
-  timerDisplay.style.display = "block";
+  customInput.style.display = 'none';
+  timerDisplay.style.display = 'block';
 }
 
 function updateSelectOption(seconds: number, label: string) {
   let options = Array.from(selectTime.options).map((option) => ({
-    value: parseInt(option.value),
-    label: option.textContent || "",
+    value: parseInt(option.value, 10),
+    label: option.textContent || '',
   }));
 
   const newOption = { value: seconds, label };
@@ -193,9 +162,9 @@ function updateSelectOption(seconds: number, label: string) {
   options.push(newOption);
   options.sort((a, b) => a.value - b.value);
 
-  selectTime.innerHTML = "";
+  selectTime.innerHTML = '';
   options.forEach((option) => {
-    const optionElement = document.createElement("option") as HTMLOptionElement;
+    const optionElement = document.createElement('option') as HTMLOptionElement;
     optionElement.value = option.value.toString();
     optionElement.textContent = option.label;
     selectTime.appendChild(optionElement);
@@ -206,64 +175,65 @@ function updateSelectOption(seconds: number, label: string) {
 
 function handleTimerEnd() {
   isTimerRunning = false;
-  startButton.textContent = "START FOCUSING";
+  startButton.textContent = 'START FOCUSING';
   selectTime.disabled = false;
   focusMode.disabled = false;
   customInput.disabled = false;
-  customInput.style.display = "none";
-  timerDisplay.style.display = "block";
-  timerDisplay.style.pointerEvents = "auto";
+  customInput.style.display = 'none';
+  timerDisplay.style.display = 'block';
+  timerDisplay.style.pointerEvents = 'auto';
 }
 
-browser.storage.onChanged.addListener((changes) => {
-  if (changes.streak && changes.streak.oldValue < changes.streak.newValue) {
-    playSound("finished");
+onStorageChanged((changes) => {
+  const { oldValue, newValue } = changes.streak ?? {};
+  if (oldValue !== undefined && newValue !== undefined && oldValue < newValue) {
+    playSound('finished');
   }
-  if (changes.timer && changes.timer.oldValue != changes.timer.newValue) {
+  if (changes.timer && changes.timer.oldValue !== changes.timer.newValue) {
     updateTimer();
   }
 });
 
-startButton.addEventListener("click", handleStartTimerButton);
-selectTime.addEventListener("change", handleTimerSelect);
-configButton.addEventListener("click", () => browser.runtime.openOptionsPage());
+startButton.addEventListener('click', handleStartTimerButton);
+selectTime.addEventListener('change', handleTimerSelect);
+configButton.addEventListener('click', () => browser.runtime.openOptionsPage());
 
-focusMode.addEventListener("click", () => {
-  browser.storage.local.get("options").then((res) => {
-    if (res.options && res.options["allowlist-mode"]) {
-      browser.storage.local.set({
-        options: { ...res.options, "allowlist-mode": false },
+focusMode.addEventListener('click', () => {
+  getStorage('options').then((res) => {
+    if (res.options?.['allowlist-mode']) {
+      setStorage({
+        options: { ...res.options, 'allowlist-mode': false },
       });
       updateFocusModeButton(false);
     } else {
-      browser.storage.local.set({
-        options: { ...res.options, "allowlist-mode": true },
+      setStorage({
+        options: { ...res.options, 'allowlist-mode': true },
       });
       updateFocusModeButton(true);
     }
   });
 });
 
-timerDisplay.addEventListener("click", () => {
+timerDisplay.addEventListener('click', () => {
   if (!isTimerRunning) {
-    customInput.style.display = "block";
-    timerDisplay.style.display = "none";
-    customInput.value = timerDisplay.textContent || "00:00";
+    customInput.style.display = 'block';
+    timerDisplay.style.display = 'none';
+    customInput.value = timerDisplay.textContent || '00:00';
     customInput.focus();
   }
 });
 
-customInput.addEventListener("blur", applyCustomTime);
-customInput.addEventListener("keypress", (event) => {
-  if (event.key === "Enter") {
+customInput.addEventListener('blur', applyCustomTime);
+customInput.addEventListener('keypress', (event) => {
+  if (event.key === 'Enter') {
     applyCustomTime();
   }
 });
 
-startButton.addEventListener("click", () => {
+startButton.addEventListener('click', () => {
   isTimerRunning = !isTimerRunning;
-  startButton.textContent = isTimerRunning ? "GIVE UP!" : "START FOCUSING";
-  timerDisplay.style.pointerEvents = isTimerRunning ? "none" : "auto";
+  startButton.textContent = isTimerRunning ? 'GIVE UP!' : 'START FOCUSING';
+  timerDisplay.style.pointerEvents = isTimerRunning ? 'none' : 'auto';
   getRandomDoNotGiveUpMessage();
 });
 

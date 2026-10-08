@@ -1,12 +1,12 @@
 const messages = [
-  "Keep going!",
-  "Never quit!",
-  "Stay focused!",
-  "You can do it!",
+  'Keep going!',
+  'Never quit!',
+  'Stay focused!',
+  'You can do it!',
   "Don't give up!",
-  "Reach your goals!",
-  "Stay motivated!",
-  "You got this!",
+  'Reach your goals!',
+  'Stay motivated!',
+  'You got this!',
 ];
 
 const getDoNotGiveUpMessage = () => {

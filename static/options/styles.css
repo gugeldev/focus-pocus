@@ -138,7 +138,7 @@ header #pix-me-button:hover .tooltip {
   border: none;
   outline: none;
   cursor: pointer;
-  font-family: "Roboto";
+  font-family: "Roboto", sans-serif;
   font-size: 16px;
   font-weight: 400;
   background: var(--action-bg);
@@ -157,6 +157,7 @@ header #pix-me-button:hover .tooltip {
 }
 
 .page.hidden-page {
+  /* biome-ignore lint/complexity/noImportantStyles: must beat the display set by .list-page and others */
   display: none !important;
 }
 
@@ -188,6 +189,7 @@ header #pix-me-button:hover .tooltip {
   font-weight: 300;
 }
 
+/* biome-ignore lint/style/noDescendingSpecificity: targets a different page than #main-page #options .option p */
 .list-page p {
   font-weight: 500;
 }

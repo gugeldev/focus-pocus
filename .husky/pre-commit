@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+bunx biome check --staged --no-errors-on-unmatched --error-on-warnings

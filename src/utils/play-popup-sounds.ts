@@ -1,50 +1,45 @@
-import browser from "webextension-polyfill";
+import browser from 'webextension-polyfill';
+import { getStorage } from './storage';
 
 function playFinishedSound() {
-  let finishedSound = new Audio(
-    browser.runtime.getURL("/assets/sounds/finished.mp3"),
-  );
+  const finishedSound = new Audio(browser.runtime.getURL('/assets/sounds/finished.mp3'));
   finishedSound.load();
   finishedSound.play();
 }
 
 function playButtonPressSound() {
-  let pressSound = new Audio(
-    browser.runtime.getURL("/assets/sounds/press.mp3"),
-  );
+  const pressSound = new Audio(browser.runtime.getURL('/assets/sounds/press.mp3'));
   pressSound.load();
   pressSound.play();
 }
 
 function playGiveUpSound() {
-  let giveUpSound = new Audio(
-    browser.runtime.getURL("/assets/sounds/lose.wav"),
-  );
+  const giveUpSound = new Audio(browser.runtime.getURL('/assets/sounds/lose.wav'));
   giveUpSound.load();
   giveUpSound.play();
 }
 
-function playSound(soundType: "giveup" | "finished" | "button") {
-  if (soundType === "giveup") {
-    browser.storage.local.get("options").then((data) => {
-      if (data.options && data.options["give-up-sound"]) {
+function playSound(soundType: 'giveup' | 'finished' | 'button') {
+  if (soundType === 'giveup') {
+    getStorage('options').then((data) => {
+      if (data.options?.['give-up-sound']) {
         playGiveUpSound();
       }
     });
     return;
   }
 
-  if (soundType === "finished") {
-    browser.storage.local.get("options").then((data) => {
-      if (data.options && data.options["victorious-sound"]) {
+  if (soundType === 'finished') {
+    getStorage('options').then((data) => {
+      if (data.options?.['victorious-sound']) {
         playFinishedSound();
       }
     });
     return;
   }
 
-  browser.storage.local.get("options").then((data) => {
-    if (data.options && data.options["button-sound"]) {
+  getStorage('options').then((data) => {
+    if (data.options?.['button-sound']) {
       playButtonPressSound();
     }
   });

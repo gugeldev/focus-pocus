@@ -1,11 +1,12 @@
-import browser from "webextension-polyfill";
+import { getStorage, onStorageChanged, setStorage } from '../utils/storage';
 
-import { options, focusSettings } from "./elements";
+import { focusSettings, options } from './elements';
 
-browser.storage.local.get(["options", "isRunning"]).then((data) => {
-  if (data.options) {
+getStorage(['options', 'isRunning']).then((data) => {
+  const settings = data.options;
+  if (settings) {
     options.forEach((option) => {
-      option.checked = data.options[option.id];
+      option.checked = settings[option.id];
     });
   }
 
@@ -14,24 +15,24 @@ browser.storage.local.get(["options", "isRunning"]).then((data) => {
 
 function hiddenFocusSettings(isRunning: boolean) {
   if (isRunning) {
-    focusSettings.style.display = "none";
+    focusSettings.style.display = 'none';
   } else {
-    focusSettings.style.display = "block";
+    focusSettings.style.display = 'block';
   }
 }
 
 options.forEach((option) => {
-  option.addEventListener("change", () => {
-    browser.storage.local.get("options").then((data) => {
-      let options = data.options || {};
+  option.addEventListener('change', () => {
+    getStorage('options').then((data) => {
+      const options = data.options || {};
       options[option.id] = option.checked;
-      browser.storage.local.set({ options });
+      setStorage({ options });
     });
   });
 });
 
-browser.storage.onChanged.addListener((changes) => {
-  if (changes.isRunning && changes.isRunning.newValue) {
+onStorageChanged((changes) => {
+  if (changes.isRunning?.newValue) {
     hiddenFocusSettings(true);
   }
 
@@ -39,9 +40,10 @@ browser.storage.onChanged.addListener((changes) => {
     hiddenFocusSettings(false);
   }
 
-  if (changes.options && changes.options.newValue) {
+  const settings = changes.options?.newValue;
+  if (settings) {
     options.forEach((option) => {
-      option.checked = changes.options.newValue[option.id];
+      option.checked = settings[option.id];
     });
   }
 });

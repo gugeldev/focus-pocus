@@ -39,47 +39,37 @@ The last published version:
 
 ### How to run locally
 
-1. Clone this repository.
-2. Install the dependencies.
-3. Run the dev script.
-4. Activate developer mode on your browser and add the _manifest_ inside the _/dest_ folder that will be generated.
+Requires [Bun](https://bun.sh).
 
-_with yarn:_
+1. Clone this repository.
+2. Install the dependencies (this also sets up the git hooks).
+3. Run the dev script.
+4. Activate developer mode on your browser and load the extension from the _/dist_ folder that will be generated (Chrome: _dist/chrome_, Firefox: _dist/firefox/manifest.json_).
 
 ```bash
 git clone https://github.com/jotavetech/focus-pocus.git
 cd focus-pocus
 
-yarn #install the dependencies
+bun install #install the dependencies
 
 # chrome:
-yarn dev:chrome #compile to /dest/chrome folder
+bun run dev:chrome #compile to /dist/chrome folder
 
 # firefox:
-yarn dev:firefox #compile to /dest/firefox folder
+bun run dev:firefox #compile to /dist/firefox folder
 ```
 
-_with npm:_
-
-```bash
-git clone https://github.com/jotavetech/focus-pocus.git
-cd focus-pocus
-
-npm install #install the dependencies
-
-# chrome:
-npm run dev:chrome #compile to /dest/chrome folder
-
-#firefox:
-npm run dev:firefox #compile to /dest/firefox folder
-```
+The git hooks check your work: pre-commit runs Biome on the staged files, commit-msg enforces [Conventional Commits](https://www.conventionalcommits.org) in English, and pre-push runs the type-check.
 
 ### How to contribute
 
-1. Fork this repository.
-2. Clone your fork on your machine.
-3. Create a new branch, make your changes, commit and push these.
-4. Open a pull request (Write a descriptive message about what you've changed).
+`main` always matches the latest published version. The next version is built in a `release/<version>` branch (currently `release/1.2.0`), and every change reaches it through a pull request.
+
+1. Fork this repository and clone your fork.
+2. Create a branch from the current release branch, named after the kind of change (e.g. `feat/pause-button`, `fix/overlay-flicker`).
+3. Make your changes. Write commit messages in English following [Conventional Commits](https://www.conventionalcommits.org) (e.g. `feat(popup): add pause button`). The git hooks check this for you.
+4. Make sure `bun run lint`, `bun run typecheck` and both builds pass.
+5. Open a pull request **to the current release branch, not to `main`**, describing what you changed.
 
 ### Contributors
 
