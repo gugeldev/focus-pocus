@@ -65,13 +65,11 @@ export function Hero() {
 }
 
 /**
- * The browser and the popup. From `lg` the popup overlaps the browser's top right
- * corner and sticks out past it, up and right; below, it sits under the browser, overlapping
- * its foot.
+ * The browser and the popup. From `lg` the popup overlaps the browser's top
+ * right corner and sticks out past it, up and right. Below, the settings page
+ * would not fit beside it, so only the popup shows.
  */
 function Demo() {
-  const { site } = useCopy();
-
   return (
     <div className="relative scroll-mt-24 lg:pr-24" id={anchors.demo}>
       {/* A violet halo under both, so they read as lit from the page. */}
@@ -79,12 +77,13 @@ function Demo() {
         aria-hidden="true"
         className="absolute inset-x-0 -inset-y-24 -z-10 rounded-full bg-radial-[closest-side] from-glow to-transparent"
       />
-      <OptionsMock />
-      <div className="relative z-10 -mt-20 flex flex-col items-center gap-4 lg:absolute lg:-top-12 lg:right-0 lg:mt-0">
+      <div className="hidden lg:block">
+        <OptionsMock />
+      </div>
+      <div className="relative z-10 flex justify-center lg:absolute lg:-top-12 lg:right-0">
         <div className="motion-safe:animate-float">
           <PopupMock />
         </div>
-        <p className="max-w-72 text-center text-sm text-text-faint">{site.hero.tryIt}</p>
       </div>
     </div>
   );

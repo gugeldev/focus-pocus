@@ -91,7 +91,7 @@ export function PopupMock() {
   return (
     <figure
       aria-label={site.mocks.popup}
-      className="w-80 overflow-hidden rounded-2xl bg-canvas shadow-float ring-1 ring-hairline"
+      className="w-80 overflow-hidden rounded-window bg-canvas shadow-float ring-1 ring-hairline"
     >
       <header className="flex items-center justify-between pt-4 pr-3 pl-4">
         <Brand size="sm" />

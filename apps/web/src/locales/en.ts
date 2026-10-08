@@ -25,9 +25,8 @@ export const en = {
     /** The title's two lines; the second is set in the accent gradient. */
     titleLead: 'Stay focused as if',
     titleAccent: 'under a magical spell',
-    lead: 'FocusPocus is a browser extension with a focus timer. While it runs, the sites that distract you are blocked. Finish the session to grow your streak; give up and you lose it.',
+    lead: 'A browser extension that blocks distracting sites while your focus timer runs.',
     github: 'View the code on GitHub',
-    tryIt: 'Go ahead, it works: pick a time and start.',
   },
   focusScreen: {
     eyebrow: 'Focus screen',

@@ -15,7 +15,11 @@ export function Install() {
 
   return (
     <Section id={anchors.install}>
-      <Reveal className="relative isolate flex flex-col items-center gap-6 overflow-hidden rounded-panel bg-surface px-6 py-16 text-center md:py-24">
+      <Reveal className="relative isolate flex flex-col items-center gap-6 overflow-hidden rounded-panel bg-linear-to-b from-accent-wash to-surface px-6 py-16 text-center md:py-24">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-dots mask-radial-[70%_80%] mask-radial-at-top mask-radial-from-0%"
+        />
         <div
           aria-hidden="true"
           className="absolute -top-1/2 left-1/2 -z-10 h-full w-4/5 -translate-x-1/2 rounded-full bg-radial-[closest-side] from-glow to-transparent"

@@ -22,9 +22,8 @@ export const es: SiteCopy = {
     badge: 'Gratis y de código abierto',
     titleLead: 'Mantén el foco',
     titleAccent: 'como bajo un hechizo',
-    lead: 'FocusPocus es una extensión de navegador con un temporizador de concentración. Mientras corre, los sitios que te distraen quedan bloqueados. Termina la sesión para aumentar tu racha; ríndete y la pierdes.',
+    lead: 'Una extensión que bloquea los sitios que te distraen mientras corre tu temporizador.',
     github: 'Ver el código en GitHub',
-    tryIt: 'Pruébalo, funciona: elige un tiempo y empieza.',
   },
   focusScreen: {
     eyebrow: 'Pantalla de concentración',

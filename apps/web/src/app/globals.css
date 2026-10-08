@@ -31,7 +31,15 @@
   --color-lilac: #ddd3ff;
   --color-glow: rgb(124 58 237 / 0.28);
   /* The 1px outline of the drawn windows: just enough to lift them off the page. */
-  --color-hairline: rgb(255 255 255 / 0.07);
+  --color-hairline: rgb(255 255 255 / 0.04);
+  /* The dots of the page's background pattern. */
+  --color-dot: rgb(255 255 255 / 0.07);
+  /* A drawn window's corners, rounder than the extension's own cards. */
+  --radius-window: 24px;
+  /* macOS's window buttons: close, minimize, zoom. */
+  --color-mac-close: #ff5f57;
+  --color-mac-minimize: #febc2e;
+  --color-mac-zoom: #28c840;
   --color-star: #fbbf24;
   --shadow-header: 0 18px 50px rgb(0 0 0 / 0.5);
   --shadow-float: 0 40px 80px -20px rgb(0 0 0 / 0.75);
@@ -77,6 +85,12 @@
   /* The focus screen's backdrop: the canvas at 96%, over a blur. */
   --color-overlay: rgb(11 10 16 / 0.96);
   --radius-overlay-logo: 14px;
+}
+
+/* A dot grid for the page's background, faded out by a mask where it is used. */
+@utility bg-dots {
+  background-image: radial-gradient(var(--color-dot) 1px, transparent 1.5px);
+  background-size: 22px 22px;
 }
 
 @layer base {
