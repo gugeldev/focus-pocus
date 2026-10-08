@@ -51,7 +51,6 @@ module.exports = {
     path: path.resolve(__dirname, `dist/${browser}`),
     clean: true,
   },
-  watch: true,
   // The extension loads its files from disk, so the web download-size hints do not apply.
   performance: { hints: false },
   plugins: [
