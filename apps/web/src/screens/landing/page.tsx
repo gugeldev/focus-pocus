@@ -15,7 +15,12 @@ import { FocusScreenShowcase, SettingsShowcase } from './partials/showcase';
  */
 export default function LandingPage() {
   return (
-    <>
+    <div className="relative isolate overflow-clip">
+      {/* The violet glow the page opens under, behind the header and the hero. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-90 left-1/2 -z-10 h-215 w-325 -translate-x-1/2 rounded-full bg-radial-[closest-side] from-glow to-transparent"
+      />
       <SiteHeader />
       <main id={anchors.top}>
         <Hero />
@@ -25,6 +30,6 @@ export default function LandingPage() {
         <Install />
       </main>
       <SiteFooter />
-    </>
+    </div>
   );
 }

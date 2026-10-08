@@ -18,7 +18,39 @@
   --text-lead: clamp(16px, 1.8vw, 18px);
   --text-lead--line-height: 1.6;
   --text-lg: 17px;
-  --tracking-hero: -0.04em;
+  --tracking-hero: -0.045em;
+  --tracking-section: -0.035em;
+
+  /*
+   * The website's atmosphere, which the extension's flat UI does without: a
+   * lighter violet for the hero's gradient, the glow behind the top of the
+   * page, and shadows on the drawings that float over it.
+   */
+  --color-lilac: #ddd3ff;
+  --color-glow: rgb(124 58 237 / 0.28);
+  --shadow-header: 0 18px 50px rgb(0 0 0 / 0.5);
+  --shadow-float: 0 40px 80px -20px rgb(0 0 0 / 0.75);
+  --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --radius-panel: 32px;
+
+  /* Entrances: what is on screen at load rises with CSS (Rise), the rest on scroll (Reveal). */
+  --animate-rise: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-float: float 7s ease-in-out infinite;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 28px;
+      filter: blur(6px);
+    }
+  }
+
+  /* The hero's popup, held up and breathing. */
+  @keyframes float {
+    50% {
+      translate: 0 -10px;
+    }
+  }
 
   /* The focus screen's sizes (apps/extension/src/content/overlay.css). */
   --text-overlay-title: 30px;

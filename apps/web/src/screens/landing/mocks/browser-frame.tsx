@@ -16,7 +16,7 @@ export function BrowserFrame({ url, label, className, children }: Props) {
     <figure
       aria-label={label}
       className={cx(
-        'overflow-hidden rounded-2xl border border-border bg-canvas shadow-popover',
+        'overflow-hidden rounded-2xl border border-border bg-canvas shadow-float',
         className,
       )}
     >

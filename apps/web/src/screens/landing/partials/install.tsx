@@ -3,6 +3,7 @@
 import { ButtonLink } from '@focus-pocus/ui/button';
 import { IconGithub } from '@/components/icons';
 import { StoreButtons } from '@/components/store-buttons';
+import { Reveal } from '@/components/ui/reveal';
 import { useCopy } from '@/lib/i18n-provider';
 import { links } from '@/lib/links';
 import { anchors } from '@/lib/routes';
@@ -14,8 +15,14 @@ export function Install() {
 
   return (
     <Section id={anchors.install}>
-      <div className="flex flex-col items-center gap-6 rounded-2xl bg-surface px-6 py-14 text-center shadow-card md:py-20">
-        <h2 className="text-balance text-section font-bold tracking-title">{site.install.title}</h2>
+      <Reveal className="relative isolate flex flex-col items-center gap-6 overflow-hidden rounded-panel border border-border/60 bg-surface px-6 py-16 text-center md:py-24">
+        <div
+          aria-hidden="true"
+          className="absolute -top-1/2 left-1/2 -z-10 h-full w-4/5 -translate-x-1/2 rounded-full bg-radial-[closest-side] from-glow to-transparent"
+        />
+        <h2 className="text-balance text-section font-medium tracking-section">
+          {site.install.title}
+        </h2>
         <p className="text-lead text-text-muted">{site.install.body}</p>
         <div className="flex flex-wrap justify-center gap-3">
           <StoreButtons />
@@ -27,7 +34,7 @@ export function Install() {
             {site.install.contribute}
           </ButtonLink>
         </div>
-      </div>
+      </Reveal>
     </Section>
   );
 }

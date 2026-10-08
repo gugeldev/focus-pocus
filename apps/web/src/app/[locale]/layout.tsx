@@ -40,7 +40,12 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
   if (!isLocale(locale)) notFound();
 
   return (
-    <html className={jakarta.variable} lang={locale}>
+    // `.js` lands on <html> before the first paint, so React finds a class it did not render.
+    <html className={jakarta.variable} lang={locale} suppressHydrationWarning>
+      <head>
+        {/* Marks a page running scripts, so `Reveal` hides only what it will reveal. */}
+        <script>{"document.documentElement.classList.add('js')"}</script>
+      </head>
       <body>
         <I18nProvider locale={locale}>{children}</I18nProvider>
       </body>

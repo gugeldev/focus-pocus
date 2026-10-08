@@ -1,5 +1,6 @@
 'use client';
 
+import { Reveal } from '@/components/ui/reveal';
 import { useCopy } from '@/lib/i18n-provider';
 import { anchors } from '@/lib/routes';
 import { FocusScreenMock } from '../mocks/focus-screen-mock';
@@ -18,7 +19,9 @@ export function SettingsShowcase() {
         intro={site.settings.intro}
         title={site.settings.title}
       />
-      <OptionsMock />
+      <Reveal order={1}>
+        <OptionsMock />
+      </Reveal>
     </Section>
   );
 }
@@ -29,15 +32,18 @@ export function FocusScreenShowcase() {
 
   return (
     <Section
-      className="grid items-center gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16"
+      className="grid items-center gap-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16"
       id={anchors.focusScreen}
     >
       <SectionHeading
         eyebrow={site.focusScreen.eyebrow}
         intro={site.focusScreen.intro}
+        spaced={false}
         title={site.focusScreen.title}
       />
-      <FocusScreenMock />
+      <Reveal order={1}>
+        <FocusScreenMock />
+      </Reveal>
     </Section>
   );
 }

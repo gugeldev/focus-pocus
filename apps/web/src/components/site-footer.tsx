@@ -70,9 +70,7 @@ export function SiteFooter() {
 function Column({ title, children }: { title: string; children: ReactNode }) {
   return (
     <nav aria-label={title} className="flex flex-col items-start gap-3">
-      <h2 className="mb-1 text-xs font-semibold tracking-label text-text-faint uppercase">
-        {title}
-      </h2>
+      <h2 className="mb-1 text-xs font-medium tracking-label text-text-faint uppercase">{title}</h2>
       {children}
     </nav>
   );
