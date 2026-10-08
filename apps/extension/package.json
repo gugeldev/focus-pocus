@@ -6,8 +6,8 @@
   "author": "@jotavetech",
   "license": "MIT",
   "scripts": {
-    "dev:chrome": "BROWSER_TARGET=chrome webpack --mode development",
-    "dev:firefox": "BROWSER_TARGET=firefox webpack --mode development",
+    "dev:chrome": "BROWSER_TARGET=chrome webpack --mode development --watch",
+    "dev:firefox": "BROWSER_TARGET=firefox webpack --mode development --watch",
     "build:chrome": "BROWSER_TARGET=chrome webpack --mode production",
     "build:firefox": "BROWSER_TARGET=firefox webpack --mode production",
     "typecheck": "tsc --noEmit -p ."
