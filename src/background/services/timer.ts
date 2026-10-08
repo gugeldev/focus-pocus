@@ -1,7 +1,7 @@
 import browser from 'webextension-polyfill';
-import { sendTimerMessage } from '../../utils/messages';
-import playSound from '../../utils/play-popup-sounds';
-import { getStorage, setStorage } from '../../utils/storage';
+import { sendTimerMessage } from '@/lib/messages';
+import { playSound } from '@/lib/play-popup-sounds';
+import { getStorage, setStorage } from '@/lib/storage';
 
 import { resetStreak } from './streak';
 
@@ -44,10 +44,6 @@ function handleStartTimer() {
   });
 }
 
-function changeSelectedTime(seconds: number) {
-  setStorage({ selectedTime: seconds });
-}
-
 function checkAndStopTimer() {
   getStorage(['timer', 'selectedTime']).then((res) => {
     if (res.timer >= res.selectedTime) {
@@ -57,4 +53,4 @@ function checkAndStopTimer() {
   });
 }
 
-export { changeSelectedTime, checkAndStopTimer, handleStartTimer, stopTimer };
+export { checkAndStopTimer, handleStartTimer, stopTimer };

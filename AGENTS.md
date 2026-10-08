@@ -25,10 +25,10 @@ Guide for AI agents (and humans) working in this repository. It describes **how 
 - **Custom time:** while the timer is stopped, clicking the time swaps it for a text input (up to 8 characters). `Enter` or blur parses it (`ss`, `mm:ss` or `hh:mm:ss`, digits only) and, if it is more than 0 seconds, saves it as `selectedTime`; `Esc` cancels. A custom time selects no preset (the thumb fades out) and the caption above the time reads "Custom session"; otherwise the idle caption is empty. The "Click to customize" hint below the time only appears on hover or focus.
 - **Mode:** a full-width Blocklist / Allowlist segmented control, above the presets, that writes `options['allowlist-mode']`.
 - **Start focusing** button: starts the session. During the session the same button becomes **Give up** (danger style).
-- Everything that changes between idle and a session hangs off `body[data-state="idle" | "running"]`, set by `src/popup/index.ts`. During a session:
+- Everything that changes between idle and a session follows the stored `isRunning` (`src/screens/popup/page.tsx`). During a session:
   - the accent progress ring appears and empties as time passes;
   - the presets, the mode control and the custom time are disabled;
-  - the caption shows a random motivational message (`src/utils/do-not-giveup.ts`), picked when the session starts or when the popup opens mid-session;
+  - the caption shows a random motivational message (`src/lib/do-not-giveup.ts`), picked when the session starts or when the popup opens mid-session;
   - the extension icon changes to `icon-32-active.png` (Chrome only; see 3.4).
 - When `streak` goes up while the popup is open, it plays the victory sound and the streak counter bumps.
 - The timer tick runs in the **background** and keeps going with the popup closed. The popup re-renders on every change to `timer`, `isRunning`, `selectedTime`, `streak` or `options`. Start, stop and give up are written by the popup itself (see section 3).
@@ -39,7 +39,7 @@ There are two modes, toggled by the Blocklist / Allowlist control in the popup o
 - **Allowlist mode**: blocks **every** page whose URL **does not contain** any `allowlist` entry.
 - Matching uses `window.location.href.includes(entry)`: substring matching, not exact domains.
 - The "block" is the **focus screen** (`src/content/overlay.ts`): a `div#focus-pocus-overlay` host appended to `<html>` with an open **shadow root**, so the page's CSS cannot restyle it and its CSS cannot leak into the page. It is fixed, full screen, at the maximum `z-index`, blurs the page behind it and shows the logo and the remaining session time live. The logo comes from `assets/logo/` (a web-accessible resource in both manifests).
-  - Its styles are `src/content/overlay.css`, bundled into `content.js` as a string (see section 4) and injected into the shadow root. They repeat the colors of `static/shared/base.css` because a shadow root cannot see the extension's stylesheets. The `:host` rules are `!important`: a page rule that matches the host beats a normal `:host` rule, but not an important one.
+  - Its styles are `src/content/overlay.css`, bundled into `content.js` as a string (see section 4) and injected into the shadow root. They repeat the colors of `src/styles/theme.css` because a shadow root cannot see the extension's stylesheets. The `:host` rules are `!important`: a page rule that matches the host beats a normal `:host` rule, but not an important one.
   - A shadow root cannot declare `@font-face`, so the overlay registers Plus Jakarta Sans on the page's `document.fonts` under the private name `FocusPocus Jakarta`, loaded from `assets/fonts/` (a web-accessible resource in both manifests). If it fails, the system font stack takes over.
 - The content script runs on `<all_urls>`. On page load it applies the overlay if `isRunning` is already `true`. Then it reacts through `storage.onChanged`: when `isRunning` becomes `true` it applies the overlay, when it becomes `false` it fades it out, and every `timer` change updates the countdown. List or mode changes update the in-memory copy but only take effect on the next evaluation.
 
@@ -47,7 +47,7 @@ There are two modes, toggled by the Blocklist / Allowlist control in the popup o
 - Each **completed** session adds +1 to `streak`.
 - **Giving up** (clicking Give up during a session) **resets** the streak to 0.
 - The streak shows in the popup header (a flame pill) and in the options sidebar (a card at the bottom).
-- **Share:** clicking either one copies a ready-made text to the clipboard (`src/utils/share-streak.ts`: "My current streak on the FocusPocus extension is N! 🎯…" or, with streak 0, "I'm starting my streak…") and confirms with a toast.
+- **Share:** clicking either one copies a ready-made text to the clipboard (`src/lib/share-streak.ts`: "My current streak on the FocusPocus extension is N! 🎯…" or, with streak 0, "I'm starting my streak…") and confirms with a toast.
 
 ### 2.4 Sounds and notifications (opt-in)
 They live in the **General** tab of the options. All start **off**, because `options` does not exist until the user flips a switch or the popup mode button:
@@ -60,21 +60,21 @@ They live in the **General** tab of the options. All start **off**, because `opt
 | Notifications › Session finished  | `victorious-notification` | "Finished a session! Now you can take a break!" notification (Chrome only; in Firefox `streak.ts` throws on `browser.action` before creating the notification) |
 | Blocking › Allowlist mode         | `allowlist-mode`          | toggles blocklist/allowlist (see 2.2)               |
 
-Each switch is a `label.row` wrapping a `.switch` with an `input[type=checkbox]`. **The input `id` is the key** saved in `options`, so adding a new option only takes a new row with a new id and reading `options[id]`.
+Each switch is a `<SettingRow optionKey="...">` in `src/screens/options/partials/general-tab.tsx` (a `<label>` wrapping a `<Switch>`). **`optionKey` is the key** saved in `options`, so adding a new option only takes a new row and reading `options[key]`.
 
 ### 2.5 Options page (Settings)
 Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in its own tab. The layout is a **sidebar** on the canvas next to a **content pane** (modeled on the maintainer's heysusi desktop settings). Below 760px wide the sidebar becomes a top bar.
 - **Sidebar:** brand, three tabs (General, Blocklist, Allowlist; the lists show their entry count), the streak card (click to copy) and the support link (`https://www.pixme.bio/jotavetech`).
-  - One `.nav-indicator` surface slides to the active tab (`src/options/tabs.ts`). Its offset is computed from the tab index (`--active-tab`), never measured. Each tab names its page with `aria-controls` and its hash with `data-hash`; the open tab is mirrored in the location hash, so `#blocklist` opens the blocklist directly (`#general`, `#blocklist`, `#allowlist`).
+  - One indicator surface slides to the active tab (`src/screens/options/partials/nav-tabs.tsx`). Its offset is computed from the tab index (`--active-tab`), never measured. Only the active page is rendered, so its entrance animation replays on every tab switch. The open tab is mirrored in the location hash, so `#blocklist` opens the blocklist directly (`#general`, `#blocklist`, `#allowlist`).
 - **General:** the switches of 2.4, grouped in Sounds, Notifications and Blocking. While a session is running, the Allowlist mode switch is **disabled** and a notice explains why.
 - **Blocklist / Allowlist:** a form to add a website and the list. Rows show the site icon, the entry and a remove button that appears on hover or focus. Rows animate in and collapse out. An empty list shows an empty state. The page of the active mode carries an "Active mode" badge.
   - The icon is the site's own `https://<host>/favicon.ico`, loaded straight from the site (no third-party favicon service, so the list never leaves the browser except to the listed sites). It only loads when the entry looks like a domain; otherwise, or if it fails, the tile shows the first letter of the host.
 - List rules:
   - the value is trimmed; empty and duplicate values are rejected (error toast);
-  - **you cannot add or remove entries while focus mode is running** (inputs and remove buttons disabled, a notice, plus an error toast);
+  - **you cannot add or remove entries while focus mode is running** (the input, the add button and the remove buttons are disabled, and a notice says why);
   - otherwise the text is saved as typed, without normalization.
-- `body.is-running` and `body.allowlist-mode` are the page-level switches the CSS reacts to. The running lock lives in `src/options/session-lock.ts`: every control with `data-locks-while-running` is disabled during a session (rows created later call `makeLockable`).
-- Toasts come from `src/utils/toast.ts` (no dependency): bottom center, 2.4 s, red for errors. They need a page that links `static/shared/base.css`.
+- The running lock is the stored `isRunning`, passed down as a prop: the list inputs, add/remove buttons and the Allowlist mode switch are disabled while it is `true`.
+- Toasts come from `src/lib/toast.ts` (no dependency): `toast(message, error?)` from anywhere, drawn by the `<Toaster />` (`src/components/toaster.tsx`) that `mount()` adds to every page. Bottom center, 2.4 s, red for errors.
 
 ---
 
@@ -85,50 +85,59 @@ src/
 ├── background/           # "background" entry: service worker (Chrome) / background script (Firefox)
 │   ├── index.ts          # message listener, 1 s setInterval, seeds storage defaults
 │   └── services/
-│       ├── timer.ts      # start/stop/give up, changeSelectedTime, checkAndStopTimer
+│       ├── timer.ts      # start/stop/give up, checkAndStopTimer
 │       └── streak.ts     # increments/resets the streak and fires the victory notification
 ├── content/              # "content" entry
 │   ├── index.ts          # decides whether the page is blocked, keeps the countdown in sync
 │   ├── overlay.ts        # the focus screen: shadow-root host, font loading, show/hide
 │   └── overlay.css       # focus screen styles, bundled as a string
-├── popup/                # "popup" entry
-│   ├── index.ts          # timer ring, presets, custom time, mode, start/give up, celebration
-│   └── elements.ts       # popup querySelectors
-├── options/              # "options" entry
-│   ├── index.ts          # blocklist/allowlist CRUD, streak card
-│   ├── session-lock.ts   # disables every [data-locks-while-running] control and sets body.is-running
-│   ├── options.ts        # switches <-> storage.options
-│   ├── tabs.ts           # tab switching, sliding nav indicator, location hash
-│   └── elements.ts       # options querySelectors
-├── types/css.d.ts        # `import css from './x.css'` is a string
-└── utils/
+├── popup/index.tsx       # "popup" entry: mount(<PopupScreen />), nothing else
+├── options/index.tsx     # "options" entry: mount(<OptionsScreen />), nothing else
+├── screens/              # one folder per page (see 5.2)
+│   ├── popup/
+│   │   ├── page.tsx      # PopupScreen: reads storage, composes the partials
+│   │   ├── parse-custom-time.ts
+│   │   └── partials/     # top-bar, streak-button, dial, progress-ring, time-field, session-settings, start-button
+│   └── options/
+│       ├── page.tsx      # OptionsScreen: tab state + location hash, sidebar + the open tab
+│       ├── tabs.ts       # the tabs and getTabFromHash
+│       ├── site-lists.ts # the copy and icon of the blocklist and allowlist tabs
+│       └── partials/     # sidebar, nav-tabs, nav-item, sidebar-footer, tab-page, settings-section,
+│                         # setting-row, locked-notice, active-mode-badge, general-tab,
+│                         # site-list-tab, add-site-form, site-list, site-row, site-icon, empty-list
+├── components/           # used by two or more screens: brand, toaster
+│   └── ui/               # the design-system kit: button, icon-button, input, switch, segmented, icons.ts
+├── styles/theme.css      # Tailwind entry: design tokens (@theme), font, base styles (see 5.1)
+├── types/css.d.ts        # `import css from './x.css?raw'` is a string; plain `.css` imports are side effects
+└── lib/                  # logic and hooks, shared by every context
     ├── do-not-giveup.ts
-    ├── segmented.ts           # moves a segmented control's thumb to its checked radio
-    ├── share-streak.ts        # bindStreakButton: shows the stored streak, copies it to share
+    ├── cx.ts                  # joins class names, skipping the falsy ones
+    ├── mount.tsx              # renders a screen into #root with the Toaster and the theme CSS
+    ├── use-storage.ts         # useStorage(...keys): a storage slice kept in sync, plus an optimistic update
+    ├── toast.ts               # toast(message, error?) and the store the Toaster reads
+    ├── share-streak.ts        # shareStreak(streak): copies a ready-made text, confirms with a toast
     ├── format-time.ts         # "mm:ss" / "h:mm:ss", shared by the popup and the focus screen
     ├── play-popup-sounds.ts   # playSound("giveup" | "finished" | "button"), respects the switches
     ├── storage.ts             # typed storage.local contract: getStorage, setStorage, onStorageChanged, seedStorageDefaults
     ├── messages.ts            # typed background message contract: sendTimerMessage, onTimerMessage
-    ├── toast.ts               # dependency-free toast, styled by static/shared/base.css
     └── language.ts            # en/pt dictionaries, NOT used anywhere yet (planned i18n)
 
 static/                   # copied as-is to dist/<browser>/
-├── shared/base.css       # design tokens, font, reset and shared controls (see 5.1)
-├── popup/  index.html + styles.css   (320px wide popup)
-├── options/ index.html + styles.css
+├── popup/index.html      # just #root, ../popup.css and ../popup.js (320px wide popup)
+├── options/index.html    # just #root, ../options.css and ../options.js
 └── assets/
     ├── logo/  icon-16/32/64/128.png, icon-32-active.png
     └── sounds/ finished.mp3, lose.wav, press.mp3
-# assets/fonts/ and assets/phosphor/ are not in static/: webpack copies them from node_modules
-# (@fontsource-variable/plus-jakarta-sans and @phosphor-icons/web) at build time.
+# assets/fonts/ is not in static/: webpack copies it from @fontsource-variable/plus-jakarta-sans.
 ```
 
-- The code is **framework-free TypeScript**: plain DOM, `querySelector` and `innerHTML` (never with user text: list entries go through `textContent`).
-- Icons come from [Phosphor](https://phosphoricons.com) through its icon font (`@phosphor-icons/web`): `<i class="ph ph-gear-six">` (regular) or `<i class="ph-fill ph-flame">` (fill). Never hand-write SVG icons. The only inline SVG is the popup's progress ring.
+- **The popup and the options page are React 19 + Tailwind CSS 4.** The background and the content script (including the focus screen) stay plain TypeScript: the focus screen lives in a shadow root on every page, where Tailwind 4 does not work (it relies on `@property`, which only registers at document level) and React would be dead weight.
+- Pages read storage through `useStorage(...keys)` (`src/lib/use-storage.ts`): `null` until the first read, then kept in sync by `storage.onChanged`. Its `update(values)` writes storage and the local copy at once.
+- Icons come from [Phosphor](https://phosphoricons.com) (`@phosphor-icons/react`), re-exported with domain names by `src/components/ui/icons.ts`: `<IconSettings size={18} />` or `<IconStreak weight="fill" />`. Never hand-write SVG icons. The only inline SVG is the popup's progress ring.
 - Every extension API goes through **`webextension-polyfill`** (`import browser from 'webextension-polyfill'`), which provides a Promise-based API. **It does not unify `action`/`browserAction`:** the code calls `browser.action.*`, which only exists in Chrome MV3. In Firefox MV2 those calls throw `TypeError`.
-- **All storage access goes through `src/utils/storage.ts`:** `getStorage(keys)`, `setStorage(values)` and `onStorageChanged(listener)` use the `StorageState` interface (table 3.1). Do not call `browser.storage.local` outside that module.
-- **All background messages go through `src/utils/messages.ts`:** `sendTimerMessage(type)` on the sending side and `onTimerMessage(listener)` in the background, which ignores anything that is not a valid `TimerMessage`. Do not call `browser.runtime.sendMessage`/`onMessage` directly.
-- **Heads-up:** `popup/index.ts` imports straight from `background/services/timer.ts`. In practice **start, stop and give up run in the popup context**: the popup writes to storage and messages the background. The background only runs the `setInterval` tick and handles session completion.
+- **All storage access goes through `src/lib/storage.ts`:** `getStorage(keys)`, `setStorage(values)` and `onStorageChanged(listener)` use the `StorageState` type (table 3.1). Do not call `browser.storage.local` outside that module.
+- **All background messages go through `src/lib/messages.ts`:** `sendTimerMessage(type)` on the sending side and `onTimerMessage(listener)` in the background, which ignores anything that is not a valid `TimerMessage`. Do not call `browser.runtime.sendMessage`/`onMessage` directly.
+- **Heads-up:** `screens/popup/page.tsx` imports straight from `background/services/timer.ts`. In practice **start, stop and give up run in the popup context**: the popup writes to storage and messages the background. The background only runs the `setInterval` tick and handles session completion.
 
 ### 3.1 State (`browser.storage.local`)
 Storage is the **source of truth**. Every context syncs through `storage.onChanged`.
@@ -143,7 +152,7 @@ Storage is the **source of truth**. Every context syncs through `storage.onChang
 | `allowlist`    | string[]                  | –       | substrings allowed in allowlist mode       |
 | `options`      | `Record<string, boolean>` | –       | switches (see 2.4)                         |
 
-The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written by `seedStorageDefaults()` (`src/utils/storage.ts`) when the background loads; existing values are kept. That is why those four keys are required in `StorageState` and the others are optional.
+The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written by `seedStorageDefaults()` (`src/lib/storage.ts`) when the background loads; existing values are kept. That is why those four keys are required in `StorageState` and the others are optional.
 
 ### 3.2 Session lifecycle
 1. **Start** (popup → `handleStartTimer`): writes `{ isRunning: true, timer: 0 }`, sends `TIMER_STARTED` and switches to the active icon.
@@ -159,7 +168,7 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
 6. **Give up** (click while `isRunning`): `stopTimer()`, `resetStreak()` (streak = 0) and the give-up sound.
 7. Every time the popup opens during an active session it re-sends `TIMER_STARTED`. That recreates the interval if Chrome unloaded the service worker.
 
-### 3.3 Messages (`src/utils/messages.ts`)
+### 3.3 Messages (`src/lib/messages.ts`)
 | `type`           | Sent by               | Effect in the background                              |
 | ---------------- | --------------------- | ----------------------------------------------------- |
 | `TIMER_STARTED`  | popup                 | (re)starts the `setInterval` and sets the active icon |
@@ -169,7 +178,7 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
 - `manifest.chrome.json`: **MV3**, `action`, `background.service_worker`, `options_page`.
 - `manifest.firefox.json`: **MV2**, `browser_action` (with `default_icon`), `background.scripts`, `options_ui` with `open_in_tab`, CSP and `web_accessible_resources`.
 - The code uses `browser.action` in both builds, but the Firefox manifest declares `browser_action` (see section 3).
-- Permissions in both: `storage` and `notifications`. The content script runs on `<all_urls>` and injects `content.js` and `content/styles.css`.
+- Permissions in both: `storage` and `notifications`. The content script runs on `<all_urls>` and injects `content.js` (the focus screen's styles are bundled into it as a string).
 
 ---
 
@@ -179,7 +188,7 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
 - **`bunfig.toml`:**
   - `install.minimumReleaseAge = 604800`: bun only installs versions published at least 7 days ago. It protects against compromised packages; do not remove it.
   - `run.shell = "bun"`: scripts run in bun's shell on every OS, so `BROWSER_TARGET=chrome webpack` works without `cross-env`.
-- Build stack: **webpack 5 + webpack-cli 7 + ts-loader 9 + copy-webpack-plugin 14**. webpack runs on both Node and the bun runtime (`bun --bun run ...`).
+- Build stack: **webpack 5 + webpack-cli 7 + ts-loader 9 + copy-webpack-plugin 14**, plus **postcss-loader + `@tailwindcss/postcss` + css-loader + mini-css-extract-plugin** for the pages' CSS. There is no dev server or HMR: `dev:*` rebuilds `dist/` on save (TSX and CSS, including new Tailwind classes) and you reopen the popup or reload the page. webpack runs on both Node and the bun runtime (`bun --bun run ...`).
 - TypeScript **6** with `strict: true`, `target: es2022`, `module: ES2022`, `rootDir: ./src`.
 - **Why not TypeScript 7:** TS 7 is the native (Go) compiler and lacks the JavaScript API that `ts-loader` uses, so the build breaks. To migrate, replace `ts-loader` with a transpile-only loader (e.g. `esbuild-loader` or `swc-loader`) and keep `tsc --noEmit` for type-checking.
 
@@ -199,8 +208,10 @@ bun run lint:fix        # biome check --write .
   - output goes to **`dist/<browser>/`**;
   - four bundles are generated: `popup.js`, `background.js`, `content.js` and `options.js`, all at the root of `dist`;
   - the HTML pages reference them as `../popup.js` and `../options.js`;
-  - `static/` is copied whole, plus the Plus Jakarta Sans `latin` and `latin-ext` woff2 files into `assets/fonts/` and the Phosphor `regular` and `fill` stylesheets and woff2 files into `assets/phosphor/`;
-  - `.css` files imported from `src/` are bundled as strings (`type: 'asset/source'`), which is how the focus screen gets its styles into a shadow root;
+  - `static/` is copied whole, plus the Plus Jakarta Sans `latin` and `latin-ext` woff2 files into `assets/fonts/`;
+  - `import './x.css'` goes through Tailwind (`postcss.config.mjs`) and is extracted next to its bundle as `popup.css` / `options.css`. css-loader runs with `url: false`, so the font URLs (`/assets/fonts/...`, absolute from the extension root) stay as written. CSS is minified in `production` mode only;
+  - `import css from './x.css?raw'` is the file as a string (`type: 'asset/source'`), which is how the focus screen gets its styles into a shadow root;
+  - `performance.hints` is off: the extension loads from disk, so the web bundle-size warnings do not apply;
   - `output.clean` empties `dist/<browser>/` before every build, so removed files do not linger;
   - `DefinePlugin` injects `process.env.BROWSER_TARGET` into the bundles (not used in `src/` today);
   - **`watch: true` is hardcoded in the config**, so even the `build:*` scripts stay in watch mode (stop with Ctrl+C, or pass `--no-watch`: `bun run build:chrome --no-watch`);
@@ -212,8 +223,8 @@ bun run lint:fix        # biome check --write .
 - **Lint and formatting: Biome** (`biome.json`, same config as the maintainer's `obd` project):
   - single quotes, semicolons, trailing commas, 100-column lines, 2-space indentation;
   - `recommended` preset, plus `noExcessiveCognitiveComplexity`, `noUnusedVariables`/`noUnusedImports`, `useConst` and `useImportType` as errors;
-  - Biome also checks HTML, CSS and JSON (`static/`, manifests);
-  - override: `noDescendingSpecificity` is off for CSS. Component rules like `.toast .icon` and `.tab .icon` never match the same element, so the rule only produced false positives;
+  - Biome also checks HTML, CSS (with Tailwind directives enabled) and JSON (`static/`, manifests);
+  - `noLabelWithoutControl` knows `Switch` and `Input` are inputs, so `<label>` can wrap them;
   - override: `src/content/overlay.css` may use `!important`, because the focus screen's host has to beat the page's CSS;
   - when a rule must be ignored locally, use `biome-ignore` **with the reason**.
 - **Git hooks (husky):** `bun install` enables them through the `prepare` script.
@@ -222,7 +233,7 @@ bun run lint:fix        # biome check --write .
   - `pre-push`: `bun run typecheck`.
 - **Dependencies:**
   - runtime: none;
-  - dev: `webextension-polyfill`, `@fontsource-variable/plus-jakarta-sans` and `@phosphor-icons/web` are devDependencies but ship in the build (the bundle, the font and the icon font).
+  - dev: everything is a devDependency, including what ships in the build (`react`, `react-dom`, `@phosphor-icons/react`, `webextension-polyfill` in the bundles, Tailwind in the CSS, `@fontsource-variable/plus-jakarta-sans` as the font files).
 - `.gitignore` ignores `node_modules`, `dist`, `focus-pocus.zip`, `dist.crx` and `dist.pem`.
 
 ---
@@ -234,26 +245,42 @@ bun run lint:fix        # biome check --write .
   - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
   - Examples: `feat(popup): add pause button`, `fix(content): remove overlay when session ends`, `build(deps): bump webpack`.
   - The `commit-msg` hook enforces the format. Older history does not always follow it.
-- Files in `kebab-case.ts`. Popup and options each have an `elements.ts` that centralizes the type-cast `querySelector` calls.
+- Files in `kebab-case.ts` / `kebab-case.tsx`; React components in PascalCase inside them. React rules: see 5.2.
+- **TS:** `type` over `interface`; no `any`; `import type` for types. Imports use the `@/` alias (`@/lib/storage` is `src/lib/storage`; `tsconfig.json` and `webpack.config.js` both resolve it); only a sibling in the same folder is imported with `./`.
+- **Exports are named** (`export function Button`), except a screen's `page.tsx`, whose default export is the screen.
 - Functions in camelCase with verbose, descriptive names (`checkIfIsRunningAndSendAMessage`, `lockFocusSettings`).
-- State is read with `getStorage([...]).then(...)` and written with `setStorage({...})` (from `src/utils/storage.ts`). Existing code uses `.then` instead of `async/await`.
+- Outside React, state is read with `getStorage([...]).then(...)` and written with `setStorage({...})` (from `src/lib/storage.ts`); existing code uses `.then` instead of `async/await`. In React, use `useStorage`.
 - UI text is hardcoded in English in the HTML/TS. `language.ts` exists for a future i18n but is not wired up.
 - Design rules: see 5.1.
 
 ### 5.1 Design system
 
-The look is dark, violet and **minimal**, modeled on the maintainer's heysusi settings window: flat colors, no gradients, no glows, no decorative animation. Motion only explains a change of state. `static/shared/base.css` holds the tokens and the shared controls; page stylesheets only lay things out. A color, radius, duration or control that is not a token there is a smell.
+The look is dark, violet and **minimal**, modeled on the maintainer's heysusi settings window: flat colors, no gradients, no glows, no decorative animation. Motion only explains a change of state. `src/styles/theme.css` holds the tokens as Tailwind theme variables (`bg-surface`, `text-text-muted`, `rounded-md`, `shadow-card`, `ease-fluid`, `duration-(--duration-enter)`, `animate-fade-up`…) and `src/components/ui/` the shared controls; pages only lay things out with utilities. Tailwind's default palette, type scale, letter spacing, radii, shadows and easings are switched off, so an off-token color, font size or radius has no utility; spacing and sizes keep Tailwind's 4px scale (`size-8`, `px-3.5`). An arbitrary value for any of those (`text-[#...]`, `text-[44px]`, `tracking-[...]`) is a smell: add a token. Arbitrary values are fine for layout math (`grid-cols-[...]`, `w-[calc(...)]`).
+- **Cascade layers:** Chrome gives extension pages its own *unlayered* stylesheet (`body { font-family: <system>; font-size: 75% }`), which beats anything Tailwind puts in a layer. That is why the `body` rules in `theme.css` sit outside `@layer`.
 
 - **Font:** Plus Jakarta Sans (variable), self-hosted. Never load fonts from a CDN.
 - **Surfaces** stack in one direction, never pure black: `--sunken` → `--canvas` → `--surface` → `--raised` → `--raised-hover`. Separation comes from surface and space; hairlines (`--border`) only divide content inside a surface.
 - **Text** has three levels plus the placeholder: `--text`, `--text-muted`, `--text-faint`, `--text-placeholder`.
 - **Accent** (one flat violet, `--accent`) marks what is live, active or primary: the running ring, the active nav icon, focus rings, switches that are on. Filled violet that carries text (the primary button) uses the darker `--accent-solid` with **white** text, so it keeps 4.5:1 contrast. Never a large fill, a gradient or a glow.
 - **Danger** (`--danger*`) is for giving up and errors only.
-- **Controls** in `base.css`: `.btn` (`-primary`, `-secondary`, `-danger`), `.icon-btn`, `.input`, `.switch`, `.segmented` (+ `src/utils/segmented.ts`), `.toast`. Extend these instead of writing one-offs. Add `.pill` to a `.btn`, `.icon-btn` or `.segmented` to round it fully; the popup uses pills everywhere.
-- **Motion:** CSS only. Entering takes `--duration-enter` (220ms), leaving `--duration-exit` (120ms), moving `--duration-layout`, all on `--ease`; `--ease-spring` is for small playful pops. `prefers-reduced-motion` is handled once at the end of `base.css` (and separately in `overlay.css`).
-- **Focus:** a 2px accent ring offset by 2px on things you press (`.focus-ring`, `.btn`, `.icon-btn`); inputs only lighten their border.
-- **Icons:** Phosphor icon font (see section 3), 18px by default via `.ph` / `.ph-fill` in `base.css`.
+- **Controls** in `src/components/ui/`: `Button` (`variant` primary/secondary/danger, `size` md/lg), `IconButton` (`icon`, `tone` neutral/danger), `Input`, `Switch`, `Segmented`; toasts are `toast()` from `src/lib/toast.ts`, drawn by `src/components/toaster.tsx`. Extend these instead of writing one-offs. Pass `pill` to `Button`, `IconButton` or `Segmented` to round it fully; the popup uses pills everywhere. A control's variants never set the same property as its base, so there is no class-order fight (and no `tailwind-merge`).
+- **Motion:** CSS only. Entering takes `--duration-enter` (220ms), leaving `--duration-exit` (120ms), moving `--duration-layout`, all on `ease-fluid`; `ease-spring` is for small playful pops. Keyframes are `--animate-*` tokens in `theme.css`. `prefers-reduced-motion` is handled once at the end of `theme.css` (and separately in `overlay.css`).
+- **Focus:** a 2px accent ring offset by 2px on things you press (the `focus-ring` utility, built into `Button` and `IconButton`); inputs only lighten their border.
+- **Icons:** Phosphor, always through `src/components/ui/icons.ts` (see 5.2), 18px by default; pass `size` explicitly.
 - **Logo:** the magic wand on violet (the Chrome Web Store icon, from the abandoned `gugeldev/focuspocus` project) in `static/assets/logo/` is used in the toolbar, the popup, the sidebar and the focus screen. `icon-32-active.png` is the same wand with a red dot, shown during a session.
+
+### 5.2 React: layout and components
+
+Same rules as the maintainer's `obd` project.
+
+- **An entry file only mounts.** `src/popup/index.tsx` and `src/options/index.tsx` are `mount(<XScreen />)` and nothing else. The page lives in `src/screens/<name>/page.tsx` (default export `XScreen`), with `partials/` for the components only that screen uses. Screen-only helpers and config (`tabs.ts`, `site-lists.ts`, `parse-custom-time.ts`) sit next to `page.tsx`.
+- **`src/components/ui/` is the design-system kit; `src/components/` is only what two or more screens use** (`Brand`, `Toaster`). When a partial gains a second user, move it up rather than importing across screen folders.
+- **Logic and hooks live in `src/lib/`** (`useStorage`, `toast`, `shareStreak`, `formatTime`…). A hook only one file needs lives in that file (`useCelebration` in the popup's `page.tsx`, `useTimeEditor` in `time-field.tsx`).
+- **Icons come from `src/components/ui/icons.ts`, never from the package directly.** Add one there with a domain name (`IconBlocklist`, not `Prohibit`), deep-imported per glyph (`@phosphor-icons/react/dist/csr/<Name>`): the package's root re-exports ~1500 icons and a development build bundles them all.
+- **A screen is a composition of named parts**, not one function full of ternaries. When a component crosses Biome's `noExcessiveCognitiveComplexity` (15), split it (a helper, a lookup table, a partial); never suppress it.
+- **Props are a `type Props`** next to the component (a second component in the same file names its own, e.g. `NavTabProps`); a one-prop component may type it inline (`{ streak }: { streak: number }`). Every component, and every prop whose meaning is not obvious, gets a `/** … */` comment saying what it is.
+- **Storage in React goes through `useStorage`**; a screen reads it once and passes values and callbacks down. Partials never reach storage, not even through a helper that does (`handleStartTimer`, `playSound` are called from the screen and handed down as callbacks).
+- **Tokens only** (5.1): no hex in a component file. Class variants are lookup objects (`variants`, `sizes`, `tones`) joined with `cx`.
 
 ---
 
@@ -280,14 +307,15 @@ The look is dark, violet and **minimal**, modeled on the maintainer's heysusi se
 - [x] Support for other browsers (Firefox)
 - [ ] Groups for the blocklist
 - [ ] Confirmation before giving up
-- [ ] PT-BR language (base in `src/utils/language.ts`)
+- [ ] PT-BR language (base in `src/lib/language.ts`)
 
 ---
 
 ## 8. Checklist when changing something
 
 - [ ] Do `bun run lint`, `bun run typecheck` and both browser builds pass?
-- [ ] Changed a storage key? Update `StorageState` in `src/utils/storage.ts` and table 3.1, and check **every** context that reads it (background, content, popup, options).
+- [ ] Changed a storage key? Update `StorageState` in `src/lib/storage.ts` and table 3.1, and check **every** context that reads it (background, content, popup, options).
+- [ ] New or changed UI follows 5.1 (tokens) and 5.2 (screens, partials, kit, icons)?
 - [ ] Added a permission or capability? Update **both** manifests.
 - [ ] Bumped the version? Update `package.json`, `manifest.chrome.json` and `manifest.firefox.json`.
 - [ ] Tested in **both** browsers (Chrome MV3 and Firefox MV2)?

@@ -1,4 +1,4 @@
-import { getStorage, onStorageChanged } from '../utils/storage';
+import { getStorage, onStorageChanged } from '@/lib/storage';
 import { hideOverlay, showOverlay, updateOverlayTime } from './overlay';
 
 let blocklist: string[] = [];

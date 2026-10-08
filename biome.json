@@ -39,6 +39,14 @@
             "allow": ["error", "warn", "info"]
           }
         }
+      },
+      "a11y": {
+        "noLabelWithoutControl": {
+          "level": "error",
+          "options": {
+            "inputComponents": ["Switch", "Input"]
+          }
+        }
       }
     }
   },
@@ -53,12 +61,14 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.css"],
-      "linter": { "rules": { "style": { "noDescendingSpecificity": "off" } } }
-    },
-    {
       "includes": ["src/content/overlay.css"],
-      "linter": { "rules": { "complexity": { "noImportantStyles": "off" } } }
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noImportantStyles": "off"
+          }
+        }
+      }
     }
   ],
   "assist": {
@@ -66,6 +76,11 @@
       "source": {
         "organizeImports": "on"
       }
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   }
 }
