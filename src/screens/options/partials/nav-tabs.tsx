@@ -1,8 +1,9 @@
 import type { CSSProperties } from 'react';
+import type { ListType } from '@/components/site-lists';
 import { cx } from '@/lib/cx';
+import { useMessages } from '@/lib/use-messages';
 import { NavLabel, navItemClasses } from '@/screens/options/partials/nav-item';
-import type { ListType } from '@/screens/options/site-lists';
-import { type Tab, type TabId, tabs } from '@/screens/options/tabs';
+import { getTabLabel, type Tab, type TabId, tabs } from '@/screens/options/tabs';
 
 type Props = {
   activeTab: TabId;
@@ -21,7 +22,8 @@ type NavTabProps = {
 
 /** One tab of the sidebar: the active one gets the weight and an accent icon. */
 function NavTab({ tab, isActive, count, onSelect }: NavTabProps) {
-  const { id, label, icon: Icon } = tab;
+  const t = useMessages();
+  const { id, icon: Icon } = tab;
 
   return (
     <li className="flex-1">
@@ -46,7 +48,7 @@ function NavTab({ tab, isActive, count, onSelect }: NavTabProps) {
             isActive && 'text-accent',
           )}
         />
-        <NavLabel>{label}</NavLabel>
+        <NavLabel>{getTabLabel(id, t)}</NavLabel>
         {count !== undefined && (
           <span className="hidden text-xs font-medium text-text-faint tabular-nums wide:inline">
             {count}

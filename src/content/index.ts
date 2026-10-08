@@ -1,3 +1,4 @@
+import { type Locale, resolveLocale } from '@/lib/i18n';
 import { getStorage, onStorageChanged } from '@/lib/storage';
 import { hideOverlay, showOverlay, updateOverlayTime } from './overlay';
 
@@ -5,6 +6,7 @@ let blocklist: string[] = [];
 let allowlist: string[] = [];
 let allowlistMode = false;
 let selectedTime = 0;
+let locale: Locale = resolveLocale('auto');
 
 function shouldBlock() {
   const url = window.location.href;
@@ -14,21 +16,28 @@ function shouldBlock() {
 }
 
 function applyFocusMode(timer: number) {
-  if (shouldBlock()) showOverlay(selectedTime - timer);
+  if (shouldBlock()) showOverlay(selectedTime - timer, locale);
   else hideOverlay();
 }
 
 function initialize() {
-  getStorage(['blocklist', 'allowlist', 'isRunning', 'options', 'selectedTime', 'timer']).then(
-    (res) => {
-      blocklist = res.blocklist ?? [];
-      allowlist = res.allowlist ?? [];
-      allowlistMode = Boolean(res.options?.['allowlist-mode']);
-      selectedTime = res.selectedTime;
+  getStorage([
+    'blocklist',
+    'allowlist',
+    'isRunning',
+    'options',
+    'selectedTime',
+    'timer',
+    'language',
+  ]).then((res) => {
+    blocklist = res.blocklist ?? [];
+    allowlist = res.allowlist ?? [];
+    allowlistMode = Boolean(res.options?.['allowlist-mode']);
+    selectedTime = res.selectedTime;
+    locale = resolveLocale(res.language);
 
-      if (res.isRunning) applyFocusMode(res.timer);
-    },
-  );
+    if (res.isRunning) applyFocusMode(res.timer);
+  });
 }
 
 onStorageChanged((changes) => {
@@ -36,6 +45,7 @@ onStorageChanged((changes) => {
   if (changes.allowlist) allowlist = changes.allowlist.newValue ?? [];
   if (changes.options) allowlistMode = Boolean(changes.options.newValue?.['allowlist-mode']);
   if (changes.selectedTime?.newValue) selectedTime = changes.selectedTime.newValue;
+  if (changes.language) locale = resolveLocale(changes.language.newValue);
 
   if (changes.isRunning) {
     if (changes.isRunning.newValue) applyFocusMode(0);

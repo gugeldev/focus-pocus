@@ -1,5 +1,6 @@
 import { cx } from '@/lib/cx';
 import { formatTime } from '@/lib/format-time';
+import { useMessages } from '@/lib/use-messages';
 import { ProgressRing } from '@/screens/popup/partials/progress-ring';
 import { TimeField } from '@/screens/popup/partials/time-field';
 
@@ -14,8 +15,10 @@ type Props = {
 
 /** The countdown inside its progress ring, with a caption above it. */
 export function Dial({ secondsLeft, selectedTime, isRunning, caption, onCustomTime }: Props) {
+  const t = useMessages();
+
   return (
-    <section className="group relative mx-auto mt-2 mb-1 size-49" aria-label="Timer">
+    <section className="group relative mx-auto mt-2 mb-1 size-49" aria-label={t.popup.timer}>
       <ProgressRing progress={secondsLeft / selectedTime} isRunning={isRunning} />
 
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 text-center">

@@ -1,3 +1,6 @@
+import type { LanguageSetting } from '@/lib/i18n';
+import { useMessages } from '@/lib/use-messages';
+import { LanguagePicker } from '@/screens/options/partials/language-picker';
 import { LockedNotice } from '@/screens/options/partials/locked-notice';
 import { SettingRow } from '@/screens/options/partials/setting-row';
 import { SettingsSection } from '@/screens/options/partials/settings-section';
@@ -8,12 +11,16 @@ type Options = Record<string, boolean>;
 type Props = {
   options: Options;
   onChange: (options: Options) => void;
+  language: LanguageSetting;
+  onLanguageChange: (language: LanguageSetting) => void;
   /** Locks the allowlist mode: the content scripts already decided what to block. */
   isRunning: boolean;
 };
 
-/** Sounds, notifications and the blocking mode. Every switch starts off. */
-export function GeneralTab({ options, onChange, isRunning }: Props) {
+/** The language, sounds, notifications and the blocking mode. Every switch starts off. */
+export function GeneralTab({ options, onChange, language, onLanguageChange, isRunning }: Props) {
+  const t = useMessages();
+  const copy = t.options.general;
   // Each row is bound to one key in storage's `options` (AGENTS.md section 2.4).
   const bind = (key: string) => ({
     checked: Boolean(options[key]),
@@ -21,46 +28,44 @@ export function GeneralTab({ options, onChange, isRunning }: Props) {
   });
 
   return (
-    <TabPage
-      id="general-page"
-      title="General"
-      description="Choose how FocusPocus sounds, notifies and blocks while you focus."
-    >
-      <LockedNotice isRunning={isRunning}>
-        A focus session is running. Blocking settings unlock when it ends.
-      </LockedNotice>
+    <TabPage id="general-page" title={copy.title} description={copy.description}>
+      <LockedNotice isRunning={isRunning}>{copy.locked}</LockedNotice>
 
-      <SettingsSection title="Sounds">
+      <SettingsSection title={copy.language.title}>
+        <LanguagePicker language={language} onChange={onLanguageChange} />
+      </SettingsSection>
+
+      <SettingsSection title={copy.sounds.title}>
         <SettingRow
           {...bind('button-sound')}
-          label="Start and give up"
-          description="A soft click when you start or stop a session."
+          label={copy.sounds.button.label}
+          description={copy.sounds.button.description}
         />
         <SettingRow
           {...bind('victorious-sound')}
-          label="Victory"
-          description="Plays when a session finishes while the popup is open."
+          label={copy.sounds.victory.label}
+          description={copy.sounds.victory.description}
         />
         <SettingRow
           {...bind('give-up-sound')}
-          label="Giving up"
-          description="A reminder that quitting costs your streak."
+          label={copy.sounds.giveUp.label}
+          description={copy.sounds.giveUp.description}
         />
       </SettingsSection>
 
-      <SettingsSection title="Notifications">
+      <SettingsSection title={copy.notifications.title}>
         <SettingRow
           {...bind('victorious-notification')}
-          label="Session finished"
-          description="A system notification telling you it's time for a break."
+          label={copy.notifications.finished.label}
+          description={copy.notifications.finished.description}
         />
       </SettingsSection>
 
-      <SettingsSection title="Blocking">
+      <SettingsSection title={copy.blocking.title}>
         <SettingRow
           {...bind('allowlist-mode')}
-          label="Allowlist mode"
-          description="Block every site except the ones on your allowlist, instead of only the ones on your blocklist."
+          label={copy.blocking.allowlistMode.label}
+          description={copy.blocking.allowlistMode.description}
           disabled={isRunning}
         />
       </SettingsSection>

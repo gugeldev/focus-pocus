@@ -1,16 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { handleStartTimer } from '@/background/services/timer';
-import { getDoNotGiveUpMessage } from '@/lib/do-not-giveup';
 import { sendTimerMessage } from '@/lib/messages';
 import { playSound } from '@/lib/play-popup-sounds';
+import { useMessages } from '@/lib/use-messages';
 import { useStorage } from '@/lib/use-storage';
 import { Dial } from '@/screens/popup/partials/dial';
 import { SessionSettings } from '@/screens/popup/partials/session-settings';
 import { StartButton } from '@/screens/popup/partials/start-button';
 import { TopBar } from '@/screens/popup/partials/top-bar';
 import { presets } from '@/screens/popup/presets';
-
-const CUSTOM_CAPTION = 'Custom session';
 
 /**
  * Re-sends TIMER_STARTED when the popup opens mid-session, which recreates the
@@ -46,6 +44,10 @@ function useCelebration(streak: number | undefined) {
   return [isCelebrating, () => setIsCelebrating(false)] as const;
 }
 
+function pickRandom(items: string[]) {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
 function startOrGiveUp() {
   playSound('button');
   handleStartTimer();
@@ -57,10 +59,12 @@ function startOrGiveUp() {
  */
 export default function PopupScreen() {
   const [state, update] = useStorage('timer', 'selectedTime', 'isRunning', 'options', 'streak');
+  const t = useMessages();
   const isRunning = Boolean(state?.isRunning);
-  // A new one each time a session starts, or when the popup opens mid-session.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: isRunning is what picks a new message
-  const runningCaption = useMemo(getDoNotGiveUpMessage, [isRunning]);
+  // A new one each time a session starts, or when the popup opens mid-session
+  // (or the language changes).
+  // biome-ignore lint/correctness/useExhaustiveDependencies: isRunning and the language pick a new message
+  const runningCaption = useMemo(() => pickRandom(t.popup.encouragements), [isRunning, t]);
   const [isCelebrating, endCelebration] = useCelebration(state?.streak);
   useWakeBackground(state?.isRunning);
 
@@ -68,7 +72,7 @@ export default function PopupScreen() {
 
   const { timer, selectedTime, options, streak } = state;
   const isPreset = presets.some((preset) => preset.value === selectedTime);
-  const idleCaption = isPreset ? '' : CUSTOM_CAPTION;
+  const idleCaption = isPreset ? '' : t.popup.customSession;
 
   return (
     <>

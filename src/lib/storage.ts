@@ -1,4 +1,5 @@
 import browser from 'webextension-polyfill';
+import type { LanguageSetting } from './i18n';
 
 // Keys the background seeds on load (seedStorageDefaults), so they are always present.
 type SeededState = {
@@ -13,6 +14,7 @@ type StorageState = SeededState & {
   blocklist?: string[];
   allowlist?: string[];
   options?: Record<string, boolean>;
+  language?: LanguageSetting;
 };
 
 type StorageChanges = {

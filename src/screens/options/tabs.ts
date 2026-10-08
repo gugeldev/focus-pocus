@@ -1,19 +1,21 @@
+import { type ListType, siteListIcons } from '@/components/site-lists';
 import { type IconComponent, IconGeneral } from '@/components/ui/icons';
-import { type ListType, siteLists } from '@/screens/options/site-lists';
+import type { Messages } from '@/lib/i18n';
 
 export type TabId = 'general' | ListType;
 
-export type Tab = { id: TabId; label: string; icon: IconComponent };
+export type Tab = { id: TabId; icon: IconComponent };
 
-/** General, then one tab per site list, named and drawn like its page. */
+/** General, then one tab per site list, drawn like its page. */
 export const tabs: Tab[] = [
-  { id: 'general', label: 'General', icon: IconGeneral },
-  ...(['blocklist', 'allowlist'] as const).map((id) => ({
-    id,
-    label: siteLists[id].title,
-    icon: siteLists[id].icon,
-  })),
+  { id: 'general', icon: IconGeneral },
+  ...(['blocklist', 'allowlist'] as const).map((id) => ({ id, icon: siteListIcons[id] })),
 ];
+
+/** A tab is named like its page. */
+export function getTabLabel(id: TabId, t: Messages) {
+  return id === 'general' ? t.options.general.title : t.options.siteLists[id].title;
+}
 
 /**
  * The open tab is mirrored in the location hash, so "#blocklist" opens the

@@ -1,5 +1,6 @@
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { cx } from '@/lib/cx';
+import { useMessages } from '@/lib/use-messages';
 import { parseCustomTime } from '@/screens/popup/parse-custom-time';
 
 const SHORT_TIME_LENGTH = 5; // "mm:ss"
@@ -62,6 +63,7 @@ type Props = {
  * an input: Enter or blur saves, Esc cancels.
  */
 export function TimeField({ time, isRunning, onCustomTime }: Props) {
+  const t = useMessages();
   const editor = useTimeEditor(time, isRunning, onCustomTime);
   const timeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -87,7 +89,7 @@ export function TimeField({ time, isRunning, onCustomTime }: Props) {
           inputMode="numeric"
           placeholder="mm:ss"
           maxLength={8}
-          aria-label="Custom time, as hh:mm:ss, mm:ss or seconds"
+          aria-label={t.popup.customTimeLabel}
           value={editor.draft}
           onChange={(event) => editor.setDraft(event.target.value)}
           onFocus={(event) => event.target.select()}
@@ -105,7 +107,7 @@ export function TimeField({ time, isRunning, onCustomTime }: Props) {
             timeSize(time),
             'focus-ring text-text transition-colors duration-(--duration) ease-fluid enabled:hover:bg-raised disabled:cursor-default',
           )}
-          title="Set a custom time"
+          title={t.popup.customTimeTitle}
           disabled={isRunning}
           onClick={editor.open}
         >
@@ -120,7 +122,7 @@ export function TimeField({ time, isRunning, onCustomTime }: Props) {
           !isRunning && 'group-focus-within:opacity-100 group-hover:opacity-100',
         )}
       >
-        {editor.isEditing ? 'Enter to save · Esc to cancel' : 'Click to customize'}
+        {editor.isEditing ? t.popup.customTimeEditingHint : t.popup.customTimeHint}
       </p>
     </>
   );

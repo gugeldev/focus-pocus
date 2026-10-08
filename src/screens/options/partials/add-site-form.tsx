@@ -1,8 +1,8 @@
 import { type FormEvent, useState } from 'react';
+import type { ListType, SiteListCopy } from '@/components/site-lists';
 import { Button } from '@/components/ui/button';
 import { IconAdd } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import type { ListType, SiteListCopy } from '@/screens/options/site-lists';
 
 type Props = {
   type: ListType;

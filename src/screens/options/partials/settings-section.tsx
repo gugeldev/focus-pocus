@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useId } from 'react';
 
 type Props = {
   title: string;
@@ -7,7 +7,7 @@ type Props = {
 
 /** A titled group of setting rows, divided from the one before it by a hairline. */
 export function SettingsSection({ title, children }: Props) {
-  const titleId = `${title.toLowerCase()}-title`;
+  const titleId = useId();
 
   return (
     <section

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cx } from '@/lib/cx';
+import { useMessages } from '@/lib/use-messages';
 
 /** Whether `value` has been different from what it was on the first render. */
 function useHasChanged<T>(value: T) {
@@ -21,12 +22,13 @@ type Props = {
  * changes, not when the popup opens.
  */
 export function StartButton({ isRunning, onPress }: Props) {
+  const t = useMessages();
   const labelHasChanged = useHasChanged(isRunning);
 
   return (
     <Button pill size="lg" variant={isRunning ? 'danger' : 'primary'} onClick={onPress}>
       <span key={String(isRunning)} className={cx(labelHasChanged && 'animate-fade-up')}>
-        {isRunning ? 'Give up' : 'Start focusing'}
+        {isRunning ? t.popup.giveUp : t.popup.start}
       </span>
     </Button>
   );
