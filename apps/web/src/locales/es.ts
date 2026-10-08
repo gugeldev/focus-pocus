@@ -8,7 +8,7 @@ export const es: SiteCopy = {
   },
   nav: {
     home: 'FocusPocus, inicio',
-    settings: 'Configuración',
+    reviews: 'Reseñas',
     focusScreen: 'Pantalla de concentración',
     features: 'Funciones',
     github: 'GitHub',
@@ -25,12 +25,6 @@ export const es: SiteCopy = {
     lead: 'FocusPocus es una extensión de navegador con un temporizador de concentración. Mientras corre, los sitios que te distraen quedan bloqueados. Termina la sesión para aumentar tu racha; ríndete y la pierdes.',
     github: 'Ver el código en GitHub',
     tryIt: 'Pruébalo, funciona: elige un tiempo y empieza.',
-  },
-  settings: {
-    eyebrow: 'Configuración',
-    title: 'Tus distracciones, en una sola lista',
-    intro:
-      'Bloquea los sitios que te sacan del foco, o cambia al modo lista de permitidos y quédate solo con los que necesitas. Sonidos, notificaciones e idioma también están aquí.',
   },
   focusScreen: {
     eyebrow: 'Pantalla de concentración',
@@ -67,6 +61,13 @@ export const es: SiteCopy = {
         body: 'Sin cuenta, sin rastreo, sin servidores. Tus listas y tu racha se guardan en tu dispositivo.',
       },
     },
+  },
+  reviews: {
+    eyebrow: 'Reseñas',
+    title: 'Quienes recuperaron el foco',
+    intro: 'Reseñas reales de la Chrome Web Store, tal como fueron escritas.',
+    original: 'En su portugués original.',
+    all: 'Verlas todas en la Chrome Web Store',
   },
   install: {
     title: '¿Listo para concentrarte?',

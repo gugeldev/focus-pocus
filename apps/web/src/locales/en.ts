@@ -10,7 +10,7 @@ export const en = {
   },
   nav: {
     home: 'FocusPocus, home',
-    settings: 'Settings',
+    reviews: 'Reviews',
     focusScreen: 'Focus screen',
     features: 'Features',
     github: 'GitHub',
@@ -28,12 +28,6 @@ export const en = {
     lead: 'FocusPocus is a browser extension with a focus timer. While it runs, the sites that distract you are blocked. Finish the session to grow your streak; give up and you lose it.',
     github: 'View the code on GitHub',
     tryIt: 'Go ahead, it works: pick a time and start.',
-  },
-  settings: {
-    eyebrow: 'Settings',
-    title: 'Your distractions, on one list',
-    intro:
-      'Block the sites that pull you away, or flip to allowlist mode and only keep the ones you need. Sounds, notifications and the language live here too.',
   },
   focusScreen: {
     eyebrow: 'Focus screen',
@@ -70,6 +64,14 @@ export const en = {
         body: 'No account, no tracking, no servers. Your lists and your streak are stored on your device.',
       },
     },
+  },
+  reviews: {
+    eyebrow: 'Reviews',
+    title: 'People who got their focus back',
+    intro: 'Real reviews from the Chrome Web Store, as they were written.',
+    /** Under the intro on the pages whose language is not the reviews' own; empty on pt-BR. */
+    original: 'In their original Portuguese.',
+    all: 'See them all on the Chrome Web Store',
   },
   install: {
     title: 'Ready to focus?',

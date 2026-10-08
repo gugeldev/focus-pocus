@@ -2,6 +2,8 @@
 export const links = {
   chrome:
     'https://chromewebstore.google.com/detail/focuspocus-in-magical-foc/mhfhegccdlndlipjicelombmchnpdebc',
+  chromeReviews:
+    'https://chromewebstore.google.com/detail/focuspocus-in-magical-foc/mhfhegccdlndlipjicelombmchnpdebc/reviews',
   firefox: 'https://addons.mozilla.org/firefox/addon/focuspocus-in-magical-focus/',
   github: 'https://github.com/gugeldev/focus-pocus',
   issues: 'https://github.com/gugeldev/focus-pocus/issues',

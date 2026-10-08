@@ -110,7 +110,7 @@ export function PopupMock() {
           <IconButton
             aria-label={app.popup.settings}
             icon={IconSettings}
-            onClick={() => document.getElementById(anchors.settings)?.scrollIntoView()}
+            onClick={() => document.getElementById(anchors.demo)?.scrollIntoView()}
             pill
             title={app.popup.settings}
           />

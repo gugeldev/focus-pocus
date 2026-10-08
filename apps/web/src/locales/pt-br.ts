@@ -8,7 +8,7 @@ export const ptBR: SiteCopy = {
   },
   nav: {
     home: 'FocusPocus, início',
-    settings: 'Configurações',
+    reviews: 'Avaliações',
     focusScreen: 'Tela de foco',
     features: 'Recursos',
     github: 'GitHub',
@@ -25,12 +25,6 @@ export const ptBR: SiteCopy = {
     lead: 'FocusPocus é uma extensão de navegador com um timer de foco. Enquanto ele roda, os sites que te distraem ficam bloqueados. Termine a sessão para aumentar sua sequência; desista e você a perde.',
     github: 'Ver o código no GitHub',
     tryIt: 'Pode testar, funciona: escolha um tempo e comece.',
-  },
-  settings: {
-    eyebrow: 'Configurações',
-    title: 'Suas distrações em uma lista só',
-    intro:
-      'Bloqueie os sites que te tiram do foco, ou mude para o modo lista de permitidos e mantenha só os que você precisa. Sons, notificações e idioma também ficam aqui.',
   },
   focusScreen: {
     eyebrow: 'Tela de foco',
@@ -67,6 +61,13 @@ export const ptBR: SiteCopy = {
         body: 'Sem conta, sem rastreamento, sem servidores. Suas listas e sua sequência ficam no seu dispositivo.',
       },
     },
+  },
+  reviews: {
+    eyebrow: 'Avaliações',
+    title: 'Quem recuperou o foco',
+    intro: 'Avaliações reais da Chrome Web Store, do jeito que foram escritas.',
+    original: '',
+    all: 'Ver todas na Chrome Web Store',
   },
   install: {
     title: 'Pronto para focar?',

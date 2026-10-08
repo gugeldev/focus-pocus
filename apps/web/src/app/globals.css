@@ -45,6 +45,15 @@
     }
   }
 
+  /* A row of reviews sliding by: the row holds its cards twice, so half a turn loops. */
+  --animate-marquee: marquee 70s linear infinite;
+
+  @keyframes marquee {
+    to {
+      translate: -50% 0;
+    }
+  }
+
   /* The hero's popup, held up and breathing. */
   @keyframes float {
     50% {

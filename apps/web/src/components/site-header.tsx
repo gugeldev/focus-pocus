@@ -26,9 +26,9 @@ export function SiteHeader() {
   const locale = useLocale();
   const scrolled = useScrolled(24);
   const sections = [
-    { anchor: anchors.settings, label: site.nav.settings },
     { anchor: anchors.focusScreen, label: site.nav.focusScreen },
     { anchor: anchors.features, label: site.nav.features },
+    { anchor: anchors.reviews, label: site.nav.reviews },
   ];
 
   return (

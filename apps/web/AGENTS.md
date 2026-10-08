@@ -28,6 +28,9 @@ The same as the extension's (root AGENTS.md section 5.2):
   `src/components/icons.ts`, deep-imported per glyph. The Chrome and Firefox marks come from
   Simple Icons (`src/components/store-mark.tsx`).
 - **Links** to the stores, GitHub and support live in `src/lib/links.ts`.
+- **Reviews** (`src/screens/landing/reviews.ts`) are real ones from the Chrome Web Store, copied as
+  written with the name and date: never invent, edit or translate one, and never add a rating the
+  source does not show.
 - `SITE_URL` (optional) is the deployed origin, so the language alternates in the metadata are
   absolute URLs.
 
