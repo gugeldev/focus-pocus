@@ -10,6 +10,9 @@ const variants = {
     'border-border bg-raised text-text enabled:hover:border-border-strong enabled:hover:bg-raised-hover',
   danger:
     'border-danger-line bg-danger-wash text-danger-soft enabled:hover:border-transparent enabled:hover:bg-danger-solid enabled:hover:text-white',
+  // The filled, committed form of danger. Same look as danger's hover, so it does
+  // not jump under the cursor.
+  'danger-solid': 'border-transparent bg-danger-solid text-white',
 };
 
 const sizes = {

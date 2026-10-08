@@ -26,14 +26,14 @@ The last published version:
 1. Focus Mode: Activate focus mode to block access to distracting websites while studying.
 2. Custom Blocking: FocusPocus allows you to choose which sites to block during focus mode.
 3. Scheduling: You can set the duration of your focus mode timer.
-4. Streak: You earn a point every time the timer finishes, but if you give up halfway through, you lose everything.
+4. Streak: You earn a point every time the timer finishes, but if you give up halfway through (giving up takes a second click to confirm), you lose everything.
 
 ### Todo
 
 - [x] Add custom timer settings.
 - [x] Add allowed list mode.
 - [ ] Add groups for the blocked websites list.
-- [ ] Add a verification prompt before giving up.
+- [x] Add a verification prompt before giving up.
 - [x] Add support for other browsers.
 - [x] Add PT-BR and Spanish language support.
 
