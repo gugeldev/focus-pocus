@@ -23,15 +23,17 @@
   --tracking-section: -0.035em;
 
   /*
-   * The website's atmosphere, which the extension's flat UI does without: a
-   * lighter violet for the hero's gradient and shadows on the drawings that
-   * float over it. The glows are `accent-solid` at /28 (or /17, further down).
+   * The website's atmosphere, which the extension's flat UI does without: the
+   * sparkles' second violet, and soft shadows on the drawings that float over
+   * the page. The glows are `accent-solid` at /28 (or /17, further down).
    */
-  --color-lilac: #ddd3ff;
+  --color-fuchsia: #d946ef;
+  /* Guide lines down the page, and the hairlines between its bands. */
+  --color-guide: rgb(18 17 28 / 0.07);
   /* The 1px outline of the drawn windows: just enough to lift them off the page. */
-  --color-hairline: rgb(255 255 255 / 0.04);
+  --color-hairline: rgb(18 17 28 / 0.05);
   /* The dots of the page's background pattern. */
-  --color-dot: rgb(255 255 255 / 0.07);
+  --color-dot: rgb(18 17 28 / 0.09);
   /* A drawn window's corners, rounder than the extension's own cards. */
   --radius-window: 24px;
   /* macOS's window buttons: close, minimize, zoom. */
@@ -39,8 +41,8 @@
   --color-mac-minimize: #febc2e;
   --color-mac-zoom: #28c840;
   --color-star: #fbbf24;
-  --shadow-header: 0 18px 50px rgb(0 0 0 / 0.5);
-  --shadow-float: 0 40px 80px -20px rgb(0 0 0 / 0.75);
+  --shadow-header: 0 6px 24px -14px rgb(30 20 80 / 0.12);
+  --shadow-float: 0 30px 60px -36px rgb(40 30 110 / 0.22), 0 2px 8px -2px rgb(18 17 28 / 0.04);
   --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-rise: cubic-bezier(0.2, 0.7, 0.2, 1);
   --duration-rise: 900ms;
@@ -51,6 +53,44 @@
   /* Entrances: what is on screen at load rises with CSS (Rise), the rest on scroll (Reveal). */
   --animate-rise: rise var(--duration-rise) var(--ease-rise) both;
   --animate-float: float 7s ease-in-out infinite;
+  --animate-silk: silk 16s ease-in-out infinite alternate;
+  --animate-spell: spell 240s linear infinite;
+  --animate-twinkle: twinkle 4.2s ease-in-out infinite;
+
+  /* A sparkle appearing, turning a little, and going out. */
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 0;
+      scale: 0.3;
+      rotate: 0deg;
+    }
+    45% {
+      opacity: 0.9;
+      scale: 1;
+      rotate: 45deg;
+    }
+    70% {
+      opacity: 0;
+      scale: 0.5;
+      rotate: 90deg;
+    }
+  }
+
+  /* The silk behind the demo drifting and shifting its hue a little. */
+  @keyframes silk {
+    to {
+      transform: translate(-30px, 18px) rotate(-1.2deg);
+      filter: hue-rotate(-22deg);
+    }
+  }
+
+  /* The hero's spell turning, once every four minutes. */
+  @keyframes spell {
+    to {
+      rotate: 360deg;
+    }
+  }
 
   @keyframes rise {
     from {
@@ -106,6 +146,44 @@
 @utility bg-dots {
   background-image: radial-gradient(var(--color-dot) 1px, transparent 1.5px);
   background-size: 22px 22px;
+}
+
+/*
+ * The website is light, while the extension is dark. The kit's color tokens
+ * are CSS variables, so this scope, set on <html>, redefines them and turns
+ * the page and every drawing of the extension light at once.
+ */
+@utility theme-light {
+  --color-canvas: #ffffff;
+  --color-surface: #fcfcfe;
+  --color-raised: #f6f6fa;
+  --color-raised-hover: #efeff5;
+  --color-sunken: #f8f8fb;
+  --color-item-hover: #f7f7fb;
+  --color-item-active: #efeafe;
+  --color-border: #eeeef4;
+  --color-border-strong: #d6d6e3;
+  --color-border-focus: #a99cf0;
+  --color-text: #12111c;
+  --color-text-muted: #55536a;
+  --color-text-faint: #8c8aa0;
+  --color-text-placeholder: #a9a7bb;
+  --color-accent: #7c3aed;
+  --color-accent-strong: #8b5cf6;
+  --color-accent-dim: #d4c8fd;
+  --color-accent-wash: #f4f0ff;
+  --color-danger: #e5374e;
+  --color-danger-soft: #d0354a;
+  --color-danger-wash: #fff1f3;
+  --color-danger-line: #ffd0d7;
+
+  /* Tailwind inlines a shadow's value into its class, so redefining the kit's
+     shadow tokens here would not reach it: on white, the kit's lifts become a
+     hairline instead. */
+  & .shadow-subtle,
+  & .shadow-card {
+    box-shadow: 0 0 0 1px var(--color-border);
+  }
 }
 
 @layer base {

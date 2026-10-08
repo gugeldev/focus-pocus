@@ -66,8 +66,7 @@ export const en = {
   reviews: {
     eyebrow: 'Reviews',
     title: 'People who got their focus back',
-    intro:
-      'Real reviews from the Chrome Web Store, as they were written, in their original Portuguese.',
+    intro: 'See what people who use FocusPocus are saying.',
     rating: '5.0 on the Chrome Web Store',
     stars: (count: number) => `${count} stars`,
     all: 'See them all on the Chrome Web Store',

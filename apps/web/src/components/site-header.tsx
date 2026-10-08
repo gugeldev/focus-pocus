@@ -13,7 +13,7 @@ import { useScrolled } from '@/lib/use-scrolled';
 const bar = {
   top: 'h-17 max-w-6xl rounded-none bg-canvas/0 px-4 sm:px-6',
   scrolled:
-    'h-15 max-w-5xl rounded-full bg-raised/80 pr-2.5 pl-5 shadow-header backdrop-blur-xl backdrop-saturate-150',
+    'h-15 max-w-5xl rounded-full bg-canvas/75 pr-2.5 pl-5 shadow-header ring-1 ring-hairline backdrop-blur-xl backdrop-saturate-150',
 };
 
 /**
@@ -27,7 +27,6 @@ export function SiteHeader() {
   const locale = useLocale();
   const scrolled = useScrolled(24);
   const sections = [
-    { anchor: anchors.focusScreen, label: site.nav.focusScreen },
     { anchor: anchors.features, label: site.nav.features },
     { anchor: anchors.reviews, label: site.nav.reviews },
   ];

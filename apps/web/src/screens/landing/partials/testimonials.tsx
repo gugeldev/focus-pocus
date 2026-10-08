@@ -33,7 +33,7 @@ export function Testimonials() {
   }, [locale]);
 
   return (
-    <section className="py-16 md:py-24" id={anchors.reviews}>
+    <section className="border-t border-guide py-16 md:py-24" id={anchors.reviews}>
       <Container>
         <SectionHeading
           eyebrow={site.reviews.eyebrow}
@@ -47,7 +47,10 @@ export function Testimonials() {
           {site.reviews.rating}
         </p>
       </Reveal>
-      <Reveal className="flex flex-col gap-3 mask-x-from-85% mask-x-to-100%" order={2}>
+      <Reveal
+        className="mx-auto flex max-w-6xl flex-col gap-3 mask-x-from-88% mask-x-to-100%"
+        order={2}
+      >
         {rows.map((row, index) => (
           <ReviewRow formatDate={formatDate} key={row[0]?.name} reverse={index === 1} row={row} />
         ))}
@@ -87,7 +90,7 @@ function ReviewRow({ row, reverse, formatDate }: RowProps) {
   const passes = Array.from({ length: REPEATS_PER_HALF * 2 }, (_, pass) => pass);
 
   return (
-    <div className="overflow-x-auto [scrollbar-width:none] motion-safe:overflow-hidden [&::-webkit-scrollbar]:hidden">
+    <div className="overflow-x-auto py-2 [scrollbar-width:none] motion-safe:overflow-hidden [&::-webkit-scrollbar]:hidden">
       <ul
         className={cx(
           'flex w-max hover:[animation-play-state:paused]',
@@ -126,8 +129,10 @@ function Stars() {
 
 /** A review as written, opened by a violet quote mark, under its stars, name and date. */
 function ReviewCard({ review, formatDate }: { review: Review; formatDate: DateFormatter }) {
+  const locale = useLocale();
+
   return (
-    <figure className="flex h-full w-80 flex-col gap-4 rounded-panel bg-surface p-7">
+    <figure className="flex h-full w-80 flex-col gap-4 rounded-panel bg-surface p-7 ring-1 ring-hairline">
       <div className="flex items-center justify-between">
         <span
           aria-hidden="true"
@@ -137,8 +142,8 @@ function ReviewCard({ review, formatDate }: { review: Review; formatDate: DateFo
         </span>
         <Stars />
       </div>
-      <blockquote className="flex-1 text-pretty text-md text-text" lang="pt-BR">
-        {review.text}
+      <blockquote className="flex-1 text-pretty text-md text-text">
+        {review.text[locale]}
       </blockquote>
       <figcaption className="flex items-center gap-3">
         <span

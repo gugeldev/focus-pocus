@@ -22,7 +22,7 @@ import { SectionHeading } from './section-heading';
 
 type FeatureKey = keyof SiteCopy['features']['items'];
 
-/** How much of the bento a card takes from `lg`, and how it lays out. */
+/** How many of the grid's columns a cell takes. */
 const spans = {
   wide: 'md:col-span-2',
   narrow: '',
@@ -33,64 +33,67 @@ type CardProps = {
   feature: FeatureKey;
   icon: IconComponent;
   span: keyof typeof spans;
-  order: number;
   /** A working piece of the extension that shows the feature. */
   children?: ReactNode;
 };
 
-/** One feature: its icon, claim and line, over the piece of the extension it is about. */
-function FeatureCard({ feature, icon: Icon, span, order, children }: CardProps) {
+/**
+ * One cell of the grid: its icon, claim and line, over the piece of the
+ * extension it is about. White, so it hides the guide lines it spans.
+ */
+function FeatureCard({ feature, icon: Icon, span, children }: CardProps) {
   const { site } = useCopy();
   const { title, body } = site.features.items[feature];
 
   return (
-    <Reveal className={cx('min-w-0', spans[span])} order={order}>
-      <div
-        className={cx(
-          'flex h-full flex-col justify-between gap-8 rounded-panel bg-surface p-8',
-          span === 'full' && 'lg:flex-row lg:items-center',
-        )}
-      >
-        <div className="flex max-w-md flex-col gap-2.5">
-          <span className="mb-2 flex size-10 items-center justify-center rounded-lg bg-accent-wash text-accent">
-            <Icon aria-hidden="true" size={20} />
-          </span>
-          <h3 className="text-lg font-medium">{title}</h3>
-          <p className="text-pretty text-text-muted">{body}</p>
-        </div>
-        {children}
+    <div
+      className={cx(
+        'flex min-w-0 flex-col justify-between gap-10 bg-canvas p-8 sm:p-10',
+        spans[span],
+        span === 'full' && 'lg:flex-row lg:items-center',
+      )}
+    >
+      <div className="flex max-w-md flex-col gap-2.5">
+        <Icon aria-hidden="true" className="mb-3 text-accent" size={24} />
+        <h3 className="text-lg font-medium">{title}</h3>
+        <p className="text-pretty text-text-muted">{body}</p>
       </div>
-    </Reveal>
+      {children}
+    </div>
   );
 }
 
-/** What it does, as a bento of cards, most of them holding a working piece of the extension. */
+/**
+ * What it does, as a grid laid on the page's guide lines: 1px inside the
+ * column's edges, so the page's own lines are its sides, and its dividers
+ * (the 1px gaps showing the line color behind) falling on the thirds. Most cells hold a working piece of the extension.
+ */
 export function Features() {
   const { site } = useCopy();
 
   return (
     <Section id={anchors.features}>
       <SectionHeading eyebrow={site.features.eyebrow} title={site.features.title} />
-      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-        <FeatureCard feature="lists" icon={IconBlocklist} order={0} span="wide">
+      <Reveal className="mx-[calc(1px-1rem)] grid gap-px bg-guide sm:mx-[calc(1px-1.5rem)] md:grid-cols-2 lg:grid-cols-3">
+        <FeatureCard feature="lists" icon={IconBlocklist} span="wide">
           <ListsPiece />
         </FeatureCard>
-        <FeatureCard feature="streak" icon={IconStreak} order={1} span="narrow">
+        <FeatureCard feature="streak" icon={IconStreak} span="narrow">
           <StreakPiece />
         </FeatureCard>
-        <FeatureCard feature="timer" icon={IconTimer} order={0} span="narrow">
+        <FeatureCard feature="timer" icon={IconTimer} span="narrow">
           <TimerPiece />
         </FeatureCard>
-        <FeatureCard feature="alerts" icon={IconAlerts} order={1} span="narrow">
+        <FeatureCard feature="alerts" icon={IconAlerts} span="narrow">
           <AlertsPiece />
         </FeatureCard>
-        <FeatureCard feature="languages" icon={IconLanguages} order={2} span="narrow">
+        <FeatureCard feature="languages" icon={IconLanguages} span="narrow">
           <LanguagesPiece />
         </FeatureCard>
-        <FeatureCard feature="private" icon={IconPrivate} order={0} span="full">
+        <FeatureCard feature="private" icon={IconPrivate} span="full">
           <PrivatePiece />
         </FeatureCard>
-      </div>
+      </Reveal>
     </Section>
   );
 }
@@ -143,8 +146,8 @@ function StreakPiece() {
 
   return (
     <p className="flex items-baseline gap-3">
-      <IconStreak aria-hidden="true" className="self-center text-streak" size={40} weight="fill" />
-      <span className="text-stat font-semibold tracking-stat tabular-nums">12</span>
+      <IconStreak aria-hidden="true" className="self-center text-accent" size={32} />
+      <span className="text-stat font-medium tracking-stat tabular-nums">12</span>
       <span className="text-text-muted">{app.options.inARow}</span>
     </p>
   );

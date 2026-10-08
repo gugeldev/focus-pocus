@@ -14,7 +14,7 @@ export function Switch(props: Omit<ComponentProps<'input'>, 'type' | 'className'
       />
       <span
         aria-hidden="true"
-        className="absolute inset-0 rounded-full bg-border-strong transition-[background-color,opacity] duration-(--duration-enter) ease-fluid peer-checked:bg-accent-strong peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent peer-disabled:opacity-45 after:absolute after:top-0.75 after:left-0.75 after:size-4.5 after:rounded-full after:bg-text after:shadow-subtle after:transition-[translate,width] after:duration-(--duration-layout) after:ease-spring peer-checked:after:translate-x-4 peer-enabled:peer-active:after:w-5.5 peer-checked:peer-enabled:peer-active:after:translate-x-3"
+        className="absolute inset-0 rounded-full bg-border-strong transition-[background-color,opacity] duration-(--duration-enter) ease-fluid peer-checked:bg-accent-strong peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent peer-disabled:opacity-45 after:absolute after:top-0.75 after:left-0.75 after:size-4.5 after:rounded-full after:bg-white after:shadow-subtle after:transition-[translate,width] after:duration-(--duration-layout) after:ease-spring peer-checked:after:translate-x-4 peer-enabled:peer-active:after:w-5.5 peer-checked:peer-enabled:peer-active:after:translate-x-3"
       />
     </span>
   );

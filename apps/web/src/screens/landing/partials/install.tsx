@@ -20,6 +20,11 @@ export function Install() {
           aria-hidden="true"
           className="absolute inset-0 -z-10 bg-dots mask-radial-[70%_80%] mask-radial-at-top mask-radial-from-0%"
         />
+        {/* Thin violet rays fanning up from below the panel. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-[repeating-conic-gradient(from_270deg_at_50%_120%,rgb(124_58_237/0.22)_0deg_0.14deg,transparent_0.14deg_1.8deg)] mask-radial-[70%_80%] mask-radial-at-bottom mask-radial-from-0% mask-radial-to-100%"
+        />
         <div
           aria-hidden="true"
           className="absolute -top-1/2 left-1/2 -z-10 h-full w-4/5 -translate-x-1/2 rounded-full bg-radial-[closest-side] from-accent-solid/28 to-transparent"
@@ -28,7 +33,7 @@ export function Install() {
           {site.install.title}
         </h2>
         <p className="text-lead text-text-muted">{site.install.body}</p>
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className="flex w-full max-w-xs flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center">
           <StoreButtons />
         </div>
         <div className="mt-6 flex w-full max-w-md flex-col items-center gap-4 border-t border-border pt-8">

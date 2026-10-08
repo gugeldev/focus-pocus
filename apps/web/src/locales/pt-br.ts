@@ -63,7 +63,7 @@ export const ptBR: SiteCopy = {
   reviews: {
     eyebrow: 'Avaliações',
     title: 'Quem recuperou o foco',
-    intro: 'Avaliações reais da Chrome Web Store, do jeito que foram escritas.',
+    intro: 'Veja o que quem usa o FocusPocus está achando.',
     rating: '5,0 na Chrome Web Store',
     stars: (count: number) => `${count} estrelas`,
     all: 'Ver todas na Chrome Web Store',

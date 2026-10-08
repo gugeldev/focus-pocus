@@ -6,6 +6,8 @@ import { useCopy } from '@/lib/i18n-provider';
 import { OptionsMock } from '../mocks/options-mock';
 import { PopupMock } from '../mocks/popup-mock';
 import { Section } from './section';
+import { Silk } from './silk';
+import { Sparkles } from './sparkles';
 
 /**
  * The first screen, centered: what it is and the stores, then the extension
@@ -16,19 +18,20 @@ export function Hero() {
   const { site } = useCopy();
 
   return (
-    <Section className="flex flex-col items-center text-center">
+    <Section className="flex flex-col items-center text-center" divided={false}>
       <Rise className="max-w-4xl">
-        <h1 className="text-balance text-hero font-medium tracking-hero">
-          {site.hero.titleLead}{' '}
-          <span className="bg-linear-100 from-accent via-lilac to-accent bg-clip-text pr-[0.06em] text-transparent">
-            {site.hero.titleAccent}
-          </span>
+        <h1 className="relative text-balance text-hero font-medium tracking-hero">
+          {site.hero.titleLead} <span className="text-text-muted">{site.hero.titleAccent}</span>
+          <Sparkles />
         </h1>
       </Rise>
       <Rise className="mt-6 max-w-2xl" order={1}>
         <p className="text-pretty text-lead text-text-muted">{site.hero.lead}</p>
       </Rise>
-      <Rise className="mt-9 flex flex-wrap justify-center gap-3" order={2}>
+      <Rise
+        className="mt-9 flex w-full max-w-xs flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center"
+        order={2}
+      >
         <StoreButtons />
       </Rise>
       <Rise className="mt-16 w-full text-left md:mt-20" order={3}>
@@ -46,11 +49,8 @@ export function Hero() {
 function Demo() {
   return (
     <div className="relative lg:pr-24">
-      {/* A violet halo under both, so they read as lit from the page. */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-x-0 -inset-y-24 -z-10 rounded-full bg-radial-[closest-side] from-accent-solid/28 to-transparent"
-      />
+      {/* The silk sweeping behind both, wider than the page's column. */}
+      <Silk className="absolute top-1/2 left-1/2 -z-10 h-[150%] w-[180%] -translate-x-1/2 -translate-y-[45%]" />
       <div className="hidden lg:block">
         <OptionsMock />
       </div>
