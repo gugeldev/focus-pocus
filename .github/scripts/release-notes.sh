@@ -42,6 +42,11 @@ while IFS=$'\t' read -r sha subject; do
     *) type=chore ;;
   esac
 
+  # Keep subjects literal: no @mentions (a zero-width space follows the @) and no HTML.
+  text=${text//@/@​}
+  text=${text//</&lt;}
+  text=${text//>/&gt;}
+
   line='- '
   [[ -n $breaking ]] && line+='**BREAKING** '
   [[ -n $scope ]] && line+="**$scope:** "

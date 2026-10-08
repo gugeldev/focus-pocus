@@ -21,7 +21,9 @@ jobs:
   release:
     if: >-
       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
-      (github.event.pull_request.merged && startsWith(github.event.pull_request.head.ref, 'release/'))
+      (github.event.pull_request.merged &&
+        startsWith(github.event.pull_request.head.ref, 'release/') &&
+        github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -49,6 +51,18 @@ jobs:
             echo "::error::$HEAD_REF was merged, but the extension's version is $version"
             exit 1
           fi
+          # A squash or rebase merge leaves no merge commit, and the changelog would only
+          # see its last commit.
+          if [ -n "$HEAD_REF" ] && [ "$(git rev-list --parents -n 1 "$SHA" | wc -w)" -ne 3 ]; then
+            echo "::error::merge release branches into main with a merge commit, not squash or rebase"
+            exit 1
+          fi
+          # Re-running is fine, but an existing version must not get a build of another commit.
+          if git rev-parse -q --verify "refs/tags/v$version" > /dev/null &&
+            [ "$(git rev-parse "v$version^{commit}")" != "$SHA" ]; then
+            echo "::error::v$version is already released at another commit; bump the version"
+            exit 1
+          fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "tag=v$version" >> "$GITHUB_OUTPUT"
 
@@ -72,13 +86,16 @@ jobs:
         env:
           TAG: ${{ steps.version.outputs.tag }}
         run: |
-          # The previous v* tag before this merge; the first release falls back to the
-          # merge's first parent, i.e. everything the release branch brought in.
-          if previous=$(git describe --tags --abbrev=0 --match 'v[0-9]*' --exclude "$TAG" "$SHA^1" 2>/dev/null); then
+          # The previous v* tag before this commit. The first release has none, so it falls
+          # back to the merge's first parent, i.e. everything the release branch brought in.
+          if previous=$(git describe --tags --abbrev=0 --match 'v[0-9]*' "$SHA^1" 2>/dev/null); then
             compare="**Full changelog:** https://github.com/$GITHUB_REPOSITORY/compare/$previous...$TAG"
-          else
+          elif git rev-parse -q --verify "$SHA^2" > /dev/null; then
             previous="$SHA^1"
             compare=''
+          else
+            echo "::error::no previous v* tag and $SHA is not a merge commit, so the changelog has no start"
+            exit 1
           fi
           {
             bash .github/scripts/release-notes.sh "$previous" "$SHA" "$GITHUB_REPOSITORY"
