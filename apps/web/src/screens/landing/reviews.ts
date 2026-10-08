@@ -2,6 +2,10 @@
  * Reviews from the Chrome Web Store listing, copied as written (in Portuguese)
  * with the reviewer's name and the date; never edited or translated. Newest first.
  */
+
+/** Every one of them gave five stars (the maintainer's word, from the listing). */
+export const reviewStars = 5;
+
 export const reviews = [
   {
     name: 'André Rigo',

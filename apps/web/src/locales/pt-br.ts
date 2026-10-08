@@ -59,6 +59,7 @@ export const ptBR: SiteCopy = {
       private: {
         title: 'Nada sai do seu navegador',
         body: 'Sem conta, sem rastreamento, sem servidores. Suas listas e sua sequência ficam no seu dispositivo.',
+        tags: ['Sem conta', 'Sem rastreamento', 'Sem servidores'],
       },
     },
   },
@@ -67,6 +68,8 @@ export const ptBR: SiteCopy = {
     title: 'Quem recuperou o foco',
     intro: 'Avaliações reais da Chrome Web Store, do jeito que foram escritas.',
     original: '',
+    rating: '5,0 na Chrome Web Store',
+    stars: (count: number) => `${count} estrelas`,
     all: 'Ver todas na Chrome Web Store',
   },
   install: {

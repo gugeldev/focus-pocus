@@ -8,5 +8,6 @@ export { ArrowUpRightIcon as IconExternal } from '@phosphor-icons/react/dist/csr
 export { BellRingingIcon as IconAlerts } from '@phosphor-icons/react/dist/csr/BellRinging';
 export { GithubLogoIcon as IconGithub } from '@phosphor-icons/react/dist/csr/GithubLogo';
 export { ShieldCheckIcon as IconPrivate } from '@phosphor-icons/react/dist/csr/ShieldCheck';
+export { StarIcon as IconStar } from '@phosphor-icons/react/dist/csr/Star';
 export { TimerIcon as IconTimer } from '@phosphor-icons/react/dist/csr/Timer';
 export { TranslateIcon as IconLanguages } from '@phosphor-icons/react/dist/csr/Translate';

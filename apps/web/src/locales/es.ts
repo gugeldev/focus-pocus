@@ -59,6 +59,7 @@ export const es: SiteCopy = {
       private: {
         title: 'Nada sale de tu navegador',
         body: 'Sin cuenta, sin rastreo, sin servidores. Tus listas y tu racha se guardan en tu dispositivo.',
+        tags: ['Sin cuenta', 'Sin rastreo', 'Sin servidores'],
       },
     },
   },
@@ -67,6 +68,8 @@ export const es: SiteCopy = {
     title: 'Quienes recuperaron el foco',
     intro: 'Reseñas reales de la Chrome Web Store, tal como fueron escritas.',
     original: 'En su portugués original.',
+    rating: '5,0 en la Chrome Web Store',
+    stars: (count: number) => `${count} estrellas`,
     all: 'Verlas todas en la Chrome Web Store',
   },
   install: {

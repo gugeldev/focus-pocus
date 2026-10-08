@@ -62,6 +62,7 @@ export const en = {
       private: {
         title: 'Nothing leaves your browser',
         body: 'No account, no tracking, no servers. Your lists and your streak are stored on your device.',
+        tags: ['No account', 'No tracking', 'No servers'],
       },
     },
   },
@@ -71,6 +72,8 @@ export const en = {
     intro: 'Real reviews from the Chrome Web Store, as they were written.',
     /** Under the intro on the pages whose language is not the reviews' own; empty on pt-BR. */
     original: 'In their original Portuguese.',
+    rating: '5.0 on the Chrome Web Store',
+    stars: (count: number) => `${count} stars`,
     all: 'See them all on the Chrome Web Store',
   },
   install: {

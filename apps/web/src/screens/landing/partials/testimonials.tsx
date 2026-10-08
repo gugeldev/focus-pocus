@@ -1,12 +1,12 @@
 'use client';
 
 import { cx } from '@focus-pocus/ui/cx';
-import { IconExternal } from '@/components/icons';
+import { IconExternal, IconStar } from '@/components/icons';
 import { Reveal } from '@/components/ui/reveal';
 import { useCopy, useLocale } from '@/lib/i18n-provider';
 import { links } from '@/lib/links';
 import { anchors } from '@/lib/routes';
-import { type Review, reviews } from '../reviews';
+import { type Review, reviewStars, reviews } from '../reviews';
 import { Section } from './section';
 import { SectionHeading } from './section-heading';
 
@@ -33,7 +33,13 @@ export function Testimonials() {
           title={site.reviews.title}
         />
       </Section>
-      <Reveal className="flex flex-col gap-4 mask-x-from-85% mask-x-to-100%" order={1}>
+      <Reveal className="mb-10 flex justify-center px-4" order={1}>
+        <p className="inline-flex items-center gap-2.5 rounded-full bg-surface py-2 pr-4 pl-3 text-sm text-text-muted">
+          <Stars />
+          {site.reviews.rating}
+        </p>
+      </Reveal>
+      <Reveal className="flex flex-col gap-3 mask-x-from-85% mask-x-to-100%" order={2}>
         {rows.map((row, index) => (
           <ReviewRow key={row[0]?.name} reverse={index === 1} row={row} />
         ))}
@@ -67,7 +73,7 @@ function ReviewRow({ row, reverse }: { row: Review[]; reverse: boolean }) {
       >
         {[false, true].map((isCopy) =>
           row.map((review) => (
-            <li aria-hidden={isCopy || undefined} className="pr-4" key={`${isCopy}-${review.name}`}>
+            <li aria-hidden={isCopy || undefined} className="pr-3" key={`${isCopy}-${review.name}`}>
               <ReviewCard review={review} />
             </li>
           )),
@@ -77,7 +83,25 @@ function ReviewRow({ row, reverse }: { row: Review[]; reverse: boolean }) {
   );
 }
 
-/** A review as written, under the reviewer's initial, name and date. */
+/** The five stars every review gave, named once for screen readers. */
+function Stars() {
+  const { site } = useCopy();
+
+  return (
+    <span
+      className="flex gap-0.5 text-star"
+      role="img"
+      aria-label={site.reviews.stars(reviewStars)}
+    >
+      {Array.from({ length: reviewStars }, (_, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: identical stars, never reordered
+        <IconStar aria-hidden="true" key={index} size={14} weight="fill" />
+      ))}
+    </span>
+  );
+}
+
+/** A review as written, opened by a violet quote mark, under its stars, name and date. */
 function ReviewCard({ review }: { review: Review }) {
   const locale = useLocale();
   const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(
@@ -85,19 +109,28 @@ function ReviewCard({ review }: { review: Review }) {
   );
 
   return (
-    <figure className="flex h-full w-80 flex-col justify-between gap-6 rounded-2xl border border-border/60 bg-surface p-6 transition-colors duration-(--duration-layout) ease-fluid hover:border-border-strong">
-      <blockquote className="text-pretty text-md text-text" lang="pt-BR">
-        “{review.text}”
+    <figure className="flex h-full w-80 flex-col gap-4 rounded-panel bg-surface p-7">
+      <div className="flex items-center justify-between">
+        <span
+          aria-hidden="true"
+          className="h-6 text-quote-mark leading-none font-medium text-accent"
+        >
+          “
+        </span>
+        <Stars />
+      </div>
+      <blockquote className="flex-1 text-pretty text-md text-text" lang="pt-BR">
+        {review.text}
       </blockquote>
       <figcaption className="flex items-center gap-3">
         <span
           aria-hidden="true"
-          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-accent-wash text-sm font-medium text-accent uppercase inset-ring inset-ring-accent-dim"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-raised text-base font-medium uppercase"
         >
           {review.name.charAt(0)}
         </span>
-        <span className="flex min-w-0 flex-col">
-          <span className="truncate text-base font-medium">{review.name}</span>
+        <span className="flex min-w-0 flex-col gap-0.5">
+          <span className="truncate text-sm font-medium">{review.name}</span>
           <time className="text-xs text-text-faint" dateTime={review.date}>
             {date}
           </time>
