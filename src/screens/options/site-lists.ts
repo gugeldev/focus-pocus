@@ -1,43 +1,10 @@
-import { IconAllowlist, IconBlocklist, type IconComponent } from '@/components/ui/icons';
+import { IconAllowlist, IconBlocklist } from '@/components/ui/icons';
+import type { Messages } from '@/lib/i18n';
 
 export type ListType = 'blocklist' | 'allowlist';
 
-/** What sets the two list tabs apart: their copy and their icon. */
-export type SiteListCopy = {
-  title: string;
-  description: string;
-  icon: IconComponent;
-  inputLabel: string;
-  placeholder: string;
-  addLabel: string;
-  listLabel: string;
-  emptyTitle: string;
-  emptyText: string;
-};
+/** What sets the two list tabs' copy apart (src/locales/). */
+export type SiteListCopy = Messages['options']['siteLists'][ListType];
 
-export const siteLists: Record<ListType, SiteListCopy> = {
-  blocklist: {
-    title: 'Blocklist',
-    description:
-      'While you focus, any page whose address contains one of these is covered by the focus screen.',
-    icon: IconBlocklist,
-    inputLabel: 'Website to block',
-    placeholder: 'youtube.com',
-    addLabel: 'Block',
-    listLabel: 'Blocked websites',
-    emptyTitle: 'Nothing blocked yet',
-    emptyText: 'Add the sites that steal your attention, like social feeds or video platforms.',
-  },
-  allowlist: {
-    title: 'Allowlist',
-    description:
-      'In allowlist mode, only pages whose address contains one of these stay reachable while you focus.',
-    icon: IconAllowlist,
-    inputLabel: 'Website to allow',
-    placeholder: 'docs.google.com',
-    addLabel: 'Allow',
-    listLabel: 'Allowed websites',
-    emptyTitle: 'Nothing allowed yet',
-    emptyText: 'Add the tools you need to work, like your docs, editor or course platform.',
-  },
-};
+/** Each list's icon, shared by its tab and its empty state. */
+export const siteListIcons = { blocklist: IconBlocklist, allowlist: IconAllowlist };

@@ -2,6 +2,7 @@ import browser from 'webextension-polyfill';
 import { Brand } from '@/components/brand';
 import { IconButton } from '@/components/ui/icon-button';
 import { IconSettings } from '@/components/ui/icons';
+import { useMessages } from '@/lib/use-messages';
 import { StreakButton } from '@/screens/popup/partials/streak-button';
 
 type Props = {
@@ -12,6 +13,8 @@ type Props = {
 
 /** The brand on the left; the streak and the way to the settings on the right. */
 export function TopBar({ streak, isCelebrating, onCelebrated }: Props) {
+  const t = useMessages();
+
   return (
     <header className="flex items-center justify-between pt-4 pr-3 pl-4">
       <Brand size="sm" />
@@ -20,8 +23,8 @@ export function TopBar({ streak, isCelebrating, onCelebrated }: Props) {
         <IconButton
           pill
           icon={IconSettings}
-          aria-label="Settings"
-          title="Settings"
+          aria-label={t.popup.settings}
+          title={t.popup.settings}
           onClick={() => browser.runtime.openOptionsPage()}
         />
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useMessages } from '@/lib/use-messages';
 import { useStorage } from '@/lib/use-storage';
 import { GeneralTab } from '@/screens/options/partials/general-tab';
 import { Sidebar } from '@/screens/options/partials/sidebar';
@@ -11,8 +12,20 @@ import { getTabFromHash } from '@/screens/options/tabs';
  * on every switch.
  */
 export default function OptionsScreen() {
-  const [state, update] = useStorage('blocklist', 'allowlist', 'options', 'isRunning', 'streak');
+  const [state, update] = useStorage(
+    'blocklist',
+    'allowlist',
+    'options',
+    'isRunning',
+    'streak',
+    'language',
+  );
   const [activeTab, setActiveTab] = useState(getTabFromHash);
+  const t = useMessages();
+
+  useEffect(() => {
+    document.title = t.options.pageTitle;
+  }, [t]);
 
   useEffect(() => {
     history.replaceState(null, '', `#${activeTab}`);
@@ -20,7 +33,7 @@ export default function OptionsScreen() {
 
   if (!state) return null;
 
-  const { options = {}, isRunning, streak } = state;
+  const { options = {}, language = 'auto', isRunning, streak } = state;
   const isAllowlistMode = Boolean(options['allowlist-mode']);
 
   return (
@@ -41,6 +54,8 @@ export default function OptionsScreen() {
             options={options}
             isRunning={isRunning}
             onChange={(next) => update({ options: next })}
+            language={language}
+            onLanguageChange={(next) => update({ language: next })}
           />
         )}
         {activeTab !== 'general' && (

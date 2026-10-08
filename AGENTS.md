@@ -13,7 +13,7 @@ Guide for AI agents (and humans) working in this repository. It describes **how 
 - Original author: `@jotavetech`. Current remote: `gugeldev/focus-pocus`
 - Published on the [Chrome Web Store](https://chromewebstore.google.com/detail/focuspocus-in-magical-foc/mhfhegccdlndlipjicelombmchnpdebc) and [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/focuspocus-in-magical-focus/)
 - License: **MIT** (`LICENSE`). The `license` field in `package.json` says `ISC` and is outdated.
-- **Language: everything in this repository is in English**: code, comments, UI text, docs and commit messages (see section 5).
+- **Language: everything in this repository is in English**: code, comments, docs and commit messages (see section 5). The UI is translated into English, Brazilian Portuguese and Spanish (see 2.6).
 
 ---
 
@@ -28,7 +28,7 @@ Guide for AI agents (and humans) working in this repository. It describes **how 
 - Everything that changes between idle and a session follows the stored `isRunning` (`src/screens/popup/page.tsx`). During a session:
   - the accent progress ring appears and empties as time passes;
   - the presets, the mode control and the custom time are disabled;
-  - the caption shows a random motivational message (`src/lib/do-not-giveup.ts`), picked when the session starts or when the popup opens mid-session;
+  - the caption shows a random motivational message (`popup.encouragements` in the locales), picked when the session starts or when the popup opens mid-session;
   - the extension icon changes to `icon-32-active.png` (Chrome only; see 3.4).
 - When `streak` goes up while the popup is open, it plays the victory sound and the streak counter bumps.
 - The timer tick runs in the **background** and keeps going with the popup closed. The popup re-renders on every change to `timer`, `isRunning`, `selectedTime`, `streak` or `options`. Start, stop and give up are written by the popup itself (see section 3).
@@ -47,7 +47,7 @@ There are two modes, toggled by the Blocklist / Allowlist control in the popup o
 - Each **completed** session adds +1 to `streak`.
 - **Giving up** (clicking Give up during a session) **resets** the streak to 0.
 - The streak shows in the popup header (a flame pill) and in the options sidebar (a card at the bottom).
-- **Share:** clicking either one copies a ready-made text to the clipboard (`src/lib/share-streak.ts`: "My current streak on the FocusPocus extension is N! 🎯…" or, with streak 0, "I'm starting my streak…") and confirms with a toast.
+- **Share:** clicking either one copies a ready-made text to the clipboard (`src/lib/share-streak.ts`, with the `share` copy of the user's language: "My current streak on the FocusPocus extension is N! 🎯…" or, with streak 0, "I'm starting my streak…") and confirms with a toast.
 
 ### 2.4 Sounds and notifications (opt-in)
 They live in the **General** tab of the options. All start **off**, because `options` does not exist until the user flips a switch or the popup mode button:
@@ -66,7 +66,7 @@ Each switch is a `<SettingRow optionKey="...">` in `src/screens/options/partials
 Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in its own tab. The layout is a **sidebar** on the canvas next to a **content pane** (modeled on the maintainer's heysusi desktop settings). Below 760px wide the sidebar becomes a top bar.
 - **Sidebar:** brand, three tabs (General, Blocklist, Allowlist; the lists show their entry count), the streak card (click to copy) and the support link (`https://www.pixme.bio/jotavetech`).
   - One indicator surface slides to the active tab (`src/screens/options/partials/nav-tabs.tsx`). Its offset is computed from the tab index (`--active-tab`), never measured. Only the active page is rendered, so its entrance animation replays on every tab switch. The open tab is mirrored in the location hash, so `#blocklist` opens the blocklist directly (`#general`, `#blocklist`, `#allowlist`).
-- **General:** the switches of 2.4, grouped in Sounds, Notifications and Blocking. While a session is running, the Allowlist mode switch is **disabled** and a notice explains why.
+- **General:** the language picker (2.6), then the switches of 2.4, grouped in Sounds, Notifications and Blocking. While a session is running, the Allowlist mode switch is **disabled** and a notice explains why.
 - **Blocklist / Allowlist:** a form to add a website and the list. Rows show the site icon, the entry and a remove button that appears on hover or focus. Rows animate in and collapse out. An empty list shows an empty state. The page of the active mode carries an "Active mode" badge.
   - The icon is the site's own `https://<host>/favicon.ico`, loaded straight from the site (no third-party favicon service, so the list never leaves the browser except to the listed sites). It only loads when the entry looks like a domain; otherwise, or if it fails, the tile shows the first letter of the host.
 - List rules:
@@ -75,6 +75,17 @@ Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in
   - otherwise the text is saved as typed, without normalization.
 - The running lock is the stored `isRunning`, passed down as a prop: the list inputs, add/remove buttons and the Allowlist mode switch are disabled while it is `true`.
 - Toasts come from `src/lib/toast.ts` (no dependency): `toast(message, error?)` from anywhere, drawn by the `<Toaster />` (`src/components/toaster.tsx`) that `mount()` adds to every page. Bottom center, 2.4 s, red for errors.
+
+### 2.6 Languages (i18n)
+- The UI speaks **English** (`en`), **Brazilian Portuguese** (`pt-BR`) and **Spanish** (`es`): the popup, the options page, the toasts, the focus screen, the share text and the notification.
+- The **Language** section of the General tab is a segmented control: **Automatic** (the default) and each language, named in its own words. It writes `language` (table 3.1); every open page and every page's focus screen switch live through `storage.onChanged` (a focus screen already on screen keeps its text until it is shown again).
+- **Automatic** follows `browser.i18n.getUILanguage()`: any `pt-*` gets `pt-BR`, any `es-*` gets `es`, everything else English (`src/lib/i18n.ts`).
+- **The copy lives in `src/locales/`:** `en.ts` is the source and its shape is the `Messages` type; `pt-br.ts` and `es.ts` are typed `Messages`, so a missing or extra key fails `typecheck`. Text that interpolates is a function (`remove: (url) => ...`).
+  - React reads it with `useMessages()` (`src/lib/use-messages.tsx`); `mount()` wraps every page in the `MessagesProvider`, which reads `language`, sets `<html lang>` and renders nothing until the language is known (no English flash).
+  - Outside React: the content script keeps the resolved `Locale` and passes it to `showOverlay()`; the background calls `loadMessages()` for the notification.
+  - Lib helpers that show text take the copy as an argument (`shareStreak(streak, t.share)`) instead of reading the language themselves.
+- **The manifest** name and description come from `static/_locales/<en|pt_BR|es>/messages.json` (`__MSG_extName__`, `__MSG_extDescription__`, `default_locale: "en"`), so the browser and the stores show them in the browser's language. That follows the browser, not the in-app setting.
+- **Adding a language:** add `src/locales/<code>.ts` typed `Messages`, register it in `dictionaries` and `LANGUAGE_NAMES` (`src/lib/i18n.ts`), map its browser codes in `getBrowserLocale()`, and add `static/_locales/<code>/messages.json`.
 
 ---
 
@@ -101,28 +112,31 @@ src/
 │   └── options/
 │       ├── page.tsx      # OptionsScreen: tab state + location hash, sidebar + the open tab
 │       ├── tabs.ts       # the tabs and getTabFromHash
-│       ├── site-lists.ts # the copy and icon of the blocklist and allowlist tabs
+│       ├── site-lists.ts # ListType and the icon of the blocklist and allowlist tabs
 │       └── partials/     # sidebar, nav-tabs, nav-item, sidebar-footer, tab-page, settings-section,
 │                         # setting-row, locked-notice, active-mode-badge, general-tab,
-│                         # site-list-tab, add-site-form, site-list, site-row, site-icon, empty-list
+│                         # language-picker, site-list-tab, add-site-form, site-list, site-row,
+│                         # site-icon, empty-list
 ├── components/           # used by two or more screens: brand, toaster
 │   └── ui/               # the design-system kit: button, icon-button, input, switch, segmented, icons.ts
+├── locales/              # the UI copy: en.ts (source + Messages type), pt-br.ts, es.ts (see 2.6)
 ├── styles/theme.css      # Tailwind entry: design tokens (@theme), font, base styles (see 5.1)
 ├── types/css.d.ts        # `import css from './x.css?raw'` is a string; plain `.css` imports are side effects
 └── lib/                  # logic and hooks, shared by every context
-    ├── do-not-giveup.ts
     ├── cx.ts                  # joins class names, skipping the falsy ones
-    ├── mount.tsx              # renders a screen into #root with the Toaster and the theme CSS
+    ├── mount.tsx              # renders a screen into #root with the Toaster, the theme CSS and the MessagesProvider
     ├── use-storage.ts         # useStorage(...keys): a storage slice kept in sync, plus an optimistic update
     ├── toast.ts               # toast(message, error?) and the store the Toaster reads
-    ├── share-streak.ts        # shareStreak(streak): copies a ready-made text, confirms with a toast
+    ├── share-streak.ts        # shareStreak(streak, copy): copies a ready-made text, confirms with a toast
     ├── format-time.ts         # "mm:ss" / "h:mm:ss", shared by the popup and the focus screen
     ├── play-popup-sounds.ts   # playSound("giveup" | "finished" | "button"), respects the switches
     ├── storage.ts             # typed storage.local contract: getStorage, setStorage, onStorageChanged, seedStorageDefaults
     ├── messages.ts            # typed background message contract: sendTimerMessage, onTimerMessage
-    └── language.ts            # en/pt dictionaries, NOT used anywhere yet (planned i18n)
+    ├── i18n.ts                # locales, browser-language detection, getMessages, loadMessages (see 2.6)
+    └── use-messages.tsx       # MessagesProvider and useMessages(): the copy in the user's language
 
 static/                   # copied as-is to dist/<browser>/
+├── _locales/             # en, pt_BR, es: the manifest's name and description (see 2.6)
 ├── popup/index.html      # just #root, ../popup.css and ../popup.js (320px wide popup)
 ├── options/index.html    # just #root, ../options.css and ../options.js
 └── assets/
@@ -151,6 +165,7 @@ Storage is the **source of truth**. Every context syncs through `storage.onChang
 | `blocklist`    | string[]                  | –       | substrings blocked in blocklist mode       |
 | `allowlist`    | string[]                  | –       | substrings allowed in allowlist mode       |
 | `options`      | `Record<string, boolean>` | –       | switches (see 2.4)                         |
+| `language`     | `'auto' \| 'en' \| 'pt-BR' \| 'es'` | – (`auto`) | UI language (see 2.6)          |
 
 The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written by `seedStorageDefaults()` (`src/lib/storage.ts`) when the background loads; existing values are kept. That is why those four keys are required in `StorageState` and the others are optional.
 
@@ -240,7 +255,7 @@ bun run lint:fix        # biome check --write .
 
 ## 5. Conventions
 
-- **Everything in English:** code, comments, UI text, docs (including this file) and commit messages.
+- **Everything in English:** code, comments, docs (including this file) and commit messages. UI text is never hardcoded: it goes in `src/locales/`, in all three languages (see 2.6).
 - **Commits always follow [Conventional Commits](https://www.conventionalcommits.org):** `type(scope)!: subject`, in English, imperative mood, lowercase type.
   - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
   - Examples: `feat(popup): add pause button`, `fix(content): remove overlay when session ends`, `build(deps): bump webpack`.
@@ -250,7 +265,6 @@ bun run lint:fix        # biome check --write .
 - **Exports are named** (`export function Button`), except a screen's `page.tsx`, whose default export is the screen.
 - Functions in camelCase with verbose, descriptive names (`checkIfIsRunningAndSendAMessage`, `lockFocusSettings`).
 - Outside React, state is read with `getStorage([...]).then(...)` and written with `setStorage({...})` (from `src/lib/storage.ts`); existing code uses `.then` instead of `async/await`. In React, use `useStorage`.
-- UI text is hardcoded in English in the HTML/TS. `language.ts` exists for a future i18n but is not wired up.
 - Design rules: see 5.1.
 
 ### 5.1 Design system
@@ -280,6 +294,7 @@ Same rules as the maintainer's `obd` project.
 - **A screen is a composition of named parts**, not one function full of ternaries. When a component crosses Biome's `noExcessiveCognitiveComplexity` (15), split it (a helper, a lookup table, a partial); never suppress it.
 - **Props are a `type Props`** next to the component (a second component in the same file names its own, e.g. `NavTabProps`); a one-prop component may type it inline (`{ streak }: { streak: number }`). Every component, and every prop whose meaning is not obvious, gets a `/** … */` comment saying what it is.
 - **Storage in React goes through `useStorage`**; a screen reads it once and passes values and callbacks down. Partials never reach storage, not even through a helper that does (`handleStartTimer`, `playSound` are called from the screen and handed down as callbacks).
+- **Text comes from `useMessages()`** in whichever component shows it, partials included: it is context, not storage (see 2.6).
 - **Tokens only** (5.1): no hex in a component file. Class variants are lookup objects (`variants`, `sizes`, `tones`) joined with `cx`.
 
 ---
@@ -307,7 +322,7 @@ Same rules as the maintainer's `obd` project.
 - [x] Support for other browsers (Firefox)
 - [ ] Groups for the blocklist
 - [ ] Confirmation before giving up
-- [ ] PT-BR language (base in `src/lib/language.ts`)
+- [x] Languages: English, Brazilian Portuguese and Spanish
 
 ---
 
@@ -316,6 +331,7 @@ Same rules as the maintainer's `obd` project.
 - [ ] Do `bun run lint`, `bun run typecheck` and both browser builds pass?
 - [ ] Changed a storage key? Update `StorageState` in `src/lib/storage.ts` and table 3.1, and check **every** context that reads it (background, content, popup, options).
 - [ ] New or changed UI follows 5.1 (tokens) and 5.2 (screens, partials, kit, icons)?
+- [ ] New or changed UI text is in `src/locales/` in **all three** languages (see 2.6)?
 - [ ] Added a permission or capability? Update **both** manifests.
 - [ ] Bumped the version? Update `package.json`, `manifest.chrome.json` and `manifest.firefox.json`.
 - [ ] Tested in **both** browsers (Chrome MV3 and Firefox MV2)?

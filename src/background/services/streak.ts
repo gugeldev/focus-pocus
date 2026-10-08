@@ -1,12 +1,15 @@
 import browser from 'webextension-polyfill';
+import { loadMessages } from '@/lib/i18n';
 import { getStorage, setStorage } from '@/lib/storage';
 
 function pushFinishedSessionNotification() {
-  browser.notifications.create({
-    type: 'basic',
-    iconUrl: browser.runtime.getURL('/assets/logo/icon-64.png'),
-    title: 'Finished a session!',
-    message: `Now you can take a break!`,
+  loadMessages().then(({ notification }) => {
+    browser.notifications.create({
+      type: 'basic',
+      iconUrl: browser.runtime.getURL('/assets/logo/icon-64.png'),
+      title: notification.title,
+      message: notification.message,
+    });
   });
 }
 

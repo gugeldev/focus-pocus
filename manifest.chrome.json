@@ -1,7 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "FocusPocus: Block Distractions & Stay Focused",
-  "description": "Stay focused as if under a magical spell.",
+  "name": "__MSG_extName__",
+  "description": "__MSG_extDescription__",
+  "default_locale": "en",
   "version": "1.1.2",
   "author": "@jotavetech",
 

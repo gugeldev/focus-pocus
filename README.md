@@ -35,7 +35,7 @@ The last published version:
 - [ ] Add groups for the blocked websites list.
 - [ ] Add a verification prompt before giving up.
 - [x] Add support for other browsers.
-- [ ] Add PT-BR language support.
+- [x] Add PT-BR and Spanish language support.
 
 ### How to run locally
 

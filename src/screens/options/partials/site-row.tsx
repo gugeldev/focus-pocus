@@ -2,6 +2,7 @@ import type { MouseEvent } from 'react';
 import { IconButton } from '@/components/ui/icon-button';
 import { IconRemove } from '@/components/ui/icons';
 import { cx } from '@/lib/cx';
+import { useMessages } from '@/lib/use-messages';
 import { SiteIcon } from '@/screens/options/partials/site-icon';
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
 
 /** One entry: its icon, the text as typed, and a remove button shown on hover or focus. */
 export function SiteRow({ url, enterDelay, isRunning, leavingHeight, onRemove, onLeft }: Props) {
+  const t = useMessages();
   const isLeaving = leavingHeight !== undefined;
 
   return (
@@ -40,7 +42,7 @@ export function SiteRow({ url, enterDelay, isRunning, leavingHeight, onRemove, o
       <IconButton
         icon={IconRemove}
         tone="danger"
-        aria-label={`Remove ${url}`}
+        aria-label={t.options.siteList.remove(url)}
         className="opacity-0 group-focus-within:opacity-100 group-hover:opacity-100"
         disabled={isRunning}
         onClick={onRemove}

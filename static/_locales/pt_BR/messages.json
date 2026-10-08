@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "FocusPocus: Bloqueie Distrações e Mantenha o Foco",
+    "description": "The extension's name in the browser and the stores."
+  },
+  "extDescription": {
+    "message": "Mantenha o foco como se estivesse sob um feitiço.",
+    "description": "The extension's one-line description in the browser and the stores."
+  }
+}
