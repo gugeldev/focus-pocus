@@ -48,7 +48,7 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
 
   return (
     // `.js` lands on <html> before the first paint, so React finds a class it did not render.
-    <html className={`${jakarta.variable} theme-light`} lang={locale} suppressHydrationWarning>
+    <html className={jakarta.variable} lang={locale} suppressHydrationWarning>
       <head>
         {/* Marks a page running scripts, so `Reveal` hides only what it will reveal. */}
         <script>{"document.documentElement.classList.add('js')"}</script>

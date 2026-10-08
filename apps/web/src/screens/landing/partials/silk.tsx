@@ -1,3 +1,5 @@
+import { cx } from '@focus-pocus/ui/cx';
+
 /** How many threads run along the ribbon. */
 const THREADS = 60;
 
@@ -13,13 +15,14 @@ const bandPath = `${threadPath(0)} L 1560 400 C 1000 760, 380 340, -60 660 Z`;
 /**
  * The silk behind the demo: a ribbon in the brand's violets, pink and blue
  * sweeping across, with fine white threads along it, its ends fading into the
- * page. It drifts slowly; under reduced motion it holds still.
+ * page. It drifts slowly (its transform only, so it never repaints); under
+ * reduced motion it holds still.
  */
 export function Silk({ className }: { className?: string }) {
   return (
     <svg
       aria-hidden="true"
-      className={`pointer-events-none motion-safe:animate-silk ${className ?? ''}`}
+      className={cx('pointer-events-none motion-safe:animate-silk', className)}
       preserveAspectRatio="none"
       viewBox="0 0 1500 900"
     >
@@ -32,11 +35,11 @@ export function Silk({ className }: { className?: string }) {
           y1="0"
           y2="0"
         >
-          <stop offset="0" stopColor="#93c5fd" />
-          <stop offset="0.3" stopColor="#8b5cf6" />
-          <stop offset="0.55" stopColor="#c084fc" />
-          <stop offset="0.78" stopColor="#f0abfc" />
-          <stop offset="1" stopColor="#fb7185" />
+          <stop offset="0" stopColor="var(--color-silk-sky)" />
+          <stop offset="0.3" stopColor="var(--color-silk-violet)" />
+          <stop offset="0.55" stopColor="var(--color-silk-orchid)" />
+          <stop offset="0.78" stopColor="var(--color-silk-pink)" />
+          <stop offset="1" stopColor="var(--color-silk-rose)" />
         </linearGradient>
         <linearGradient id="silk-fade" x1="0" x2="1" y1="0" y2="0">
           <stop offset="0" stopColor="white" stopOpacity="0" />

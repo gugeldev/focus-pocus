@@ -9,7 +9,6 @@ export const ptBR: SiteCopy = {
   nav: {
     home: 'FocusPocus, início',
     reviews: 'Avaliações',
-    focusScreen: 'Tela de foco',
     features: 'Recursos',
     github: 'GitHub',
     install: 'Instalar',

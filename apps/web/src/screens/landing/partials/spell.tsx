@@ -4,18 +4,19 @@ const THREADS = 28;
 /**
  * The hero's spell: fine threads in the brand's colors, each an ellipse
  * turned a little further than the last, winding into a faint vortex behind
- * the top of the hero. Hollow in the middle so the title stays clear; it
- * turns barely perceptibly, and holds still under reduced motion.
+ * the top of the hero. Hollow in the middle so the title stays clear. The
+ * whole SVG turns about its own center, barely perceptibly, and holds still
+ * under reduced motion.
  */
 export function Spell() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 h-[1100px] overflow-hidden"
+      className="pointer-events-none absolute inset-x-0 top-0 h-275 overflow-hidden"
     >
       <svg
         aria-hidden="true"
-        className="absolute top-[-420px] left-1/2 size-[1500px] -translate-x-1/2 [mask-image:radial-gradient(circle,transparent_30%,black_40%,black_44%,transparent_50%)]"
+        className="absolute -top-105 left-1/2 size-375 -translate-x-1/2 motion-safe:animate-spell [mask-image:radial-gradient(circle,transparent_30%,black_40%,black_44%,transparent_50%)]"
         viewBox="-750 -750 1500 1500"
       >
         <defs>
@@ -27,13 +28,13 @@ export function Spell() {
             y1="-700"
             y2="700"
           >
-            <stop offset="0" stopColor="#93c5fd" />
-            <stop offset="0.35" stopColor="#8b5cf6" />
-            <stop offset="0.65" stopColor="#d946ef" />
-            <stop offset="1" stopColor="#fb7185" />
+            <stop offset="0" stopColor="var(--color-silk-sky)" />
+            <stop offset="0.35" stopColor="var(--color-silk-violet)" />
+            <stop offset="0.65" stopColor="var(--color-fuchsia)" />
+            <stop offset="1" stopColor="var(--color-silk-rose)" />
           </linearGradient>
         </defs>
-        <g className="origin-center motion-safe:animate-spell">
+        <g>
           {Array.from({ length: THREADS }, (_, index) => (
             <ellipse
               cx="0"

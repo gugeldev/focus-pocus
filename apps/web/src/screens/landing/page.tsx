@@ -11,9 +11,9 @@ import { Spell } from './partials/spell';
 import { Testimonials } from './partials/testimonials';
 
 /**
- * The page's background: a dot grid that fades out around the hero and the foot, the violet
- * glow it opens under, and softer glows further down, at the features and the
- * install, so the page never goes flat black for long.
+ * The page's background: a dot grid fading out around the hero and the foot,
+ * the spell at the top, the column's guide lines all the way down, and soft
+ * violet glows on either side further down.
  */
 function Backdrop() {
   return (
@@ -42,7 +42,7 @@ export default function LandingPage() {
     <div className="relative isolate overflow-clip">
       <Backdrop />
       <SiteHeader />
-      <main id={anchors.top}>
+      <main className="divide-y divide-guide" id={anchors.top}>
         <Hero />
         <FocusScreenShowcase />
         <Features />

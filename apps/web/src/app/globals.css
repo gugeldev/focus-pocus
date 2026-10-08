@@ -77,11 +77,10 @@
     }
   }
 
-  /* The silk behind the demo drifting and shifting its hue a little. */
+  /* The silk behind the demo drifting a little. */
   @keyframes silk {
     to {
       transform: translate(-30px, 18px) rotate(-1.2deg);
-      filter: hue-rotate(-22deg);
     }
   }
 
@@ -142,18 +141,13 @@
   --radius-overlay-logo: 14px;
 }
 
-/* A dot grid for the page's background, faded out by a mask where it is used. */
-@utility bg-dots {
-  background-image: radial-gradient(var(--color-dot) 1px, transparent 1.5px);
-  background-size: 22px 22px;
-}
-
 /*
- * The website is light, while the extension is dark. The kit's color tokens
- * are CSS variables, so this scope, set on <html>, redefines them and turns
- * the page and every drawing of the extension light at once.
+ * The website is light, while the extension is dark: this block, after the
+ * kit's own, redefines its color tokens, so every kit class on the page (and
+ * in the drawings of the extension) draws light. The kit's lifts become a
+ * hairline on white.
  */
-@utility theme-light {
+@theme {
   --color-canvas: #ffffff;
   --color-surface: #fcfcfe;
   --color-raised: #f6f6fa;
@@ -176,14 +170,35 @@
   --color-danger-soft: #d0354a;
   --color-danger-wash: #fff1f3;
   --color-danger-line: #ffd0d7;
+  --shadow-subtle: 0 0 0 1px var(--color-border);
+  --shadow-card: 0 0 0 1px var(--color-border);
+}
 
-  /* Tailwind inlines a shadow's value into its class, so redefining the kit's
-     shadow tokens here would not reach it: on white, the kit's lifts become a
-     hairline instead. */
-  & .shadow-subtle,
-  & .shadow-card {
-    box-shadow: 0 0 0 1px var(--color-border);
-  }
+/*
+ * The hero's silk and spell palette, used only inside their SVGs (as
+ * `var()`), so `static` keeps the variables even though no class names them.
+ */
+@theme static {
+  --color-silk-sky: #93c5fd;
+  --color-silk-violet: #8b5cf6;
+  --color-silk-orchid: #c084fc;
+  --color-silk-pink: #f0abfc;
+  --color-silk-rose: #fb7185;
+}
+
+/* A dot grid for the page's background, faded out by a mask where it is used. */
+@utility bg-dots {
+  background-image: radial-gradient(var(--color-dot) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+/* Thin violet rays fanning up from below, for the install panel. */
+@utility bg-rays {
+  background-image: repeating-conic-gradient(
+    from 270deg at 50% 120%,
+    rgb(124 58 237 / 0.22) 0deg 0.14deg,
+    transparent 0.14deg 1.8deg
+  );
 }
 
 @layer base {

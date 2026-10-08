@@ -23,7 +23,7 @@ export function Install() {
         {/* Thin violet rays fanning up from below the panel. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-[repeating-conic-gradient(from_270deg_at_50%_120%,rgb(124_58_237/0.22)_0deg_0.14deg,transparent_0.14deg_1.8deg)] mask-radial-[70%_80%] mask-radial-at-bottom mask-radial-from-0% mask-radial-to-100%"
+          className="absolute inset-0 -z-10 bg-rays mask-radial-at-bottom mask-radial-from-0% mask-radial-to-100%"
         />
         <div
           aria-hidden="true"
@@ -33,9 +33,7 @@ export function Install() {
           {site.install.title}
         </h2>
         <p className="text-lead text-text-muted">{site.install.body}</p>
-        <div className="flex w-full max-w-xs flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center">
-          <StoreButtons />
-        </div>
+        <StoreButtons />
         <div className="mt-6 flex w-full max-w-md flex-col items-center gap-4 border-t border-border pt-8">
           <p className="text-pretty text-text-muted">{site.install.openSource}</p>
           <ButtonLink href={links.github} pill variant="secondary">

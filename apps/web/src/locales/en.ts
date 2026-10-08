@@ -11,7 +11,6 @@ export const en = {
   nav: {
     home: 'FocusPocus, home',
     reviews: 'Reviews',
-    focusScreen: 'Focus screen',
     features: 'Features',
     github: 'GitHub',
     install: 'Install',

@@ -9,7 +9,6 @@ export const es: SiteCopy = {
   nav: {
     home: 'FocusPocus, inicio',
     reviews: 'Reseñas',
-    focusScreen: 'Pantalla de concentración',
     features: 'Funciones',
     github: 'GitHub',
     install: 'Instalar',

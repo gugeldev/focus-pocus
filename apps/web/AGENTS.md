@@ -14,21 +14,22 @@ The same as the extension's (root AGENTS.md section 5.2):
   icons, and `motion.tsx`: `Rise` for what is on screen at load, `Reveal` for what scrolls into
   view); the design-system kit, `Brand` included, is `@focus-pocus/ui` (`packages/ui`), never a
   copy of it.
-- `Section` is a band of the page, divided from the one before by a hairline; `Container` is its
-  column alone. The page's background (`screens/landing/page.tsx`) draws the column's guide lines
-  all the way down; the features grid sits 1px inside them, so they are its sides.
-- The hero's decoration: `spell.tsx` (the faint turning vortex at the top), `silk.tsx` (the ribbon
-  behind the demo) and `sparkles.tsx` (the wand logo's sparkles around the title).
+- `Section` is a band of the page (`<main>` divides the bands with hairlines); `Container` is its
+  column alone, and sets its gutter as `--gutter`. The page's background
+  (`screens/landing/page.tsx`) draws the column's guide lines all the way down, and the spell
+  (`spell.tsx`, the faint turning vortex at the top); the features grid sits 1px inside the guide
+  lines (`--gutter` less 1px), so they are its sides.
+- The hero's own decoration: `silk.tsx` (the ribbon behind the demo) and `sparkles.tsx` (the wand
+  logo's sparkles around the title). Their SVG colors are the `--color-silk-*` tokens.
 - `src/proxy.ts` sends a path without a locale to the browser's best match.
 
 ## Rules
 
 - **Tokens only**, from `@focus-pocus/ui/theme.css` plus the page-sized ones in
   `src/app/globals.css`, the one file here allowed to hold a raw color or size.
-- **The site is light.** `theme-light` (on `<html>`, defined in `globals.css`) redefines the kit's
-  color tokens, so every kit class (`bg-surface`, `text-text-muted`…) draws light, the drawings of
-  the extension included. Shadows are the exception: Tailwind inlines their values, so
-  `theme-light` overrides the kit's `shadow-subtle`/`shadow-card` classes directly.
+- **The site is light.** A second `@theme` block in `globals.css`, after the kit's, redefines its
+  color and shadow tokens, so every kit class (`bg-surface`, `text-text-muted`, `shadow-subtle`…)
+  draws light, the drawings of the extension included.
 - **The drawings mirror the extension**, in the site's light colors. They use the kit's controls
   and repeat the class strings (and small constants, like the duration presets) of the screens
   they draw; each file says which. Change a screen in `apps/extension`, change its drawing.

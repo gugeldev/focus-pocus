@@ -66,7 +66,8 @@ function FeatureCard({ feature, icon: Icon, span, children }: CardProps) {
 /**
  * What it does, as a grid laid on the page's guide lines: 1px inside the
  * column's edges, so the page's own lines are its sides, and its dividers
- * (the 1px gaps showing the line color behind) falling on the thirds. Most cells hold a working piece of the extension.
+ * (the 1px gaps showing the line color behind) falling on the thirds. Most
+ * cells hold a working piece of the extension.
  */
 export function Features() {
   const { site } = useCopy();
@@ -74,7 +75,7 @@ export function Features() {
   return (
     <Section id={anchors.features}>
       <SectionHeading eyebrow={site.features.eyebrow} title={site.features.title} />
-      <Reveal className="mx-[calc(1px-1rem)] grid gap-px bg-guide sm:mx-[calc(1px-1.5rem)] md:grid-cols-2 lg:grid-cols-3">
+      <Reveal className="mx-[calc(1px-var(--gutter))] grid gap-px bg-guide md:grid-cols-2 lg:grid-cols-3">
         <FeatureCard feature="lists" icon={IconBlocklist} span="wide">
           <ListsPiece />
         </FeatureCard>

@@ -11,7 +11,8 @@ export function StoreButtons() {
   const { site } = useCopy();
 
   return (
-    <>
+    // Stacked and as wide as each other on a phone, side by side from `sm`.
+    <div className="flex w-full max-w-xs flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center">
       <ButtonLink className="group" href={links.chrome} pill size="lg" variant="primary">
         <StoreMark store="chrome" />
         {site.stores.chrome}
@@ -22,6 +23,6 @@ export function StoreButtons() {
         {site.stores.firefox}
         <HoverArrow />
       </ButtonLink>
-    </>
+    </div>
   );
 }

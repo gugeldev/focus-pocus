@@ -18,7 +18,7 @@ export function Hero() {
   const { site } = useCopy();
 
   return (
-    <Section className="flex flex-col items-center text-center" divided={false}>
+    <Section className="flex flex-col items-center text-center">
       <Rise className="max-w-4xl">
         <h1 className="relative text-balance text-hero font-medium tracking-hero">
           {site.hero.titleLead} <span className="text-text-muted">{site.hero.titleAccent}</span>
@@ -28,10 +28,7 @@ export function Hero() {
       <Rise className="mt-6 max-w-2xl" order={1}>
         <p className="text-pretty text-lead text-text-muted">{site.hero.lead}</p>
       </Rise>
-      <Rise
-        className="mt-9 flex w-full max-w-xs flex-col gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:flex-wrap sm:justify-center"
-        order={2}
-      >
+      <Rise className="mt-9 flex w-full justify-center" order={2}>
         <StoreButtons />
       </Rise>
       <Rise className="mt-16 w-full text-left md:mt-20" order={3}>

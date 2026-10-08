@@ -5,6 +5,7 @@ import { IconExternal } from '@focus-pocus/ui/icons';
 import { useMemo } from 'react';
 import { IconStar } from '@/components/icons';
 import { Reveal } from '@/components/motion';
+import type { Locale } from '@/lib/i18n';
 import { useCopy, useLocale } from '@/lib/i18n-provider';
 import { links } from '@/lib/links';
 import { anchors } from '@/lib/routes';
@@ -33,7 +34,7 @@ export function Testimonials() {
   }, [locale]);
 
   return (
-    <section className="border-t border-guide py-16 md:py-24" id={anchors.reviews}>
+    <section className="py-16 md:py-24" id={anchors.reviews}>
       <Container>
         <SectionHeading
           eyebrow={site.reviews.eyebrow}
@@ -52,7 +53,13 @@ export function Testimonials() {
         order={2}
       >
         {rows.map((row, index) => (
-          <ReviewRow formatDate={formatDate} key={row[0]?.name} reverse={index === 1} row={row} />
+          <ReviewRow
+            formatDate={formatDate}
+            key={row[0]?.name}
+            locale={locale}
+            reverse={index === 1}
+            row={row}
+          />
         ))}
       </Reveal>
       <Container className="flex justify-center pt-10 md:pt-12">
@@ -82,11 +89,11 @@ const REPEATS_PER_HALF = 2;
  * One row: two identical halves, each its reviews repeated, sliding by one
  * half per turn. Only the first pass is read out; the repeats are hidden.
  */
-type RowProps = { row: Review[]; reverse: boolean; formatDate: DateFormatter };
+type RowProps = { row: Review[]; reverse: boolean; locale: Locale; formatDate: DateFormatter };
 
 type DateFormatter = (date: string) => string;
 
-function ReviewRow({ row, reverse, formatDate }: RowProps) {
+function ReviewRow({ row, reverse, locale, formatDate }: RowProps) {
   const passes = Array.from({ length: REPEATS_PER_HALF * 2 }, (_, pass) => pass);
 
   return (
@@ -100,7 +107,11 @@ function ReviewRow({ row, reverse, formatDate }: RowProps) {
         {passes.map((pass) =>
           row.map((review) => (
             <li aria-hidden={pass > 0 || undefined} className="pr-3" key={`${pass}-${review.name}`}>
-              <ReviewCard formatDate={formatDate} review={review} />
+              <ReviewCard
+                date={formatDate(review.date)}
+                review={review}
+                text={review.text[locale]}
+              />
             </li>
           )),
         )}
@@ -127,10 +138,16 @@ function Stars() {
   );
 }
 
-/** A review as written, opened by a violet quote mark, under its stars, name and date. */
-function ReviewCard({ review, formatDate }: { review: Review; formatDate: DateFormatter }) {
-  const locale = useLocale();
+/** A review in the page's language, opened by a violet quote mark, under its stars, name and date. */
+type CardProps = {
+  review: Review;
+  /** The review in the page's language. */
+  text: string;
+  /** The review's date, formatted for the page's language. */
+  date: string;
+};
 
+function ReviewCard({ review, text, date }: CardProps) {
   return (
     <figure className="flex h-full w-80 flex-col gap-4 rounded-panel bg-surface p-7 ring-1 ring-hairline">
       <div className="flex items-center justify-between">
@@ -142,9 +159,7 @@ function ReviewCard({ review, formatDate }: { review: Review; formatDate: DateFo
         </span>
         <Stars />
       </div>
-      <blockquote className="flex-1 text-pretty text-md text-text">
-        {review.text[locale]}
-      </blockquote>
+      <blockquote className="flex-1 text-pretty text-md text-text">{text}</blockquote>
       <figcaption className="flex items-center gap-3">
         <span
           aria-hidden="true"
@@ -155,7 +170,7 @@ function ReviewCard({ review, formatDate }: { review: Review; formatDate: DateFo
         <span className="flex min-w-0 flex-col gap-0.5">
           <span className="truncate text-sm font-medium">{review.name}</span>
           <time className="text-xs text-text-faint" dateTime={review.date}>
-            {formatDate(review.date)}
+            {date}
           </time>
         </span>
       </figcaption>
