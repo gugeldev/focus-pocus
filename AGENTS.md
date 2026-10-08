@@ -25,6 +25,7 @@ Guide for AI agents (and humans) working in this repository. It describes **how 
 - **Custom time:** while the timer is stopped, clicking the time swaps it for a text input (up to 8 characters). `Enter` or blur parses it (`ss`, `mm:ss` or `hh:mm:ss`, digits only) and, if it is more than 0 seconds, saves it as `selectedTime`; `Esc` cancels. A custom time selects no preset (the thumb fades out) and the caption above the time reads "Custom session"; otherwise the idle caption is empty. The "Click to customize" hint below the time only appears on hover or focus.
 - **Mode:** a full-width Blocklist / Allowlist segmented control, above the presets, that writes `options['allowlist-mode']`.
 - **Start focusing** button: starts the session. During the session the same button becomes **Give up** (danger style).
+- **Give up takes two clicks** (`src/screens/popup/partials/start-button.tsx`), because it resets the streak: the first click arms the button (solid red, "Click again to give up", `popup.confirmGiveUp` in the locales); a second click within 3 s gives up (a click sooner than 400 ms is ignored, so a double-click does not give up). It disarms on its own after 3 s, on blur, or when the session ends.
 - Everything that changes between idle and a session follows the stored `isRunning` (`src/screens/popup/page.tsx`). During a session:
   - the accent progress ring appears and empties as time passes;
   - the presets, the mode control and the custom time are disabled;
@@ -45,7 +46,7 @@ There are two modes, toggled by the Blocklist / Allowlist control in the popup o
 
 ### 2.3 Streak
 - Each **completed** session adds +1 to `streak`.
-- **Giving up** (clicking Give up during a session) **resets** the streak to 0.
+- **Giving up** (confirming Give up during a session) **resets** the streak to 0.
 - The streak shows in the popup header (a flame pill) and in the options sidebar (a card at the bottom).
 - **Share:** clicking either one copies a ready-made text to the clipboard (`src/lib/share-streak.ts`, with the `share` copy of the user's language: "My current streak on the FocusPocus extension is N! 🎯…" or, with streak 0, "I'm starting my streak…") and confirms with a toast.
 
@@ -179,7 +180,7 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
    - the interval is cleared directly in the background (`src/background/index.ts`);
    - `checkAndStopTimer()` calls `stopTimer()`, which resets `timer` and restores the normal icon. The `TIMER_FINISHED` it sends from here reaches nobody, because a context does not receive its own messages;
    - victory sound: the popup plays it when it sees `streak` go up, so it only plays with the popup open. The background's own `playSound("finished")` in `checkAndStopTimer()` never plays: in Chrome `Audio` does not exist in an MV3 service worker, and in Firefox `stopTimer()` throws on `browser.action` before reaching it.
-6. **Give up** (click while `isRunning`): `stopTimer()`, `resetStreak()` (streak = 0) and the give-up sound.
+6. **Give up** (confirmed second click while `isRunning`, see 2.1): `stopTimer()`, `resetStreak()` (streak = 0) and the give-up sound.
 7. Every time the popup opens during an active session it re-sends `TIMER_STARTED`. That recreates the interval if Chrome unloaded the service worker.
 
 ### 3.3 Messages (`src/lib/messages.ts`)
@@ -276,7 +277,7 @@ The look is dark, violet and **minimal**, modeled on the maintainer's heysusi se
 - **Text** has three levels plus the placeholder: `--text`, `--text-muted`, `--text-faint`, `--text-placeholder`.
 - **Accent** (one flat violet, `--accent`) marks what is live, active or primary: the running ring, the active nav icon, focus rings, switches that are on. Filled violet that carries text (the primary button) uses the darker `--accent-solid` with **white** text, so it keeps 4.5:1 contrast. Never a large fill, a gradient or a glow.
 - **Danger** (`--danger*`) is for giving up and errors only.
-- **Controls** in `src/components/ui/`: `Button` (`variant` primary/secondary/danger, `size` md/lg), `IconButton` (`icon`, `tone` neutral/danger), `Input`, `Switch`, `Segmented`; toasts are `toast()` from `src/lib/toast.ts`, drawn by `src/components/toaster.tsx`. Extend these instead of writing one-offs. Pass `pill` to `Button`, `IconButton` or `Segmented` to round it fully; the popup uses pills everywhere. A control's variants never set the same property as its base, so there is no class-order fight (and no `tailwind-merge`).
+- **Controls** in `src/components/ui/`: `Button` (`variant` primary/secondary/danger/danger-solid, `size` md/lg), `IconButton` (`icon`, `tone` neutral/danger), `Input`, `Switch`, `Segmented`; toasts are `toast()` from `src/lib/toast.ts`, drawn by `src/components/toaster.tsx`. Extend these instead of writing one-offs. Pass `pill` to `Button`, `IconButton` or `Segmented` to round it fully; the popup uses pills everywhere. A control's variants never set the same property as its base, so there is no class-order fight (and no `tailwind-merge`).
 - **Motion:** CSS only. Entering takes `--duration-enter` (220ms), leaving `--duration-exit` (120ms), moving `--duration-layout`, all on `ease-fluid`; `ease-spring` is for small playful pops. Keyframes are `--animate-*` tokens in `theme.css`. `prefers-reduced-motion` is handled once at the end of `theme.css` (and separately in `overlay.css`).
 - **Focus:** a 2px accent ring offset by 2px on things you press (the `focus-ring` utility, built into `Button` and `IconButton`); inputs only lighten their border.
 - **Icons:** Phosphor, always through `src/components/ui/icons.ts` (see 5.2), 18px by default; pass `size` explicitly.
@@ -320,7 +321,7 @@ Same rules as the maintainer's `obd` project.
 - [x] Allowlist mode
 - [x] Support for other browsers (Firefox)
 - [ ] Groups for the blocklist
-- [ ] Confirmation before giving up
+- [x] Confirmation before giving up
 - [x] Languages: English, Brazilian Portuguese and Spanish
 
 ---

@@ -15,6 +15,8 @@ export const ptBR: Messages = {
     modes: { blocklist: 'Bloqueados', allowlist: 'Permitidos' },
     start: 'Começar a focar',
     giveUp: 'Desistir',
+    /** The Give up button while it waits for the confirming click. */
+    confirmGiveUp: 'Clique de novo para desistir',
     encouragements: [
       'Continue assim!',
       'Nunca desista!',

@@ -15,6 +15,8 @@ export const es: Messages = {
     modes: { blocklist: 'Bloqueados', allowlist: 'Permitidos' },
     start: 'Empezar a concentrarme',
     giveUp: 'Rendirme',
+    /** The Give up button while it waits for the confirming click. */
+    confirmGiveUp: 'Haz clic de nuevo para rendirte',
     encouragements: [
       '¡Sigue así!',
       '¡Nunca te rindas!',

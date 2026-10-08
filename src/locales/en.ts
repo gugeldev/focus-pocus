@@ -17,6 +17,8 @@ export const en = {
     modes: { blocklist: 'Blocklist', allowlist: 'Allowlist' },
     start: 'Start focusing',
     giveUp: 'Give up',
+    /** The Give up button while it waits for the confirming click. */
+    confirmGiveUp: 'Click again to give up',
     /** One is picked at random as the caption while a session runs. */
     encouragements: [
       'Keep going!',
