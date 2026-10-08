@@ -33,7 +33,7 @@
   /* The 1px outline of the drawn windows: just enough to lift them off the page. */
   --color-hairline: rgb(255 255 255 / 0.04);
   /* The dots of the page's background pattern. */
-  --color-dot: rgb(255 255 255 / 0.07);
+  --color-dot: rgb(255 255 255 / 0.13);
   /* A drawn window's corners, rounder than the extension's own cards. */
   --radius-window: 24px;
   /* macOS's window buttons: close, minimize, zoom. */
@@ -91,6 +91,17 @@
 @utility bg-dots {
   background-image: radial-gradient(var(--color-dot) 1px, transparent 1.5px);
   background-size: 22px 22px;
+}
+
+/*
+ * Where the page's dot grid shows: fully at the top and the foot, at a
+ * third in between, and fading at the sides so the content stays on calm black.
+ */
+@utility mask-page-dots {
+  mask-image:
+    linear-gradient(to bottom, black, rgb(0 0 0 / 0.35) 25%, rgb(0 0 0 / 0.35) 80%, black),
+    linear-gradient(to right, transparent, black 15%, black 85%, transparent);
+  mask-composite: intersect;
 }
 
 @layer base {
