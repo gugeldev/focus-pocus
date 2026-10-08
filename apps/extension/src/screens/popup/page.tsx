@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { handleStartTimer } from '@/background/services/timer';
 import { sendTimerMessage } from '@/lib/messages';
-import { playSound } from '@/lib/play-popup-sounds';
+import { playSound } from '@/lib/play-sound';
 import { useMessages } from '@/lib/use-messages';
 import { useStorage } from '@/lib/use-storage';
 import { Dial } from '@/screens/popup/partials/dial';

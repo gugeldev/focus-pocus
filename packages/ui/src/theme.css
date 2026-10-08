@@ -18,42 +18,46 @@
   --ease-*: initial;
   --animate-*: initial;
 
-  /* ---- Surfaces: dark neutral with a violet cast, never pure black. They
-     stack in one direction: sunken -> canvas -> surface -> raised. ---- */
-  --color-canvas: #0b0a10;
-  --color-surface: #121019;
-  --color-raised: #1a1724;
-  --color-raised-hover: #221e2f;
-  --color-sunken: #0e0c14;
-  --color-item-hover: #1a1724;
-  --color-item-active: #231f32;
-  --color-border: #25212f;
-  --color-border-strong: #363044;
-  --color-border-focus: #5d5573;
+  /* ---- Every color is light-dark(light, dark): `color-scheme` picks the
+     side. A page follows the system's mode unless it, or an element in it,
+     carries data-theme="light" or "dark" (the base rules below). ---- */
+
+  /* ---- Surfaces: never pure black in the dark. They stack in one
+     direction: sunken -> canvas -> surface -> raised. ---- */
+  --color-canvas: light-dark(#ffffff, #0b0a10);
+  --color-surface: light-dark(#fcfcfe, #121019);
+  --color-raised: light-dark(#f6f6fa, #1a1724);
+  --color-raised-hover: light-dark(#efeff5, #221e2f);
+  --color-sunken: light-dark(#f8f8fb, #0e0c14);
+  --color-item-hover: light-dark(#f7f7fb, #1a1724);
+  --color-item-active: light-dark(#efeafe, #231f32);
+  --color-border: light-dark(#eeeef4, #25212f);
+  --color-border-strong: light-dark(#d6d6e3, #363044);
+  --color-border-focus: light-dark(#a99cf0, #5d5573);
 
   /* ---- Text: three levels plus the placeholder ---- */
-  --color-text: #f4f3f8;
-  --color-text-muted: #b4afc4;
-  --color-text-faint: #8a849d;
-  --color-text-placeholder: #6c6680;
+  --color-text: light-dark(#12111c, #f4f3f8);
+  --color-text-muted: light-dark(#55536a, #b4afc4);
+  --color-text-faint: light-dark(#8c8aa0, #8a849d);
+  --color-text-placeholder: light-dark(#a9a7bb, #6c6680);
 
   /* ---- Accent: one flat violet. A spotlight for the live and primary state,
      never a large fill, never a gradient or a glow. ---- */
-  --color-accent: #a78bfa;
+  --color-accent: light-dark(#7c3aed, #a78bfa);
   --color-accent-strong: #8b5cf6;
   /* Filled violet that carries white text (4.5:1 or better). */
   --color-accent-solid: #7c3aed;
   --color-accent-solid-hover: #8b4cf7;
-  --color-accent-dim: #5b4a8c;
-  --color-accent-wash: #1a1430;
+  --color-accent-dim: light-dark(#d4c8fd, #5b4a8c);
+  --color-accent-wash: light-dark(#f4f0ff, #1a1430);
 
   /* ---- Status ---- */
   --color-success: #4ade9b;
   --color-streak: #fb923c;
-  --color-danger: #ff6b7a;
-  --color-danger-soft: #ffa1ab;
-  --color-danger-wash: #1f1016;
-  --color-danger-line: #44202a;
+  --color-danger: light-dark(#e5374e, #ff6b7a);
+  --color-danger-soft: light-dark(#d0354a, #ffa1ab);
+  --color-danger-wash: light-dark(#fff1f3, #1f1016);
+  --color-danger-line: light-dark(#ffd0d7, #44202a);
   --color-danger-solid: #d0354a;
   --color-white: #fff;
   --color-transparent: transparent;
@@ -90,10 +94,16 @@
   --radius-xl: 16px;
   --radius-2xl: 18px;
 
-  /* ---- Elevation: carried by surface color, shadows stay quiet ---- */
-  --shadow-subtle: 0 1px 2px rgb(0 0 0 / 0.3);
-  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.25);
-  --shadow-popover: 0 16px 40px -12px rgb(0 0 0 / 0.75);
+  /* ---- Elevation: carried by surface color, shadows stay quiet. In the
+     light a lift is a hairline instead (white on white needs an edge), so each
+     shadow holds both layers and the scheme makes one of them transparent. ---- */
+  --shadow-subtle:
+    0 0 0 1px light-dark(var(--color-border), transparent),
+    0 1px 2px light-dark(transparent, rgb(0 0 0 / 0.3));
+  --shadow-card:
+    0 0 0 1px light-dark(var(--color-border), transparent),
+    0 1px 2px light-dark(transparent, rgb(0 0 0 / 0.25));
+  --shadow-popover: 0 16px 40px -12px light-dark(rgb(30 20 80 / 0.18), rgb(0 0 0 / 0.75));
 
   /* ---- Motion: entering is slower than leaving, because what arrives has to
      be read. Durations are used as duration-(--duration-enter). ---- */
@@ -175,8 +185,23 @@
   }
 }
 
+/* A thin scrollbar in the theme's colors, for a pane that scrolls inside the page. */
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
 @layer base {
+  /* The system's mode, unless the page (or a part of it) picks one. */
   :root {
+    color-scheme: light dark;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+  }
+
+  [data-theme="dark"] {
     color-scheme: dark;
   }
 

@@ -1,13 +1,8 @@
 import { Button } from '@focus-pocus/ui/button';
 import { cx } from '@focus-pocus/ui/cx';
-import { useEffect, useRef, useState } from 'react';
+import { useConfirmTwice } from '@focus-pocus/ui/use-confirm-twice';
+import { useRef, useState } from 'react';
 import { useMessages } from '@/lib/use-messages';
-
-/** How long the button waits for the second click before disarming. */
-const CONFIRM_WINDOW_MS = 3000;
-
-/** A confirming click sooner than this is the tail of a double-click, not a decision. */
-const MIN_CONFIRM_DELAY_MS = 400;
 
 /** The copy key and the button variant of each phase. */
 const phases = {
@@ -22,31 +17,6 @@ function useHasChanged<T>(value: T) {
   const [hasChanged, setHasChanged] = useState(false);
   if (!hasChanged && value !== initial.current) setHasChanged(true);
   return hasChanged;
-}
-
-/**
- * An action that takes two clicks: `confirm` arms it the first time and runs
- * `onConfirmed` the second, if that comes within the confirm window but not as
- * part of a double-click. Only armed while `enabled`.
- */
-function useConfirmTwice(enabled: boolean) {
-  const [armedAt, setArmedAt] = useState<number | null>(null);
-  const isArmed = enabled && armedAt !== null;
-
-  useEffect(() => {
-    if (armedAt === null) return;
-    const timeout = setTimeout(() => setArmedAt(null), CONFIRM_WINDOW_MS);
-    return () => clearTimeout(timeout);
-  }, [armedAt]);
-
-  function confirm(onConfirmed: () => void) {
-    if (!isArmed) return setArmedAt(Date.now());
-    if (Date.now() - armedAt < MIN_CONFIRM_DELAY_MS) return;
-    setArmedAt(null);
-    onConfirmed();
-  }
-
-  return { isArmed, confirm, disarm: () => setArmedAt(null) };
 }
 
 type Props = {

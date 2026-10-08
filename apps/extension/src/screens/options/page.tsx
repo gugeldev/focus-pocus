@@ -8,8 +8,8 @@ import { getTabFromHash } from '@/screens/options/tabs';
 
 /**
  * The settings page: a sidebar on the canvas next to a content pane one step
- * up the surface ladder. Only the open tab is rendered, so its entrance plays
- * on every switch.
+ * up the surface ladder, which scrolls on its own. Only the open tab is
+ * rendered, so its entrance plays on every switch.
  */
 export default function OptionsScreen() {
   const [state, update] = useStorage(
@@ -19,6 +19,7 @@ export default function OptionsScreen() {
     'isRunning',
     'streak',
     'language',
+    'theme',
   );
   const [activeTab, setActiveTab] = useState(getTabFromHash);
   const t = useMessages();
@@ -33,11 +34,13 @@ export default function OptionsScreen() {
 
   if (!state) return null;
 
-  const { options = {}, language = 'auto', isRunning, streak } = state;
+  const { options = {}, language = 'auto', theme = 'auto', isRunning, streak } = state;
   const isAllowlistMode = Boolean(options['allowlist-mode']);
 
   return (
-    <div className="grid min-h-screen grid-cols-[minmax(0,1fr)] gap-3 p-3 wide:grid-cols-[248px_minmax(0,1fr)]">
+    // The page itself never scrolls: the content pane does, under a sidebar
+    // (or top bar) that stays put.
+    <div className="grid h-screen grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] gap-3 p-3 wide:grid-cols-[248px_minmax(0,1fr)] wide:grid-rows-[minmax(0,1fr)]">
       <Sidebar
         activeTab={activeTab}
         onSelectTab={setActiveTab}
@@ -48,7 +51,7 @@ export default function OptionsScreen() {
         streak={streak}
       />
 
-      <main className="min-w-0 rounded-xl bg-surface shadow-card">
+      <main className="min-w-0 overflow-y-auto overscroll-contain rounded-xl scrollbar-thin bg-surface shadow-card">
         {activeTab === 'general' && (
           <GeneralTab
             options={options}
@@ -56,6 +59,8 @@ export default function OptionsScreen() {
             onChange={(next) => update({ options: next })}
             language={language}
             onLanguageChange={(next) => update({ language: next })}
+            theme={theme}
+            onThemeChange={(next) => update({ theme: next })}
           />
         )}
         {activeTab !== 'general' && (

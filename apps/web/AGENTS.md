@@ -27,9 +27,10 @@ The same as the extension's (root AGENTS.md section 5.2):
 
 - **Tokens only**, from `@focus-pocus/ui/theme.css` plus the page-sized ones in
   `src/app/globals.css`, the one file here allowed to hold a raw color or size.
-- **The site is light.** A second `@theme` block in `globals.css`, after the kit's, redefines its
-  color and shadow tokens, so every kit class (`bg-surface`, `text-text-muted`, `shadow-subtle`…)
-  draws light, the drawings of the extension included.
+- **The site is light.** The kit's colors are `light-dark()` pairs; `globals.css` sets
+  `color-scheme: light`, so every kit class (`bg-surface`, `text-text-muted`, `shadow-subtle`…)
+  draws light, the drawings of the extension included. The extension's Appearance setting is
+  drawn, but it does not switch the site.
 - **The drawings mirror the extension**, in the site's light colors. They use the kit's controls
   and repeat the class strings (and small constants, like the duration presets) of the screens
   they draw; each file says which. Change a screen in `apps/extension`, change its drawing.

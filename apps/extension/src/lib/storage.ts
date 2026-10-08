@@ -1,3 +1,4 @@
+import type { ThemeSetting } from '@focus-pocus/ui/theme';
 import browser from 'webextension-polyfill';
 import type { LanguageSetting } from './i18n';
 
@@ -15,6 +16,7 @@ type StorageState = SeededState & {
   allowlist?: string[];
   options?: Record<string, boolean>;
   language?: LanguageSetting;
+  theme?: ThemeSetting;
 };
 
 type StorageChanges = {

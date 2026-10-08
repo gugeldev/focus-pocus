@@ -37,13 +37,20 @@ export const es: Messages = {
     general: {
       title: 'General',
       description:
-        'Elige el idioma, los sonidos, las notificaciones y el bloqueo mientras te concentras.',
+        'Elige la apariencia, el idioma, los sonidos, las notificaciones y el bloqueo mientras te concentras.',
       locked:
         'Hay una sesión de concentración en curso. La configuración de bloqueo se desbloquea cuando termine.',
       language: {
         title: 'Idioma',
         description: 'Automático sigue el idioma de tu navegador.',
         auto: 'Automático',
+      },
+      appearance: {
+        title: 'Apariencia',
+        description: 'Automático sigue el modo claro u oscuro de tu sistema.',
+        auto: 'Automático',
+        light: 'Claro',
+        dark: 'Oscuro',
       },
       sounds: {
         title: 'Sonidos',
@@ -125,6 +132,8 @@ export const es: Messages = {
     lead: 'Volverá cuando termine tu sesión. Hasta entonces, el trabajo que tienes delante merece tu atención.',
     timeLabel: 'restantes en esta sesión',
     warning: 'Rendirte reinicia tu racha.',
+    giveUp: 'Rendirme',
+    confirmGiveUp: 'Haz clic de nuevo para rendirte',
   },
   notification: {
     title: '¡Sesión terminada!',

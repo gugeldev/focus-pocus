@@ -40,12 +40,20 @@ export const en = {
     support: 'Support FocusPocus',
     general: {
       title: 'General',
-      description: 'Choose how FocusPocus speaks, sounds, notifies and blocks while you focus.',
+      description:
+        'Choose how FocusPocus looks, speaks, sounds, notifies and blocks while you focus.',
       locked: 'A focus session is running. Blocking settings unlock when it ends.',
       language: {
         title: 'Language',
         description: 'Automatic follows your browser’s language.',
         auto: 'Automatic',
+      },
+      appearance: {
+        title: 'Appearance',
+        description: 'Automatic follows your system’s light or dark mode.',
+        auto: 'Automatic',
+        light: 'Light',
+        dark: 'Dark',
       },
       sounds: {
         title: 'Sounds',
@@ -125,6 +133,9 @@ export const en = {
     lead: 'It will be back when your session ends. Until then, the work in front of you deserves your attention.',
     timeLabel: 'left in this session',
     warning: 'Giving up resets your streak.',
+    giveUp: 'Give up',
+    /** The Give up button while it waits for the confirming click. */
+    confirmGiveUp: 'Click again to give up',
   },
   notification: {
     title: 'Finished a session!',

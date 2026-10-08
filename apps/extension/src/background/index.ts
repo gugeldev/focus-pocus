@@ -2,7 +2,7 @@ import browser from 'webextension-polyfill';
 import { onTimerMessage } from '@/lib/messages';
 import { getStorage, seedStorageDefaults, setStorage } from '@/lib/storage';
 import { getStreakAndIncrement } from './services/streak';
-import { checkAndStopTimer } from './services/timer';
+import { checkAndStopTimer, giveUp } from './services/timer';
 
 let interval: ReturnType<typeof setInterval>;
 
@@ -11,8 +11,12 @@ onTimerMessage((type) => {
     startTimer();
     browser.action.setIcon({ path: 'assets/logo/icon-32-active.png' });
   } else if (type === 'TIMER_FINISHED') {
-    stopTimer();
+    clearTickInterval();
     browser.action.setIcon({ path: 'assets/logo/icon-32.png' });
+  } else if (type === 'TIMER_GIVEN_UP') {
+    // Every give up lands here, from the popup or the focus screen.
+    clearTickInterval();
+    giveUp();
   }
 });
 
@@ -41,7 +45,7 @@ function startTimer() {
   }, 1000);
 }
 
-function stopTimer() {
+function clearTickInterval() {
   if (interval) clearInterval(interval);
 }
 

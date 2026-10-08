@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 import { sendTimerMessage } from '@/lib/messages';
-import { playSound } from '@/lib/play-popup-sounds';
+import { playSound } from '@/lib/play-sound';
 import { getStorage, setStorage } from '@/lib/storage';
 
 import { resetStreak } from './streak';
@@ -31,11 +31,18 @@ function startTimer() {
   });
 }
 
+// Runs in the background, which the popup and the focus screen ask with
+// TIMER_GIVEN_UP. The streak is reset first: in Firefox stopTimer() throws on
+// browser.action (AGENTS.md section 3) after it has stopped the session.
+function giveUp() {
+  resetStreak();
+  stopTimer();
+}
+
 function handleStartTimer() {
   getStorage(['isRunning']).then((res) => {
     if (res.isRunning) {
-      stopTimer();
-      resetStreak();
+      sendTimerMessage('TIMER_GIVEN_UP');
       playSound('giveup');
       return;
     }
@@ -53,4 +60,4 @@ function checkAndStopTimer() {
   });
 }
 
-export { checkAndStopTimer, handleStartTimer, stopTimer };
+export { checkAndStopTimer, giveUp, handleStartTimer, stopTimer };

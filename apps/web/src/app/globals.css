@@ -139,39 +139,28 @@
   --tracking-overlay-time: -0.035em;
 
   --radius-overlay-logo: 14px;
-}
 
-/*
- * The website is light, while the extension is dark: this block, after the
- * kit's own, redefines its color tokens, so every kit class on the page (and
- * in the drawings of the extension) draws light. The kit's lifts become a
- * hairline on white.
- */
-@theme {
-  --color-canvas: #ffffff;
-  --color-surface: #fcfcfe;
-  --color-raised: #f6f6fa;
-  --color-raised-hover: #efeff5;
-  --color-sunken: #f8f8fb;
-  --color-item-hover: #f7f7fb;
-  --color-item-active: #efeafe;
-  --color-border: #eeeef4;
-  --color-border-strong: #d6d6e3;
-  --color-border-focus: #a99cf0;
-  --color-text: #12111c;
-  --color-text-muted: #55536a;
-  --color-text-faint: #8c8aa0;
-  --color-text-placeholder: #a9a7bb;
-  --color-accent: #7c3aed;
-  --color-accent-strong: #8b5cf6;
-  --color-accent-dim: #d4c8fd;
-  --color-accent-wash: #f4f0ff;
-  --color-danger: #e5374e;
-  --color-danger-soft: #d0354a;
-  --color-danger-wash: #fff1f3;
-  --color-danger-line: #ffd0d7;
-  --shadow-subtle: 0 0 0 1px var(--color-border);
-  --shadow-card: 0 0 0 1px var(--color-border);
+  /* The focus screen's motion: its live dot, its spell ring and its aura. */
+  --animate-ping: ping 1.8s ease-out infinite;
+  /* The hero's spell keyframes, turning twice as fast on the smaller ring. */
+  --animate-spell-ring: spell 120s linear infinite;
+  --animate-drift: drift 18s ease-in-out infinite alternate;
+  --animate-drift-reverse: drift 22s ease-in-out -9s infinite alternate-reverse;
+
+  @keyframes ping {
+    75%,
+    100% {
+      opacity: 0;
+      scale: 2.6;
+    }
+  }
+
+  @keyframes drift {
+    to {
+      translate: 60px 40px;
+      scale: 1.15;
+    }
+  }
 }
 
 /*
@@ -202,6 +191,15 @@
 }
 
 @layer base {
+  /*
+   * The website is always light: the kit's colors are light-dark() pairs, so
+   * this draws every kit class on the page, the drawings of the extension
+   * included, in their light side, whatever the visitor's system uses.
+   */
+  :root {
+    color-scheme: light;
+  }
+
   html {
     scroll-behavior: smooth;
     /* The sticky header's height, so a section it links to is not hidden under it. */
