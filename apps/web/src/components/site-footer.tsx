@@ -61,7 +61,11 @@ export function SiteFooter() {
         </Column>
       </div>
       <p className="mx-auto max-w-6xl px-4 pb-10 text-sm text-text-faint sm:px-6">
-        {site.footer.credits}
+        {site.footer.madeBy}{' '}
+        <a className={link} href={links.maintainer}>
+          @gugeldev
+        </a>{' '}
+        {site.footer.andContributors}
       </p>
     </footer>
   );

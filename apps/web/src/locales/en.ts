@@ -88,7 +88,9 @@ export const en = {
     issues: 'Report a bug',
     support: 'Support FocusPocus',
     license: 'MIT license',
-    credits: 'Made by @jotavetech and contributors.',
+    /** Around the maintainer's linked handle: "Made by @gugeldev and contributors." */
+    madeBy: 'Made by',
+    andContributors: 'and contributors.',
   },
   mocks: {
     popup: 'The FocusPocus popup',

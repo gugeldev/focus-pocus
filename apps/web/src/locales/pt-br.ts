@@ -84,7 +84,8 @@ export const ptBR: SiteCopy = {
     issues: 'Reportar um bug',
     support: 'Apoie o FocusPocus',
     license: 'Licença MIT',
-    credits: 'Feito por @jotavetech e contribuidores.',
+    madeBy: 'Feito por',
+    andContributors: 'e contribuidores.',
   },
   mocks: {
     popup: 'O popup do FocusPocus',
