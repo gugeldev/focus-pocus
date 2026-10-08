@@ -1,0 +1,210 @@
+@import "tailwindcss";
+@import "@focus-pocus/ui/theme.css";
+
+/*
+ * The website: the extension's design system (packages/ui), so the drawings
+ * of its screens are drawn with the same tokens and controls, plus the few
+ * tokens a page needs that a 320px popup does not. This is the one file in
+ * apps/web allowed to hold a raw value; components use the class names.
+ */
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* The page's own type: fluid, so one size reads from a phone to a desktop. */
+  --text-hero: clamp(38px, 6vw, 64px);
+  --text-hero--line-height: 1.04;
+  --text-section: clamp(28px, 4vw, 42px);
+  --text-section--line-height: 1.1;
+  --text-lead: clamp(16px, 1.8vw, 18px);
+  --text-lead--line-height: 1.6;
+  /* The big opening quote on a review. */
+  --text-quote-mark: 56px;
+  --tracking-hero: -0.045em;
+  --tracking-section: -0.035em;
+
+  /*
+   * The website's atmosphere, which the extension's flat UI does without: the
+   * sparkles' second violet, and soft shadows on the drawings that float over
+   * the page. The glows are `accent-solid` at /28 (or /17, further down).
+   */
+  --color-fuchsia: #d946ef;
+  /* Guide lines down the page, and the hairlines between its bands. */
+  --color-guide: rgb(18 17 28 / 0.07);
+  /* The 1px outline of the drawn windows: just enough to lift them off the page. */
+  --color-hairline: rgb(18 17 28 / 0.05);
+  /* The dots of the page's background pattern. */
+  --color-dot: rgb(18 17 28 / 0.09);
+  /* A drawn window's corners, rounder than the extension's own cards. */
+  --radius-window: 24px;
+  /* macOS's window buttons: close, minimize, zoom. */
+  --color-mac-close: #ff5f57;
+  --color-mac-minimize: #febc2e;
+  --color-mac-zoom: #28c840;
+  --color-star: #fbbf24;
+  --shadow-header: 0 6px 24px -14px rgb(30 20 80 / 0.12);
+  --shadow-float: 0 30px 60px -36px rgb(40 30 110 / 0.22), 0 2px 8px -2px rgb(18 17 28 / 0.04);
+  --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-rise: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-rise: 900ms;
+  /* The header pulling in to a pill, and back. */
+  --duration-header: 450ms;
+  --radius-panel: 32px;
+
+  /* Entrances: what is on screen at load rises with CSS (Rise), the rest on scroll (Reveal). */
+  --animate-rise: rise var(--duration-rise) var(--ease-rise) both;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-silk: silk 16s ease-in-out infinite alternate;
+  --animate-spell: spell 240s linear infinite;
+  --animate-twinkle: twinkle 4.2s ease-in-out infinite;
+
+  /* A sparkle appearing, turning a little, and going out. */
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 0;
+      scale: 0.3;
+      rotate: 0deg;
+    }
+    45% {
+      opacity: 0.9;
+      scale: 1;
+      rotate: 45deg;
+    }
+    70% {
+      opacity: 0;
+      scale: 0.5;
+      rotate: 90deg;
+    }
+  }
+
+  /* The silk behind the demo drifting a little. */
+  @keyframes silk {
+    to {
+      transform: translate(-30px, 18px) rotate(-1.2deg);
+    }
+  }
+
+  /* The hero's spell turning, once every four minutes. */
+  @keyframes spell {
+    to {
+      rotate: 360deg;
+    }
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      translate: 0 28px;
+      filter: blur(6px);
+    }
+  }
+
+  /*
+   * A row of reviews sliding by, either way: the row holds its cards in two
+   * identical halves, so moving by one half loops without a seam.
+   */
+  --animate-marquee: marquee 90s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 90s linear infinite;
+
+  @keyframes marquee {
+    to {
+      translate: -50% 0;
+    }
+  }
+
+  @keyframes marquee-reverse {
+    from {
+      translate: -50% 0;
+    }
+  }
+
+  /* The hero's popup, held up and breathing. */
+  @keyframes float {
+    50% {
+      translate: 0 -10px;
+    }
+  }
+
+  /* A big number on a features card (the streak). */
+  --text-stat: 48px;
+  --text-stat--line-height: 1;
+  --tracking-stat: -0.035em;
+
+  /* The focus screen's sizes (apps/extension/src/content/overlay.css). */
+  --text-overlay-title: 30px;
+  --text-overlay-title--line-height: 1.2;
+  --text-overlay-time: 48px;
+  --text-overlay-time--line-height: 1;
+  --tracking-overlay-title: -0.025em;
+  --tracking-overlay-time: -0.035em;
+
+  --radius-overlay-logo: 14px;
+}
+
+/*
+ * The website is light, while the extension is dark: this block, after the
+ * kit's own, redefines its color tokens, so every kit class on the page (and
+ * in the drawings of the extension) draws light. The kit's lifts become a
+ * hairline on white.
+ */
+@theme {
+  --color-canvas: #ffffff;
+  --color-surface: #fcfcfe;
+  --color-raised: #f6f6fa;
+  --color-raised-hover: #efeff5;
+  --color-sunken: #f8f8fb;
+  --color-item-hover: #f7f7fb;
+  --color-item-active: #efeafe;
+  --color-border: #eeeef4;
+  --color-border-strong: #d6d6e3;
+  --color-border-focus: #a99cf0;
+  --color-text: #12111c;
+  --color-text-muted: #55536a;
+  --color-text-faint: #8c8aa0;
+  --color-text-placeholder: #a9a7bb;
+  --color-accent: #7c3aed;
+  --color-accent-strong: #8b5cf6;
+  --color-accent-dim: #d4c8fd;
+  --color-accent-wash: #f4f0ff;
+  --color-danger: #e5374e;
+  --color-danger-soft: #d0354a;
+  --color-danger-wash: #fff1f3;
+  --color-danger-line: #ffd0d7;
+  --shadow-subtle: 0 0 0 1px var(--color-border);
+  --shadow-card: 0 0 0 1px var(--color-border);
+}
+
+/*
+ * The hero's silk and spell palette, used only inside their SVGs (as
+ * `var()`), so `static` keeps the variables even though no class names them.
+ */
+@theme static {
+  --color-silk-sky: #93c5fd;
+  --color-silk-violet: #8b5cf6;
+  --color-silk-orchid: #c084fc;
+  --color-silk-pink: #f0abfc;
+  --color-silk-rose: #fb7185;
+}
+
+/* A dot grid for the page's background, faded out by a mask where it is used. */
+@utility bg-dots {
+  background-image: radial-gradient(var(--color-dot) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+/* Thin violet rays fanning up from below, for the install panel. */
+@utility bg-rays {
+  background-image: repeating-conic-gradient(
+    from 270deg at 50% 120%,
+    rgb(124 58 237 / 0.22) 0deg 0.14deg,
+    transparent 0.14deg 1.8deg
+  );
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* The sticky header's height, so a section it links to is not hidden under it. */
+    scroll-padding-top: 4rem;
+  }
+}

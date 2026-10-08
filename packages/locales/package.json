@@ -1,0 +1,13 @@
+{
+  "name": "@focus-pocus/locales",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The extension's UI copy in every language it speaks",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p ."
+  }
+}

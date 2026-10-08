@@ -44,7 +44,7 @@ Requires [Bun](https://bun.sh).
 1. Clone this repository.
 2. Install the dependencies (this also sets up the git hooks).
 3. Run the dev script.
-4. Activate developer mode on your browser and load the extension from the _/dist_ folder that will be generated (Chrome: _dist/chrome_, Firefox: _dist/firefox/manifest.json_).
+4. Activate developer mode on your browser and load the extension from the _dist_ folder that will be generated (Chrome: _apps/extension/dist/chrome_, Firefox: _apps/extension/dist/firefox/manifest.json_).
 
 ```bash
 git clone https://github.com/jotavetech/focus-pocus.git
@@ -53,11 +53,21 @@ cd focus-pocus
 bun install #install the dependencies
 
 # chrome:
-bun run dev:chrome #compile to /dist/chrome folder
+bun run dev:chrome #compile to apps/extension/dist/chrome
 
 # firefox:
-bun run dev:firefox #compile to /dist/firefox folder
+bun run dev:firefox #compile to apps/extension/dist/firefox
+
+# the website:
+bun run dev:web #http://localhost:3003
 ```
+
+The repository is a bun workspace:
+
+- `apps/extension`: the browser extension.
+- `apps/web`: the website (Next.js), with working copies of the popup, the settings page and the focus screen.
+- `packages/ui`: the design system both apps are built with.
+- `packages/locales`: the extension's text in English, Portuguese and Spanish.
 
 The git hooks check your work: pre-commit runs Biome on the staged files, commit-msg enforces [Conventional Commits](https://www.conventionalcommits.org) in English, and pre-push runs the type-check.
 
@@ -68,7 +78,7 @@ The git hooks check your work: pre-commit runs Biome on the staged files, commit
 1. Fork this repository and clone your fork.
 2. Create a branch from the current release branch, named after the kind of change (e.g. `feat/pause-button`, `fix/overlay-flicker`).
 3. Make your changes. Write commit messages in English following [Conventional Commits](https://www.conventionalcommits.org) (e.g. `feat(popup): add pause button`). The git hooks check this for you.
-4. Make sure `bun run lint`, `bun run typecheck` and both builds pass.
+4. Make sure `bun run lint`, `bun run typecheck`, both extension builds and `bun run build:web` pass.
 5. Open a pull request **to the current release branch, not to `main`**, describing what you changed.
 
 ### Contributors

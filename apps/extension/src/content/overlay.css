@@ -1,0 +1,126 @@
+/* The focus screen drawn over blocked pages. It lives in a shadow root
+   (src/content/overlay.ts), so the host page's CSS cannot reach it and these
+   rules cannot leak into the page. Colors mirror packages/ui/src/theme.css. */
+
+/* A page rule that matches the host (div { position: relative }) beats a
+   normal :host rule; an !important :host rule beats the page. */
+:host {
+  all: initial !important;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 2147483647 !important;
+  display: block !important;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(11 10 16 / 0.96);
+  backdrop-filter: blur(20px);
+  color: #f4f3f8;
+  font-family:
+    "FocusPocus Jakarta", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-align: center;
+  animation: fade-in 300ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.overlay.leaving {
+  animation: fade-out 180ms cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 420px;
+  padding: 0 24px;
+  animation: rise 400ms cubic-bezier(0.32, 0.72, 0, 1) 60ms both;
+}
+
+.logo {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 28px;
+  border-radius: 14px;
+}
+
+.eyebrow {
+  margin-bottom: 12px;
+  color: #a78bfa;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.lead {
+  margin-top: 12px;
+  color: #b4afc4;
+  font-size: 15px;
+  line-height: 1.6;
+  text-wrap: balance;
+}
+
+.time {
+  margin-top: 32px;
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-label {
+  margin-top: 8px;
+  color: #8a849d;
+  font-size: 13px;
+}
+
+.warning {
+  margin-top: 32px;
+  color: #8a849d;
+  font-size: 13px;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation-name: fade-in;
+  }
+}
