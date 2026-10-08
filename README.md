@@ -63,10 +63,13 @@ The git hooks check your work: pre-commit runs Biome on the staged files, commit
 
 ### How to contribute
 
-1. Fork this repository.
-2. Clone your fork on your machine.
-3. Create a new branch, make your changes, commit and push these.
-4. Open a pull request (Write a descriptive message about what you've changed).
+`main` always matches the latest published version. The next version is built in a `release/<version>` branch (currently `release/1.2.0`), and every change reaches it through a pull request.
+
+1. Fork this repository and clone your fork.
+2. Create a branch from the current release branch, named after the kind of change (e.g. `feat/pause-button`, `fix/overlay-flicker`).
+3. Make your changes. Write commit messages in English following [Conventional Commits](https://www.conventionalcommits.org) (e.g. `feat(popup): add pause button`). The git hooks check this for you.
+4. Make sure `bun run lint`, `bun run typecheck` and both builds pass.
+5. Open a pull request **to the current release branch, not to `main`**, describing what you changed.
 
 ### Contributors
 
