@@ -22,7 +22,7 @@ export function Sidebar({ activeTab, onSelectTab, counts, streak }: Props) {
   return (
     <nav
       aria-label={t.options.sections}
-      className="flex flex-col p-1 wide:sticky wide:top-3 wide:h-[calc(100vh-24px)] wide:px-3 wide:pt-2 wide:pb-3"
+      className="flex flex-col p-1 wide:px-3 wide:pt-2 wide:pb-3"
     >
       <Brand logoSrc="../assets/logo/icon-64.png" size="md" className="pt-2 pb-3 wide:pb-7" />
       <NavTabs activeTab={activeTab} onSelect={onSelectTab} counts={counts} />

@@ -1,6 +1,8 @@
 /* The focus screen drawn over blocked pages. It lives in a shadow root
    (src/content/overlay.ts), so the host page's CSS cannot reach it and these
-   rules cannot leak into the page. Colors mirror packages/ui/src/theme.css. */
+   rules cannot leak into the page. The colors mirror packages/ui/src/theme.css
+   (light-dark() pairs, picked by color-scheme), because a shadow root cannot
+   see the extension's stylesheets. */
 
 /* A page rule that matches the host (div { position: relative }) beats a
    normal :host rule; an !important :host rule beats the page. */
@@ -21,51 +23,141 @@
 }
 
 .overlay {
+  /* The system's mode, unless the user picked one (data-theme). */
+  color-scheme: light dark;
+
+  --canvas: light-dark(#ffffff, #0b0a10);
+  --raised: light-dark(#f6f6fa, #1a1724);
+  --border: light-dark(#eeeef4, #25212f);
+  --border-strong: light-dark(#d6d6e3, #363044);
+  --text: light-dark(#12111c, #f4f3f8);
+  --text-muted: light-dark(#55536a, #b4afc4);
+  --text-faint: light-dark(#8c8aa0, #8a849d);
+  --accent: light-dark(#7c3aed, #a78bfa);
+  --danger: light-dark(#e5374e, #ff6b7a);
+  --danger-solid: #d0354a;
+  --danger-wash: light-dark(#fff1f3, #1f1016);
+  --danger-line: light-dark(#ffd0d7, #44202a);
+  /* The aura's violet: stronger in the dark, where it has less to light up. */
+  --aura: light-dark(rgb(124 58 237 / 0.14), rgb(124 58 237 / 0.22));
+
+  --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-rise: cubic-bezier(0.2, 0.7, 0.2, 1);
+
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgb(11 10 16 / 0.96);
-  backdrop-filter: blur(20px);
-  color: #f4f3f8;
+  overflow: hidden auto;
+  background: color-mix(in srgb, var(--canvas) 94%, transparent);
+  backdrop-filter: blur(24px) saturate(1.2);
+  color: var(--text);
   font-family:
     "FocusPocus Jakarta", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   text-align: center;
-  animation: fade-in 300ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: fade-in 400ms var(--ease-fluid) both;
+}
+
+.overlay[data-theme="light"] {
+  color-scheme: light;
+}
+
+.overlay[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 .overlay.leaving {
-  animation: fade-out 180ms cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: fade-out 220ms var(--ease-fluid) both;
 }
 
+/* ---- Two soft violet clouds drifting behind the card ---- */
+.aura {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+.aura span {
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--aura), transparent);
+  filter: blur(40px);
+}
+
+.aura span:first-child {
+  top: calc(50% - 420px);
+  left: calc(50% - 460px);
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+.aura span:last-child {
+  top: calc(50% - 60px);
+  left: calc(50% - 40px);
+  animation: drift 22s ease-in-out -9s infinite alternate-reverse;
+}
+
+/* ---- The card: each part rises in turn (--order, set in overlay.ts) ---- */
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 420px;
-  padding: 0 24px;
-  animation: rise 400ms cubic-bezier(0.32, 0.72, 0, 1) 60ms both;
+  max-width: 460px;
+  margin: auto;
+  padding: 48px 24px;
 }
 
+.card > * {
+  animation: rise 700ms var(--ease-rise) calc(120ms + var(--order) * 70ms) both;
+}
+
+/* ---- The wand ---- */
 .logo {
+  display: block;
   width: 56px;
   height: 56px;
   margin-bottom: 28px;
   border-radius: 14px;
 }
 
+/* ---- The words ---- */
 .eyebrow {
-  margin-bottom: 12px;
-  color: #a78bfa;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 5px 12px 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--raised);
+  color: var(--accent);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.live-dot {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: ping 1.8s ease-out infinite;
 }
 
 h1 {
   font-size: 30px;
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: -0.025em;
   line-height: 1.2;
   text-wrap: balance;
@@ -73,16 +165,65 @@ h1 {
 
 .lead {
   margin-top: 12px;
-  color: #b4afc4;
+  color: var(--text-muted);
   font-size: 15px;
+  font-weight: 400;
   line-height: 1.6;
   text-wrap: balance;
 }
 
+/* ---- The countdown, inside a ring that empties as the session runs ---- */
+.clock {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 216px;
+  height: 216px;
+  margin-top: 36px;
+}
+
+.clock svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.spell {
+  fill: none;
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  stroke-dasharray: 1 7;
+  stroke-linecap: round;
+  scale: 1.1;
+  animation: spin 120s linear infinite;
+}
+
+.ring {
+  rotate: -90deg;
+  fill: none;
+}
+
+.ring-track {
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.ring-arc {
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.clock-face {
+  position: relative;
+}
+
 .time {
-  margin-top: 32px;
   font-size: 48px;
-  font-weight: 600;
+  font-weight: 300;
   letter-spacing: -0.035em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -90,16 +231,76 @@ h1 {
 
 .time-label {
   margin-top: 8px;
-  color: #8a849d;
+  color: var(--text-faint);
   font-size: 13px;
+}
+
+/* ---- Give up: quiet until you mean it ---- */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 36px;
+}
+
+.give-up {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 132px;
+  height: 40px;
+  padding: 0 20px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color 140ms var(--ease-fluid),
+    background-color 140ms var(--ease-fluid),
+    border-color 140ms var(--ease-fluid),
+    scale 140ms var(--ease-fluid);
+}
+
+.give-up:hover {
+  border-color: var(--danger-line);
+  background: var(--danger-wash);
+  color: var(--danger);
+}
+
+.give-up:active {
+  scale: 0.97;
+}
+
+.give-up:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.give-up.armed {
+  border-color: var(--danger-solid);
+  background: var(--danger-solid);
+  color: #fff;
+}
+
+.give-up-label {
+  display: block;
+}
+
+.give-up-label.swap {
+  animation: label-in 220ms var(--ease-fluid) both;
 }
 
 .warning {
-  margin-top: 32px;
-  color: #8a849d;
+  color: var(--text-faint);
   font-size: 13px;
 }
 
+/* ---- Motion ---- */
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -115,12 +316,48 @@ h1 {
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    translate: 0 16px;
+    filter: blur(6px);
   }
 }
 
+@keyframes label-in {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    opacity: 0;
+    scale: 2.6;
+  }
+}
+
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes drift {
+  to {
+    translate: 60px 40px;
+    scale: 1.15;
+  }
+}
+
+/* Reduced motion: the card fades in whole, and nothing loops. */
 @media (prefers-reduced-motion: reduce) {
-  .card {
+  .card > * {
     animation-name: fade-in;
+  }
+
+  .live-dot::after,
+  .spell,
+  .aura span {
+    animation: none;
   }
 }

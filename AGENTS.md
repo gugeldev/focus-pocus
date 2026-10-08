@@ -48,17 +48,20 @@ packages/
   - the caption shows a random motivational message (`popup.encouragements` in the locales), picked when the session starts or when the popup opens mid-session;
   - the extension icon changes to `icon-32-active.png` (Chrome only; see 3.4).
 - When `streak` goes up while the popup is open, it plays the victory sound and the streak counter bumps.
-- The timer tick runs in the **background** and keeps going with the popup closed. The popup re-renders on every change to `timer`, `isRunning`, `selectedTime`, `streak` or `options`. Start, stop and give up are written by the popup itself (see section 3).
+- The timer tick runs in the **background** and keeps going with the popup closed. The popup re-renders on every change to `timer`, `isRunning`, `selectedTime`, `streak` or `options`. Start is written by the popup itself; give up is asked of the background (see section 3).
 
 ### 2.2 Website blocking (content script)
 There are two modes, toggled by the Blocklist / Allowlist control in the popup or the "Allowlist mode" switch in the options:
 - **Blocklist mode** (default): blocks the page if the current URL **contains** any `blocklist` entry.
 - **Allowlist mode**: blocks **every** page whose URL **does not contain** any `allowlist` entry.
 - Matching uses `window.location.href.includes(entry)`: substring matching, not exact domains.
-- The "block" is the **focus screen** (`src/content/overlay.ts`): a `div#focus-pocus-overlay` host appended to `<html>` with an open **shadow root**, so the page's CSS cannot restyle it and its CSS cannot leak into the page. It is fixed, full screen, at the maximum `z-index`, blurs the page behind it and shows the logo and the remaining session time live. The logo comes from `assets/logo/` (a web-accessible resource in both manifests).
-  - Its styles are `src/content/overlay.css`, bundled into `content.js` as a string (see section 4) and injected into the shadow root. They repeat the colors of `packages/ui/src/theme.css` because a shadow root cannot see the extension's stylesheets. The `:host` rules are `!important`: a page rule that matches the host beats a normal `:host` rule, but not an important one.
+- The "block" is the **focus screen** (`src/content/overlay.ts`): a `div#focus-pocus-overlay` host appended to `<html>` with an open **shadow root**, so the page's CSS cannot restyle it and its CSS cannot leak into the page. It is fixed, full screen, at the maximum `z-index`, blurs the page behind it and shows the logo, the copy and the remaining session time live inside a ring that empties as the session runs (measured against `selectedTime`). The logo comes from `assets/logo/` (a web-accessible resource in both manifests).
+  - Motion: the card's parts rise in turn (each has an `--order`), two violet clouds drift behind it, the "Focus mode" pill has a pulsing live dot and a faint dotted ring turns around the countdown. The logo stays still. Under `prefers-reduced-motion` the card only fades in and nothing loops.
+  - **Give up** sits under the countdown and takes two clicks, like the popup's button (same timing, `packages/ui/src/confirm-timing.ts`; copy in `overlay.giveUp` / `overlay.confirmGiveUp`). The confirming click sends `TIMER_GIVEN_UP` to the background (a content script cannot reach `browser.action`) and plays the give-up sound if its switch is on; `assets/sounds/` is a web-accessible resource in both manifests for that. A page's CSP or autoplay policy may still block the sound, which is ignored.
+  - It follows the user's theme (2.7), live: `data-theme` on the `.overlay` element.
+  - Its styles are `src/content/overlay.css`, bundled into `content.js` as a string (see section 4) and injected into the shadow root. They repeat the colors of `packages/ui/src/theme.css` (as the same `light-dark()` pairs) because a shadow root cannot see the extension's stylesheets. The `:host` rules are `!important`: a page rule that matches the host beats a normal `:host` rule, but not an important one.
   - A shadow root cannot declare `@font-face`, so the overlay registers Plus Jakarta Sans on the page's `document.fonts` under the private name `FocusPocus Jakarta`, loaded from `assets/fonts/` (a web-accessible resource in both manifests). If it fails, the system font stack takes over.
-- The content script runs on `<all_urls>`. On page load it applies the overlay if `isRunning` is already `true`. Then it reacts through `storage.onChanged`: when `isRunning` becomes `true` it applies the overlay, when it becomes `false` it fades it out, and every `timer` change updates the countdown. List or mode changes update the in-memory copy but only take effect on the next evaluation.
+- The content script runs on `<all_urls>`. On page load it applies the overlay if `isRunning` is already `true`. Then it reacts through `storage.onChanged`: when `isRunning` becomes `true` it applies the overlay, when it becomes `false` it fades it out, every `timer` change updates the countdown and its ring, and a `theme` change repaints it. List or mode changes update the in-memory copy but only take effect on the next evaluation.
 
 ### 2.3 Streak
 - Each **completed** session adds +1 to `streak`.
@@ -80,10 +83,10 @@ They live in the **General** tab of the options. All start **off**, because `opt
 Each switch is a `<SettingRow optionKey="...">` in `src/screens/options/partials/general-tab.tsx` (a `<label>` wrapping a `<Switch>`). **`optionKey` is the key** saved in `options`, so adding a new option only takes a new row and reading `options[key]`.
 
 ### 2.5 Options page (Settings)
-Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in its own tab. The layout is a **sidebar** on the canvas next to a **content pane** (modeled on the maintainer's heysusi desktop settings). Below 760px wide the sidebar becomes a top bar.
+Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in its own tab. The layout is a **sidebar** on the canvas next to a **content pane** (modeled on the maintainer's heysusi desktop settings). Below 760px wide the sidebar becomes a top bar. The page fills the window and never scrolls: the content pane scrolls on its own, so the sidebar (or top bar) stays put.
 - **Sidebar:** brand, three tabs (General, Blocklist, Allowlist; the lists show their entry count), the streak card (click to copy) and the support link (`https://www.pixme.bio/jotavetech`).
   - One indicator surface slides to the active tab (`src/screens/options/partials/nav-tabs.tsx`). Its offset is computed from the tab index (`--active-tab`), never measured. Only the active page is rendered, so its entrance animation replays on every tab switch. The open tab is mirrored in the location hash, so `#blocklist` opens the blocklist directly (`#general`, `#blocklist`, `#allowlist`).
-- **General:** the language picker (2.6), then the switches of 2.4, grouped in Sounds, Notifications and Blocking. While a session is running, the Allowlist mode switch is **disabled** and a notice explains why.
+- **General:** the appearance picker (2.7), the language picker (2.6), then the switches of 2.4, grouped in Sounds, Notifications and Blocking. While a session is running, the Allowlist mode switch is **disabled** and a notice explains why.
 - **Blocklist / Allowlist:** a form to add a website and the list. Rows show the site icon, the entry and a remove button that appears on hover or focus. Rows animate in and collapse out. An empty list shows an empty state. The page of the active mode carries an "Active mode" badge.
   - The icon is the site's own `https://<host>/favicon.ico`, loaded straight from the site (no third-party favicon service, so the list never leaves the browser except to the listed sites). It only loads when the entry looks like a domain; otherwise, or if it fails, the tile shows the first letter of the host.
 - List rules:
@@ -104,6 +107,11 @@ Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in
 - **The manifest** name and description come from `static/_locales/<en|pt_BR|es>/messages.json` (`__MSG_extName__`, `__MSG_extDescription__`, `default_locale: "en"`), so the browser and the stores show them in the browser's language. That follows the browser, not the in-app setting.
 - **Adding a language:** add `packages/locales/src/<code>.ts` typed `Messages`, add one row to `languages` in `packages/locales/src/index.ts` (its copy, its native name and the language-tag prefix it answers to), add `static/_locales/<code>/messages.json`, and add the website's copy in `apps/web/src/locales/`.
 
+### 2.7 Appearance (light and dark)
+- The popup, the options page and the focus screen come in a **light** and a **dark** theme. The **Appearance** section of the General tab is a segmented control: **Automatic** (the default: the system's light or dark mode), **Light** and **Dark**. It writes `theme` (table 3.1); every open page and every focus screen switch live through `storage.onChanged`.
+- How it works: every color token in `packages/ui/src/theme.css` is a `light-dark(light, dark)` pair, so `color-scheme` picks the side. The kit's base styles set `color-scheme: light dark` on `:root` (the system decides) and pin it on any element with `data-theme="light"` or `"dark"`. `applyTheme(element, theme)` (`packages/ui/src/theme.ts`, with the `ThemeSetting` type) sets or removes that attribute: `mount()` applies it to `<html>` before the first render (so a page never flashes the wrong theme) and keeps it in sync; the focus screen applies it to its `.overlay`.
+- The light colors are the website's (it is always light, see 3.5); the dark ones are the extension's original look.
+
 ---
 
 ## 3. Architecture
@@ -117,7 +125,7 @@ apps/extension/src/
 │       └── streak.ts     # increments/resets the streak and fires the victory notification
 ├── content/              # "content" entry
 │   ├── index.ts          # decides whether the page is blocked, keeps the countdown in sync
-│   ├── overlay.ts        # the focus screen: shadow-root host, font loading, show/hide
+│   ├── overlay.ts        # the focus screen: shadow-root host, font loading, show/hide, give up
 │   └── overlay.css       # focus screen styles, bundled as a string
 ├── popup/index.tsx       # "popup" entry: mount(<PopupScreen />), nothing else
 ├── options/index.tsx     # "options" entry: mount(<OptionsScreen />), nothing else
@@ -131,17 +139,17 @@ apps/extension/src/
 │       ├── tabs.ts       # the tabs and getTabFromHash
 │       └── partials/     # sidebar, nav-tabs, nav-item, sidebar-footer, tab-page, settings-section,
 │                         # setting-row, locked-notice, active-mode-badge, general-tab,
-│                         # language-picker, site-list-tab, add-site-form, site-list, site-row,
+│                         # language-picker, theme-picker, site-list-tab, add-site-form, site-list, site-row,
 │                         # site-icon, empty-list
 ├── components/           # used by two or more screens: toaster, site-lists (ListType, list icons)
 ├── styles/theme.css      # Tailwind entry: Tailwind, the design system (packages/ui) and the font (see 5.1)
 ├── types/css.d.ts        # `import css from './x.css?raw'` is a string; plain `.css` imports are side effects
 └── lib/                  # logic and hooks, shared by every context
-    ├── mount.tsx              # renders a screen into #root with the Toaster, the theme CSS and the MessagesProvider
+    ├── mount.tsx              # renders a screen into #root with the Toaster, the theme CSS, the stored theme and the MessagesProvider
     ├── use-storage.ts         # useStorage(...keys): a storage slice kept in sync, plus an optimistic update
     ├── toast.ts               # toast(message, error?) and the store the Toaster reads
     ├── share-streak.ts        # shareStreak(streak, copy): copies a ready-made text, confirms with a toast
-    ├── play-popup-sounds.ts   # playSound("giveup" | "finished" | "button"), respects the switches
+    ├── play-sound.ts          # playSound("giveup" | "finished" | "button"), respects the switches (popup and focus screen)
     ├── storage.ts             # typed storage.local contract: getStorage, setStorage, onStorageChanged, seedStorageDefaults
     ├── messages.ts            # typed background message contract: sendTimerMessage, onTimerMessage
     ├── i18n.ts                # locales, browser-language detection, getMessages, loadMessages (see 2.6)
@@ -153,14 +161,18 @@ static/                   # copied as-is to dist/<browser>/
 ├── options/index.html    # just #root, ../options.css and ../options.js
 └── assets/
     ├── logo/  icon-16/32/64/128.png, icon-32-active.png
-    └── sounds/ finished.mp3, lose.wav, press.mp3
+    └── sounds/ finished.mp3, lose.wav, press.mp3 (web-accessible, for the focus screen's give up)
 # assets/fonts/ is not in static/: webpack copies it from @fontsource-variable/plus-jakarta-sans.
 
 packages/ui/src/          # @focus-pocus/ui, shared with the website
-├── theme.css             # design tokens (@theme), the focus-ring utility, base styles (see 5.1)
+├── theme.css             # design tokens (@theme, light-dark() pairs), the focus-ring utility, base styles (see 5.1)
 ├── button.tsx            # Button and ButtonLink (a link that looks like a Button)
 ├── brand.tsx             # the wand logo and the name; each app passes its own logo URL
 ├── icon-button.tsx, input.tsx, switch.tsx, segmented.tsx, progress-ring.tsx
+├── progress-ring-geometry.ts  # the ring's radius and length, shared with the focus screen (no React)
+├── theme.ts              # ThemeSetting and applyTheme (see 2.7)
+├── confirm-timing.ts     # the two-click give up's timing (no React, so the content script can use it)
+├── use-confirm-twice.ts  # useConfirmTwice: the popup's and the website's two-click give up
 ├── icons.ts              # every Phosphor icon the extension uses, with domain names
 ├── cx.ts                 # joins class names, skipping the falsy ones
 └── format-time.ts        # "mm:ss" / "h:mm:ss", shared by the popup, the focus screen and the website
@@ -171,11 +183,11 @@ packages/locales/src/     # @focus-pocus/locales: en.ts (source + Messages type)
 
 - **The popup and the options page are React 19 + Tailwind CSS 4.** The background and the content script (including the focus screen) stay plain TypeScript: the focus screen lives in a shadow root on every page, where Tailwind 4 does not work (it relies on `@property`, which only registers at document level) and React would be dead weight.
 - Pages read storage through `useStorage(...keys)` (`src/lib/use-storage.ts`): `null` until the first read, then kept in sync by `storage.onChanged`. Its `update(values)` writes storage and the local copy at once.
-- Icons come from [Phosphor](https://phosphoricons.com) (`@phosphor-icons/react`), re-exported with domain names by `packages/ui/src/icons.ts`: `<IconSettings size={18} />` or `<IconStreak weight="fill" />`. Never hand-write SVG icons. The only inline SVGs are the popup's progress ring and, on the website, the Chrome and Firefox marks (paths from Simple Icons).
+- Icons come from [Phosphor](https://phosphoricons.com) (`@phosphor-icons/react`), re-exported with domain names by `packages/ui/src/icons.ts`: `<IconSettings size={18} />` or `<IconStreak weight="fill" />`. Never hand-write SVG icons. The only inline SVGs are the progress rings (the popup's and the focus screen's) and, on the website, the Chrome and Firefox marks (paths from Simple Icons).
 - Every extension API goes through **`webextension-polyfill`** (`import browser from 'webextension-polyfill'`), which provides a Promise-based API. **It does not unify `action`/`browserAction`:** the code calls `browser.action.*`, which only exists in Chrome MV3. In Firefox MV2 those calls throw `TypeError`.
 - **All storage access goes through `src/lib/storage.ts`:** `getStorage(keys)`, `setStorage(values)` and `onStorageChanged(listener)` use the `StorageState` type (table 3.1). Do not call `browser.storage.local` outside that module.
 - **All background messages go through `src/lib/messages.ts`:** `sendTimerMessage(type)` on the sending side and `onTimerMessage(listener)` in the background, which ignores anything that is not a valid `TimerMessage`. Do not call `browser.runtime.sendMessage`/`onMessage` directly.
-- **Heads-up:** `screens/popup/page.tsx` imports straight from `background/services/timer.ts`. In practice **start, stop and give up run in the popup context**: the popup writes to storage and messages the background. The background only runs the `setInterval` tick and handles session completion.
+- **Heads-up:** `screens/popup/page.tsx` imports straight from `background/services/timer.ts`. In practice **start runs in the popup context**: the popup writes to storage and messages the background. **Give up runs in the background** (`TIMER_GIVEN_UP`, see 3.2), which also runs the `setInterval` tick and handles session completion.
 
 ### 3.1 State (`browser.storage.local`)
 Storage is the **source of truth**. Every context syncs through `storage.onChanged`.
@@ -190,6 +202,7 @@ Storage is the **source of truth**. Every context syncs through `storage.onChang
 | `allowlist`    | string[]                  | –       | substrings allowed in allowlist mode       |
 | `options`      | `Record<string, boolean>` | –       | switches (see 2.4)                         |
 | `language`     | `'auto' \| 'en' \| 'pt-BR' \| 'es'` | – (`auto`) | UI language (see 2.6)          |
+| `theme`        | `'auto' \| 'light' \| 'dark'` | – (`auto`) | light or dark look (see 2.7)        |
 
 The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written by `seedStorageDefaults()` (`src/lib/storage.ts`) when the background loads; existing values are kept. That is why those four keys are required in `StorageState` and the others are optional.
 
@@ -204,14 +217,15 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
    - the interval is cleared directly in the background (`src/background/index.ts`);
    - `checkAndStopTimer()` calls `stopTimer()`, which resets `timer` and restores the normal icon. The `TIMER_FINISHED` it sends from here reaches nobody, because a context does not receive its own messages;
    - victory sound: the popup plays it when it sees `streak` go up, so it only plays with the popup open. The background's own `playSound("finished")` in `checkAndStopTimer()` never plays: in Chrome `Audio` does not exist in an MV3 service worker, and in Firefox `stopTimer()` throws on `browser.action` before reaching it.
-6. **Give up** (confirmed second click while `isRunning`, see 2.1): `stopTimer()`, `resetStreak()` (streak = 0) and the give-up sound.
+6. **Give up** (confirmed second click while `isRunning`, from the popup (2.1) or the focus screen (2.2)): the page sends `TIMER_GIVEN_UP` and plays the give-up sound; the background clears its interval and runs `giveUp()` (`src/background/services/timer.ts`: `resetStreak()`, so streak = 0, then `stopTimer()`). The streak is reset first because in Firefox `stopTimer()` throws on `browser.action`.
 7. Every time the popup opens during an active session it re-sends `TIMER_STARTED`. That recreates the interval if Chrome unloaded the service worker.
 
 ### 3.3 Messages (`src/lib/messages.ts`)
 | `type`           | Sent by               | Effect in the background                              |
 | ---------------- | --------------------- | ----------------------------------------------------- |
 | `TIMER_STARTED`  | popup                 | (re)starts the `setInterval` and sets the active icon |
-| `TIMER_FINISHED` | `stopTimer()` (popup on give up; on completion it is sent by the background itself and ignored) | clears the interval and restores the normal icon |
+| `TIMER_FINISHED` | `stopTimer()` (always in the background, on completion or give up, so it reaches nobody) | clears the interval and restores the normal icon |
+| `TIMER_GIVEN_UP` | Give up, in the popup or on the focus screen | clears the interval and runs `giveUp()` (resets the streak, stops the session, restores the icon) |
 
 ### 3.4 Manifest differences
 - `manifest.chrome.json`: **MV3**, `action`, `background.service_worker`, `options_page`.
@@ -221,7 +235,7 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
 
 ### 3.5 Website (`apps/web`)
 - **Next.js 16** (App Router, Turbopack) + Tailwind CSS 4, statically rendered once per language. `apps/web/AGENTS.md` has its layout and rules.
-- One light page (the extension is dark; the site redefines the kit's tokens, see `apps/web/AGENTS.md`): a centered hero over the **settings page** in a browser with the **popup** hanging off its edge, the **focus screen**, the features on a grid laid over the page's guide lines, real Chrome Web Store reviews sliding by (translated), and the install links (Chrome Web Store, Firefox Add-ons, GitHub), in English, Brazilian Portuguese and Spanish (`/en`, `/pt-BR`, `/es`; `src/proxy.ts` sends `/` to the browser's best match).
+- One light page (the site pins the kit's `light-dark()` colors to their light side, see `apps/web/AGENTS.md`): a centered hero over the **settings page** in a browser with the **popup** hanging off its edge, the **focus screen**, the features on a grid laid over the page's guide lines, real Chrome Web Store reviews sliding by (translated), and the install links (Chrome Web Store, Firefox Add-ons, GitHub), in English, Brazilian Portuguese and Spanish (`/en`, `/pt-BR`, `/es`; `src/proxy.ts` sends `/` to the browser's best match).
 - **The drawings of the extension are working React copies** (`apps/web/src/screens/landing/mocks/`), built from `@focus-pocus/ui` and the extension's copy from `@focus-pocus/locales`, run by local state. They repeat the class strings (and small constants such as the duration presets) of the screens they draw, and each file names its source. **When you change the popup, the settings page or the focus screen, update its drawing.**
 - Store and GitHub links live in `apps/web/src/lib/links.ts`.
 
@@ -305,11 +319,12 @@ bun run lint:fix        # biome check --write .
 
 ### 5.1 Design system
 
-The look is dark, violet and **minimal**, modeled on the maintainer's heysusi settings window: flat colors, no gradients, no glows, no decorative animation. Motion only explains a change of state. `packages/ui/src/theme.css` holds the tokens as Tailwind theme variables (`bg-surface`, `text-text-muted`, `rounded-md`, `shadow-card`, `ease-fluid`, `duration-(--duration-enter)`, `animate-fade-up`…) and `packages/ui/src/` the shared controls (used by the extension and the website); pages only lay things out with utilities. Tailwind's default palette, type scale, letter spacing, radii, shadows and easings are switched off, so an off-token color, font size or radius has no utility; spacing and sizes keep Tailwind's 4px scale (`size-8`, `px-3.5`). An arbitrary value for any of those (`text-[#...]`, `text-[44px]`, `tracking-[...]`) is a smell: add a token. Arbitrary values are fine for layout math (`grid-cols-[...]`, `w-[calc(...)]`).
+The look is violet and **minimal**, in a light and a dark theme (2.7), modeled on the maintainer's heysusi settings window: flat colors, no gradients, no glows, no decorative animation. Motion only explains a change of state. **One exception: the focus screen** (2.2) may use ambient motion and a soft violet aura (drifting clouds, a pulsing live dot, a slowly turning ring), because it is a full-screen moment rather than a tool, and it stops all of it under reduced motion. `packages/ui/src/theme.css` holds the tokens as Tailwind theme variables (`bg-surface`, `text-text-muted`, `rounded-md`, `shadow-card`, `ease-fluid`, `duration-(--duration-enter)`, `animate-fade-up`…) and `packages/ui/src/` the shared controls (used by the extension and the website); pages only lay things out with utilities. Tailwind's default palette, type scale, letter spacing, radii, shadows and easings are switched off, so an off-token color, font size or radius has no utility; spacing and sizes keep Tailwind's 4px scale (`size-8`, `px-3.5`). An arbitrary value for any of those (`text-[#...]`, `text-[44px]`, `tracking-[...]`) is a smell: add a token. Arbitrary values are fine for layout math (`grid-cols-[...]`, `w-[calc(...)]`).
 - **Cascade layers:** Chrome gives extension pages its own *unlayered* stylesheet (`body { font-family: <system>; font-size: 75% }`), which beats anything Tailwind puts in a layer. That is why the `body` rules in `theme.css` sit outside `@layer`.
-- **Each app's stylesheet** imports Tailwind, then `@focus-pocus/ui/theme.css`, then adds its font: the extension's `src/styles/theme.css` self-hosts it with `@font-face`, the website sets `--font-sans` to `next/font`'s variable. The website adds its page-sized tokens in `apps/web/src/app/globals.css`, plus a later `@theme` block that redefines the kit's color tokens (and its shadows), so the kit draws light there.
+- **Each app's stylesheet** imports Tailwind, then `@focus-pocus/ui/theme.css`, then adds its font: the extension's `src/styles/theme.css` self-hosts it with `@font-face`, the website sets `--font-sans` to `next/font`'s variable. The website adds its page-sized tokens in `apps/web/src/app/globals.css` and sets `color-scheme: light`, so the kit always draws light there.
 
 - **Font:** Plus Jakarta Sans (variable), self-hosted. Never load fonts from a CDN.
+- **Colors** are `light-dark(light, dark)` pairs in `theme.css`; a new color token needs both sides. Shadows hold both looks as two layers (a hairline ring in the light, a soft drop in the dark), one of them transparent per scheme.
 - **Surfaces** stack in one direction, never pure black: `--sunken` → `--canvas` → `--surface` → `--raised` → `--raised-hover`. Separation comes from surface and space; hairlines (`--border`) only divide content inside a surface.
 - **Text** has three levels plus the placeholder: `--text`, `--text-muted`, `--text-faint`, `--text-placeholder`.
 - **Accent** (one flat violet, `--accent`) marks what is live, active or primary: the running ring, the active nav icon, focus rings, switches that are on. Filled violet that carries text (the primary button) uses the darker `--accent-solid` with **white** text, so it keeps 4.5:1 contrast. Never a large fill, a gradient or a glow.

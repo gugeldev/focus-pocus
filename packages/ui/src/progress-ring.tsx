@@ -1,7 +1,5 @@
 import { cx } from './cx';
-
-const RADIUS = 94;
-const LENGTH = 2 * Math.PI * RADIUS;
+import { RING_LENGTH, RING_RADIUS } from './progress-ring-geometry';
 
 type Props = {
   /** From 1 (full) to 0 (empty). */
@@ -14,7 +12,7 @@ type Props = {
 export function ProgressRing({ progress, isRunning }: Props) {
   return (
     <svg className="size-full -rotate-90" viewBox="0 0 200 200" aria-hidden="true">
-      <circle className="fill-none stroke-border stroke-2" cx="100" cy="100" r={RADIUS} />
+      <circle className="fill-none stroke-border stroke-2" cx="100" cy="100" r={RING_RADIUS} />
       <circle
         className={cx(
           'fill-none stroke-accent stroke-3 transition-[stroke-dashoffset,opacity] duration-[1s,var(--duration-enter)] ease-[linear,var(--ease-fluid)] [stroke-linecap:round]',
@@ -22,9 +20,9 @@ export function ProgressRing({ progress, isRunning }: Props) {
         )}
         cx="100"
         cy="100"
-        r={RADIUS}
-        strokeDasharray={LENGTH}
-        strokeDashoffset={LENGTH * (1 - progress)}
+        r={RING_RADIUS}
+        strokeDasharray={RING_LENGTH}
+        strokeDashoffset={RING_LENGTH * (1 - progress)}
       />
     </svg>
   );

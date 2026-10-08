@@ -45,5 +45,11 @@
 
   "content_security_policy": "script-src 'self'; object-src 'self'",
 
-  "web_accessible_resources": ["/assets/logo/*", "/assets/fonts/*", "/popup/*", "/options/*"]
+  "web_accessible_resources": [
+    "/assets/logo/*",
+    "/assets/fonts/*",
+    "/assets/sounds/*",
+    "/popup/*",
+    "/options/*"
+  ]
 }

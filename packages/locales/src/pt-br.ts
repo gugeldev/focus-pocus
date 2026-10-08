@@ -36,13 +36,21 @@ export const ptBR: Messages = {
     support: 'Apoie o FocusPocus',
     general: {
       title: 'Geral',
-      description: 'Escolha o idioma, os sons, as notificações e o bloqueio enquanto você foca.',
+      description:
+        'Escolha a aparência, o idioma, os sons, as notificações e o bloqueio enquanto você foca.',
       locked:
         'Uma sessão de foco está em andamento. As configurações de bloqueio são liberadas quando ela terminar.',
       language: {
         title: 'Idioma',
         description: 'Automático segue o idioma do seu navegador.',
         auto: 'Automático',
+      },
+      appearance: {
+        title: 'Aparência',
+        description: 'Automático segue o modo claro ou escuro do seu sistema.',
+        auto: 'Automático',
+        light: 'Claro',
+        dark: 'Escuro',
       },
       sounds: {
         title: 'Sons',
@@ -125,6 +133,8 @@ export const ptBR: Messages = {
     lead: 'Ele volta quando sua sessão terminar. Até lá, o trabalho à sua frente merece sua atenção.',
     timeLabel: 'restantes nesta sessão',
     warning: 'Desistir zera sua sequência.',
+    giveUp: 'Desistir',
+    confirmGiveUp: 'Clique de novo para desistir',
   },
   notification: {
     title: 'Sessão concluída!',

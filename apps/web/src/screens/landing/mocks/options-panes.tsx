@@ -4,10 +4,19 @@ import { getNativeName, LOCALES, type Locale } from '@focus-pocus/locales';
 import { Button } from '@focus-pocus/ui/button';
 import { cx } from '@focus-pocus/ui/cx';
 import { IconButton } from '@focus-pocus/ui/icon-button';
-import { IconAdd, IconAllowlist, IconBlocklist, IconRemove } from '@focus-pocus/ui/icons';
+import {
+  IconAdd,
+  IconAllowlist,
+  IconBlocklist,
+  IconRemove,
+  IconThemeAuto,
+  IconThemeDark,
+  IconThemeLight,
+} from '@focus-pocus/ui/icons';
 import { Input } from '@focus-pocus/ui/input';
 import { Segmented } from '@focus-pocus/ui/segmented';
 import { Switch } from '@focus-pocus/ui/switch';
+import type { ThemeSetting } from '@focus-pocus/ui/theme';
 import { type FormEvent, type ReactNode, useState } from 'react';
 import { useCopy } from '@/lib/i18n-provider';
 
@@ -88,10 +97,14 @@ type GeneralPaneProps = {
   onChange: (switches: Switches) => void;
 };
 
-/** general-tab.tsx: the language, sounds, notifications and the blocking mode. */
+/**
+ * general-tab.tsx: the appearance, language, sounds, notifications and the
+ * blocking mode. The site stays light whatever the appearance picks.
+ */
 export function GeneralPane({ switches, onChange }: GeneralPaneProps) {
   const { app } = useCopy();
   const copy = app.options.general;
+  const [theme, setTheme] = useState<ThemeSetting>('light');
   const [language, setLanguage] = useState<'auto' | Locale>('auto');
   const row = (key: SwitchKey, { label, description }: { label: string; description: string }) => (
     <SettingRow
@@ -104,6 +117,21 @@ export function GeneralPane({ switches, onChange }: GeneralPaneProps) {
 
   return (
     <TabPage description={copy.description} title={copy.title}>
+      <SettingsSection title={copy.appearance.title}>
+        <div className="flex flex-col gap-2.5">
+          <Segmented<ThemeSetting>
+            name="demo-theme"
+            onChange={setTheme}
+            options={[
+              { value: 'auto', label: copy.appearance.auto, icon: IconThemeAuto },
+              { value: 'light', label: copy.appearance.light, icon: IconThemeLight },
+              { value: 'dark', label: copy.appearance.dark, icon: IconThemeDark },
+            ]}
+            value={theme}
+          />
+          <p className="text-sm text-text-muted">{copy.appearance.description}</p>
+        </div>
+      </SettingsSection>
       <SettingsSection title={copy.language.title}>
         <div className="flex flex-col gap-2.5">
           <Segmented<'auto' | Locale>
