@@ -65,8 +65,8 @@ export function Hero() {
 }
 
 /**
- * The browser and the popup. From `lg` the popup overlaps the browser's right
- * edge and sticks out past it; below, it sits under the browser, overlapping
+ * The browser and the popup. From `lg` the popup overlaps the browser's top right
+ * corner and sticks out past it, up and right; below, it sits under the browser, overlapping
  * its foot.
  */
 function Demo() {
@@ -80,7 +80,7 @@ function Demo() {
         className="absolute inset-x-0 -inset-y-24 -z-10 rounded-full bg-radial-[closest-side] from-glow to-transparent"
       />
       <OptionsMock />
-      <div className="relative z-10 -mt-20 flex flex-col items-center gap-4 lg:absolute lg:top-32 lg:right-0 lg:mt-0">
+      <div className="relative z-10 -mt-20 flex flex-col items-center gap-4 lg:absolute lg:-top-12 lg:right-0 lg:mt-0">
         <div className="motion-safe:animate-float">
           <PopupMock />
         </div>
