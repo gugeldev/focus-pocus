@@ -1,4 +1,4 @@
-import browser from "webextension-polyfill";
+import { getStorage, onStorageChanged } from '../utils/storage';
 
 let blocklist: string[] = [];
 let allowlist: string[] = [];
@@ -6,31 +6,26 @@ let allowlist: string[] = [];
 let allowlistMode = false;
 
 function initialize() {
-  browser.storage.local
-    .get(["blocklist", "allowlist", "isRunning", "options"])
-    .then((res) => {
-      blocklist = res.blocklist || [];
-      allowlist = res.allowlist || [];
+  getStorage(['blocklist', 'allowlist', 'isRunning', 'options']).then((res) => {
+    blocklist = res.blocklist || [];
+    allowlist = res.allowlist || [];
 
-      if (res.options && res.options["allowlist-mode"]) {
-        allowlistMode = true;
-      }
+    if (res.options?.['allowlist-mode']) {
+      allowlistMode = true;
+    }
 
-      if (res.isRunning) {
-        checkFocusPage();
-      }
-    });
+    if (res.isRunning) {
+      checkFocusPage();
+    }
+  });
 }
 
-browser.storage.onChanged.addListener((changes) => {
+onStorageChanged((changes) => {
   if (changes.blocklist) blocklist = changes.blocklist.newValue || [];
   if (changes.allowlist) allowlist = changes.allowlist.newValue || [];
 
   if (changes.options) {
-    if (
-      changes.options.newValue &&
-      changes.options.newValue["allowlist-mode"]
-    ) {
+    if (changes.options.newValue?.['allowlist-mode']) {
       allowlistMode = true;
     } else {
       allowlistMode = false;
@@ -53,12 +48,12 @@ function checkFocusPage() {
 
 function checkMode() {
   if (allowlistMode) {
-    for (let url of allowlist) {
+    for (const url of allowlist) {
       if (window.location.href.includes(url)) return;
     }
     addFocusPage();
   } else {
-    for (let url of blocklist) {
+    for (const url of blocklist) {
       if (window.location.href.includes(url)) {
         addFocusPage();
         return;
@@ -68,9 +63,9 @@ function checkMode() {
 }
 
 function addFocusPage() {
-  const body = document.querySelector("body");
-  const focusPage = document.createElement("div");
-  focusPage.id = "focus-page";
+  const body = document.querySelector('body');
+  const focusPage = document.createElement('div');
+  focusPage.id = 'focus-page';
   focusPage.innerHTML = `
     <div id="focus-page-content">
       <h1>Focus Mode</h1>
@@ -83,7 +78,7 @@ function addFocusPage() {
 }
 
 function removeFocusPage() {
-  const focusPage = document.querySelector("#focus-page");
+  const focusPage = document.querySelector('#focus-page');
   if (focusPage) focusPage.remove();
 }
 

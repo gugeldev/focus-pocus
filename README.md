@@ -39,40 +39,27 @@ The last published version:
 
 ### How to run locally
 
-1. Clone this repository.
-2. Install the dependencies.
-3. Run the dev script.
-4. Activate developer mode on your browser and add the _manifest_ inside the _/dest_ folder that will be generated.
+Requires [Bun](https://bun.sh).
 
-_with yarn:_
+1. Clone this repository.
+2. Install the dependencies (this also sets up the git hooks).
+3. Run the dev script.
+4. Activate developer mode on your browser and load the extension from the _/dist_ folder that will be generated (Chrome: _dist/chrome_, Firefox: _dist/firefox/manifest.json_).
 
 ```bash
 git clone https://github.com/jotavetech/focus-pocus.git
 cd focus-pocus
 
-yarn #install the dependencies
+bun install #install the dependencies
 
 # chrome:
-yarn dev:chrome #compile to /dest/chrome folder
+bun run dev:chrome #compile to /dist/chrome folder
 
 # firefox:
-yarn dev:firefox #compile to /dest/firefox folder
+bun run dev:firefox #compile to /dist/firefox folder
 ```
 
-_with npm:_
-
-```bash
-git clone https://github.com/jotavetech/focus-pocus.git
-cd focus-pocus
-
-npm install #install the dependencies
-
-# chrome:
-npm run dev:chrome #compile to /dest/chrome folder
-
-#firefox:
-npm run dev:firefox #compile to /dest/firefox folder
-```
+The git hooks check your work: pre-commit runs Biome on the staged files, commit-msg enforces [Conventional Commits](https://www.conventionalcommits.org) in English, and pre-push runs the type-check.
 
 ### How to contribute
 

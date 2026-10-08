@@ -1,0 +1,7 @@
+[install]
+# Only install versions published at least 7 days ago (supply-chain protection)
+minimumReleaseAge = 604800
+
+[run]
+# Bun's shell on every OS, so `VAR=value cmd` works in package.json scripts
+shell = "bun"

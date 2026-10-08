@@ -2,31 +2,33 @@
   "name": "focus-pocus",
   "version": "1.1.2",
   "description": "A extension that will help you to focus on your work",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:chrome": "cross-env BROWSER_TARGET=chrome webpack --mode development",
-    "dev:firefox": "cross-env BROWSER_TARGET=firefox webpack --mode development",
-    "build:chrome": "cross-env BROWSER_TARGET=chrome webpack --mode production",
-    "build:firefox": "cross-env BROWSER_TARGET=firefox webpack --mode production"
+    "dev:chrome": "BROWSER_TARGET=chrome webpack --mode development",
+    "dev:firefox": "BROWSER_TARGET=firefox webpack --mode development",
+    "build:chrome": "BROWSER_TARGET=chrome webpack --mode production",
+    "build:firefox": "BROWSER_TARGET=firefox webpack --mode production",
+    "typecheck": "tsc --noEmit -p .",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "@jotavetech",
   "license": "ISC",
+  "packageManager": "bun@1.4.2",
   "devDependencies": {
-    "@babel/eslint-parser": "^7.24.5",
-    "@types/toastify-js": "^1.12.3",
-    "@types/webextension-polyfill": "^0.10.7",
-    "copy-webpack-plugin": "^12.0.2",
-    "cross-env": "^7.0.3",
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.4.5",
-    "webextension-polyfill": "^0.11.0",
-    "webpack": "^5.91.0",
-    "webpack-cli": "^5.1.4"
+    "@biomejs/biome": "^2.5.15",
+    "@types/toastify-js": "^1.12.4",
+    "@types/webextension-polyfill": "^0.12.6",
+    "copy-webpack-plugin": "^14.0.0",
+    "husky": "^9.1.7",
+    "ts-loader": "^9.6.2",
+    "typescript": "^6.0.3",
+    "webextension-polyfill": "^0.12.0",
+    "webpack": "^5.111.1",
+    "webpack-cli": "^7.2.3"
   },
   "dependencies": {
-    "tippy.js": "^6.3.7",
     "toastify-js": "^1.12.0"
   }
 }

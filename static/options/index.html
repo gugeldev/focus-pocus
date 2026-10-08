@@ -32,9 +32,9 @@
         </div>
       </header>
       <nav id="tabs">
-        <button class="tab active-tab" id="tab-main">Main</button>
-        <button class="tab" id="tab-blocklist">Blocklist</button>
-        <button class="tab" id="tab-allowlist">Allowlist</button>
+        <button type="button" class="tab active-tab" id="tab-main">Main</button>
+        <button type="button" class="tab" id="tab-blocklist">Blocklist</button>
+        <button type="button" class="tab" id="tab-allowlist">Allowlist</button>
       </nav>
 
       <!-- MAIN -->
@@ -43,28 +43,28 @@
         <div id="options">
           <p class="title">Alerts</p>
           <div class="option">
-            <label class="switch">
+            <label class="switch" aria-label="Give Up Sound">
               <input type="checkbox" id="give-up-sound" />
               <span class="slider round"></span>
             </label>
             <p>Give Up Sound</p>
           </div>
           <div class="option">
-            <label class="switch">
+            <label class="switch" aria-label="Victory Sound">
               <input type="checkbox" id="victorious-sound" />
               <span class="slider round"></span>
             </label>
             <p>Victory Sound</p>
           </div>
           <div class="option">
-            <label class="switch">
+            <label class="switch" aria-label="Victory Notification">
               <input type="checkbox" id="victorious-notification" />
               <span class="slider round"></span>
             </label>
             <p>Victory Notification</p>
           </div>
           <div class="option">
-            <label class="switch">
+            <label class="switch" aria-label="Start Button Sound">
               <input type="checkbox" id="button-sound" />
               <span class="slider round"></span>
             </label>
@@ -73,7 +73,7 @@
           <div id="focus-settings">
             <p class="title">Focus Settings</p>
             <div class="option">
-              <label class="switch">
+              <label class="switch" aria-label="Allowlist Mode">
                 <input type="checkbox" id="allowlist-mode" />
                 <span class="slider round"></span>
               </label>

@@ -1,29 +1,29 @@
 import {
-  blocklistForm,
-  allowlistForm,
-  blocklistButton,
-  blocklistInput,
-  blocklistList,
   allowlistButton,
+  allowlistForm,
   allowlistInput,
   allowlistList,
+  blocklistButton,
+  blocklistForm,
+  blocklistInput,
+  blocklistList,
   streakCounter,
-} from "./elements";
+} from './elements';
 
-import "./tabs";
-import "./options";
-import "./streak";
+import './tabs';
+import './options';
+import './streak';
 
-import browser from "webextension-polyfill";
-import toast from "../utils/toast";
+import { getStorage, onStorageChanged, setStorage } from '../utils/storage';
+import toast from '../utils/toast';
 
 let blocklist: string[] = [];
 let allowlist: string[] = [];
 
 let isRunning = false;
 
-function checkIfUrlExists(url: string, type: "blocklist" | "allowlist") {
-  if (type === "blocklist") {
+function checkIfUrlExists(url: string, type: 'blocklist' | 'allowlist') {
+  if (type === 'blocklist') {
     return blocklist.includes(url);
   } else {
     return allowlist.includes(url);
@@ -44,35 +44,33 @@ function enableListsWhileNotRunning() {
   allowlistInput.disabled = false;
 }
 
-browser.storage.local
-  .get(["blocklist", "allowlist", "isRunning", "options", "streak"])
-  .then((data) => {
-    if (data.isRunning) {
-      isRunning = true;
-      disableListsWhileRunning();
-    }
+getStorage(['blocklist', 'allowlist', 'isRunning', 'options', 'streak']).then((data) => {
+  if (data.isRunning) {
+    isRunning = true;
+    disableListsWhileRunning();
+  }
 
-    if (data.blocklist) {
-      blocklist = data.blocklist;
-      blocklist.forEach((url) => {
-        addUrlListElement(url, blocklistList, "blocklist");
-      });
-    }
+  if (data.blocklist) {
+    blocklist = data.blocklist;
+    blocklist.forEach((url) => {
+      addUrlListElement(url, blocklistList, 'blocklist');
+    });
+  }
 
-    if (data.allowlist) {
-      allowlist = data.allowlist;
-      allowlist.forEach((url) => {
-        addUrlListElement(url, allowlistList, "allowlist");
-      });
-    }
+  if (data.allowlist) {
+    allowlist = data.allowlist;
+    allowlist.forEach((url) => {
+      addUrlListElement(url, allowlistList, 'allowlist');
+    });
+  }
 
-    if (data.streak) {
-      streakCounter.textContent = data.streak.toString();
-    }
-  });
+  if (data.streak) {
+    streakCounter.textContent = data.streak.toString();
+  }
+});
 
-browser.storage.onChanged.addListener((changes) => {
-  if (changes.isRunning && changes.isRunning.newValue) {
+onStorageChanged((changes) => {
+  if (changes.isRunning?.newValue) {
     isRunning = true;
     disableListsWhileRunning();
   }
@@ -82,61 +80,53 @@ browser.storage.onChanged.addListener((changes) => {
     enableListsWhileNotRunning();
   }
 
-  if (changes.streak && changes.streak.newValue) {
+  if (changes.streak?.newValue) {
     streakCounter.textContent = changes.streak.newValue.toString();
   }
 
   if (changes.streak && changes.streak.newValue === 0) {
-    streakCounter.textContent = "0";
+    streakCounter.textContent = '0';
   }
 });
 
-blocklistForm.addEventListener("submit", (e) => {
+blocklistForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  if (isRunning)
-    return toast(
-      "You can't add a website while the focus mode is running.",
-      true
-    );
+  if (isRunning) return toast("You can't add a website while the focus mode is running.", true);
 
-  if (!blocklistInput.value) return toast("Please, enter a URL.", true);
+  if (!blocklistInput.value) return toast('Please, enter a URL.', true);
 
-  if (checkIfUrlExists(blocklistInput.value, "blocklist"))
-    return toast("This URL already exists in the blocklist.", true);
+  if (checkIfUrlExists(blocklistInput.value, 'blocklist'))
+    return toast('This URL already exists in the blocklist.', true);
 
   blocklist.push(blocklistInput.value);
 
-  browser.storage.local.set({ blocklist });
+  setStorage({ blocklist });
 
-  addUrlListElement(blocklistInput.value, blocklistList, "blocklist");
+  addUrlListElement(blocklistInput.value, blocklistList, 'blocklist');
 
-  blocklistInput.value = "";
+  blocklistInput.value = '';
 });
 
-allowlistForm.addEventListener("submit", (e) => {
+allowlistForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  if (isRunning)
-    return toast(
-      "You can't add a website while the focus mode is running.",
-      true
-    );
+  if (isRunning) return toast("You can't add a website while the focus mode is running.", true);
 
-  if (!allowlistInput.value) return toast("Please enter a URL.", true);
+  if (!allowlistInput.value) return toast('Please enter a URL.', true);
 
-  if (checkIfUrlExists(allowlistInput.value, "allowlist"))
-    return toast("This URL already exists in the allowlist.", true);
+  if (checkIfUrlExists(allowlistInput.value, 'allowlist'))
+    return toast('This URL already exists in the allowlist.', true);
 
   allowlist.push(allowlistInput.value);
 
-  browser.storage.local.set({ allowlist });
+  setStorage({ allowlist });
 
-  addUrlListElement(allowlistInput.value, allowlistList, "allowlist");
+  addUrlListElement(allowlistInput.value, allowlistList, 'allowlist');
 
-  allowlistInput.value = "";
+  allowlistInput.value = '';
 });
 
-function createUrlListElement(url: string, type: "blocklist" | "allowlist") {
-  const li = document.createElement("li");
+function createUrlListElement(url: string, type: 'blocklist' | 'allowlist') {
+  const li = document.createElement('li');
 
   li.innerHTML = `
     <span>${url}</span>
@@ -148,35 +138,29 @@ function createUrlListElement(url: string, type: "blocklist" | "allowlist") {
   return li;
 }
 
-function addUrlListElement(
-  url: string,
-  list: HTMLUListElement,
-  type: "blocklist" | "allowlist"
-) {
+function addUrlListElement(url: string, list: HTMLUListElement, type: 'blocklist' | 'allowlist') {
   const li = createUrlListElement(url, type);
   list.appendChild(li);
 }
 
-document.addEventListener("click", (e) => {
+document.addEventListener('click', (e) => {
   const target = e.target as HTMLElement;
 
   if (
-    target.classList.contains("remove-button-blocklist") ||
-    target.parentElement?.classList.contains("remove-button-blocklist")
+    target.classList.contains('remove-button-blocklist') ||
+    target.parentElement?.classList.contains('remove-button-blocklist')
   ) {
-    let url =
-      target.parentElement?.parentElement?.querySelector("span")?.textContent;
+    const url = target.parentElement?.parentElement?.querySelector('span')?.textContent;
     if (url) {
       removeBlocklistElement(url);
     }
   }
 
   if (
-    target.classList.contains("remove-button-allowlist") ||
-    target.parentElement?.classList.contains("remove-button-allowlist")
+    target.classList.contains('remove-button-allowlist') ||
+    target.parentElement?.classList.contains('remove-button-allowlist')
   ) {
-    let url =
-      target.parentElement?.parentElement?.querySelector("span")?.textContent;
+    const url = target.parentElement?.parentElement?.querySelector('span')?.textContent;
     if (url) {
       removeAllowlistElement(url);
     }
@@ -184,33 +168,25 @@ document.addEventListener("click", (e) => {
 });
 
 function removeBlocklistElement(url: string) {
-  if (isRunning)
-    return toast(
-      "You can't remove a website while the focus mode is running.",
-      true
-    );
+  if (isRunning) return toast("You can't remove a website while the focus mode is running.", true);
   blocklist = blocklist.filter((u) => u !== url);
-  browser.storage.local.set({ blocklist });
+  setStorage({ blocklist });
 
-  blocklistList.innerHTML = "";
+  blocklistList.innerHTML = '';
 
   blocklist.forEach((url) => {
-    addUrlListElement(url, blocklistList, "blocklist");
+    addUrlListElement(url, blocklistList, 'blocklist');
   });
 }
 
 function removeAllowlistElement(url: string) {
-  if (isRunning)
-    return toast(
-      "You can't remove a website while the focus mode is running.",
-      true
-    );
+  if (isRunning) return toast("You can't remove a website while the focus mode is running.", true);
   allowlist = allowlist.filter((u) => u !== url);
-  browser.storage.local.set({ allowlist });
+  setStorage({ allowlist });
 
-  allowlistList.innerHTML = "";
+  allowlistList.innerHTML = '';
 
   allowlist.forEach((url) => {
-    addUrlListElement(url, allowlistList, "allowlist");
+    addUrlListElement(url, allowlistList, 'allowlist');
   });
 }
