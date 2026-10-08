@@ -1,7 +1,7 @@
+import { Brand } from '@focus-pocus/ui/brand';
 import { IconButton } from '@focus-pocus/ui/icon-button';
 import { IconSettings } from '@focus-pocus/ui/icons';
 import browser from 'webextension-polyfill';
-import { Brand } from '@/components/brand';
 import { useMessages } from '@/lib/use-messages';
 import { StreakButton } from '@/screens/popup/partials/streak-button';
 
@@ -17,7 +17,7 @@ export function TopBar({ streak, isCelebrating, onCelebrated }: Props) {
 
   return (
     <header className="flex items-center justify-between pt-4 pr-3 pl-4">
-      <Brand size="sm" />
+      <Brand logoSrc="../assets/logo/icon-64.png" size="sm" />
       <div className="flex items-center gap-1">
         <StreakButton streak={streak} isCelebrating={isCelebrating} onCelebrated={onCelebrated} />
         <IconButton

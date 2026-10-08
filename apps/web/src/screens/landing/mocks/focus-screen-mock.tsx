@@ -45,7 +45,7 @@ export function FocusScreenMock() {
     <BrowserFrame label={site.mocks.focusScreen} url="youtube.com">
       <div className="relative">
         <BlockedPage />
-        <div className="relative flex min-h-120 items-center justify-center bg-overlay px-6 py-14 text-center backdrop-blur-xl">
+        <div className="relative flex min-h-120 items-center justify-center bg-canvas/96 px-6 py-14 text-center backdrop-blur-xl">
           <div className="flex max-w-105 flex-col items-center">
             {/* biome-ignore lint/performance/noImgElement: a 56px logo, next/image would add nothing */}
             <img alt="" className="mb-7 size-14 rounded-overlay-logo" src={logo.src} />

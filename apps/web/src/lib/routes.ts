@@ -3,7 +3,6 @@ import type { Locale } from './i18n';
 /** The landing page's sections, which the header links to, in page order. */
 export const anchors = {
   top: 'top',
-  demo: 'demo',
   focusScreen: 'focus-screen',
   features: 'features',
   reviews: 'reviews',

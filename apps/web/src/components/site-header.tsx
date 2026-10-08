@@ -1,8 +1,9 @@
 'use client';
 
+import { Brand } from '@focus-pocus/ui/brand';
 import { ButtonLink } from '@focus-pocus/ui/button';
 import { cx } from '@focus-pocus/ui/cx';
-import { Brand } from '@/components/brand';
+import logo from '@/assets/logo.png';
 import { IconGithub } from '@/components/icons';
 import { useCopy, useLocale } from '@/lib/i18n-provider';
 import { links } from '@/lib/links';
@@ -34,13 +35,13 @@ export function SiteHeader() {
   return (
     <header
       className={cx(
-        'sticky top-0 z-50 transition-[padding] duration-450 ease-settle',
+        'sticky top-0 z-50 transition-[padding] duration-(--duration-header) ease-settle',
         scrolled ? 'px-3 pt-3' : 'p-0',
       )}
     >
       <div
         className={cx(
-          'mx-auto flex items-center justify-between gap-5 transition-all duration-450 ease-settle',
+          'mx-auto flex items-center justify-between gap-5 transition-all duration-(--duration-header) ease-settle',
           scrolled ? bar.scrolled : bar.top,
         )}
       >
@@ -49,7 +50,7 @@ export function SiteHeader() {
           className="focus-ring flex-none rounded-sm"
           href={homeRoute(locale)}
         >
-          <Brand size="md" />
+          <Brand logoSrc={logo.src} size="md" />
         </a>
         <nav className="hidden min-w-0 flex-1 justify-center gap-1 md:flex">
           {sections.map(({ anchor, label }) => (

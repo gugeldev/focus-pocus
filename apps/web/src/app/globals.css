@@ -17,7 +17,6 @@
   --text-section--line-height: 1.1;
   --text-lead: clamp(16px, 1.8vw, 18px);
   --text-lead--line-height: 1.6;
-  --text-lg: 17px;
   /* The big opening quote on a review. */
   --text-quote-mark: 56px;
   --tracking-hero: -0.045em;
@@ -25,11 +24,10 @@
 
   /*
    * The website's atmosphere, which the extension's flat UI does without: a
-   * lighter violet for the hero's gradient, the glow behind the top of the
-   * page, and shadows on the drawings that float over it.
+   * lighter violet for the hero's gradient and shadows on the drawings that
+   * float over it. The glows are `accent-solid` at /28 (or /17, further down).
    */
   --color-lilac: #ddd3ff;
-  --color-glow: rgb(124 58 237 / 0.28);
   /* The 1px outline of the drawn windows: just enough to lift them off the page. */
   --color-hairline: rgb(255 255 255 / 0.04);
   /* The dots of the page's background pattern. */
@@ -44,10 +42,14 @@
   --shadow-header: 0 18px 50px rgb(0 0 0 / 0.5);
   --shadow-float: 0 40px 80px -20px rgb(0 0 0 / 0.75);
   --ease-settle: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-rise: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-rise: 900ms;
+  /* The header pulling in to a pill, and back. */
+  --duration-header: 450ms;
   --radius-panel: 32px;
 
   /* Entrances: what is on screen at load rises with CSS (Rise), the rest on scroll (Reveal). */
-  --animate-rise: rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-rise: rise var(--duration-rise) var(--ease-rise) both;
   --animate-float: float 7s ease-in-out infinite;
 
   @keyframes rise {
@@ -84,6 +86,11 @@
     }
   }
 
+  /* A big number on a features card (the streak). */
+  --text-stat: 48px;
+  --text-stat--line-height: 1;
+  --tracking-stat: -0.035em;
+
   /* The focus screen's sizes (apps/extension/src/content/overlay.css). */
   --text-overlay-title: 30px;
   --text-overlay-title--line-height: 1.2;
@@ -92,8 +99,6 @@
   --tracking-overlay-title: -0.025em;
   --tracking-overlay-time: -0.035em;
 
-  /* The focus screen's backdrop: the canvas at 96%, over a blur. */
-  --color-overlay: rgb(11 10 16 / 0.96);
   --radius-overlay-logo: 14px;
 }
 

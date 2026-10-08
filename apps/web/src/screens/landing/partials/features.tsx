@@ -13,7 +13,7 @@ import { Segmented } from '@focus-pocus/ui/segmented';
 import { Switch } from '@focus-pocus/ui/switch';
 import { type ReactNode, useState } from 'react';
 import { IconAlerts, IconLanguages, IconPrivate, IconTimer } from '@/components/icons';
-import { Reveal } from '@/components/ui/reveal';
+import { Reveal } from '@/components/motion';
 import { useCopy } from '@/lib/i18n-provider';
 import { anchors } from '@/lib/routes';
 import type { SiteCopy } from '@/locales/en';
@@ -144,7 +144,7 @@ function StreakPiece() {
   return (
     <p className="flex items-baseline gap-3">
       <IconStreak aria-hidden="true" className="self-center text-streak" size={40} weight="fill" />
-      <span className="text-overlay-time font-semibold tracking-overlay-time tabular-nums">12</span>
+      <span className="text-stat font-semibold tracking-stat tabular-nums">12</span>
       <span className="text-text-muted">{app.options.inARow}</span>
     </p>
   );
@@ -176,7 +176,7 @@ function TimerPiece() {
 function AlertsPiece() {
   const { app } = useCopy();
   const { sounds, notifications } = app.options.general;
-  const [on, setOn] = useState({ sound: false, notification: true });
+  const [on, setOn] = useState({ sound: false, notification: false });
 
   return (
     <div className="flex flex-col">
@@ -193,7 +193,10 @@ function AlertsPiece() {
           <span className="text-md font-medium">{label}</span>
           <Switch
             checked={on[key]}
-            onChange={(event) => setOn({ ...on, [key]: event.target.checked })}
+            onChange={(event) => {
+              const { checked } = event.target;
+              setOn((current) => ({ ...current, [key]: checked }));
+            }}
           />
         </label>
       ))}

@@ -1,5 +1,6 @@
 'use client';
 
+import { Brand } from '@focus-pocus/ui/brand';
 import { Button } from '@focus-pocus/ui/button';
 import { cx } from '@focus-pocus/ui/cx';
 import { formatTime } from '@focus-pocus/ui/format-time';
@@ -8,9 +9,8 @@ import { IconAllowlist, IconBlocklist, IconSettings, IconStreak } from '@focus-p
 import { ProgressRing } from '@focus-pocus/ui/progress-ring';
 import { Segmented } from '@focus-pocus/ui/segmented';
 import { useEffect, useState } from 'react';
-import { Brand } from '@/components/brand';
+import logo from '@/assets/logo.png';
 import { useCopy } from '@/lib/i18n-provider';
-import { anchors } from '@/lib/routes';
 import { useInterval } from '@/lib/use-interval';
 
 // A working drawing of the toolbar popup (apps/extension/src/screens/popup/),
@@ -94,7 +94,7 @@ export function PopupMock() {
       className="w-80 overflow-hidden rounded-window bg-canvas shadow-float ring-1 ring-hairline"
     >
       <header className="flex items-center justify-between pt-4 pr-3 pl-4">
-        <Brand size="sm" />
+        <Brand logoSrc={logo.src} size="sm" />
         <div className="flex items-center gap-1">
           <span
             className={cx(
@@ -110,7 +110,6 @@ export function PopupMock() {
           <IconButton
             aria-label={app.popup.settings}
             icon={IconSettings}
-            onClick={() => document.getElementById(anchors.demo)?.scrollIntoView()}
             pill
             title={app.popup.settings}
           />
@@ -161,11 +160,10 @@ type DialProps = {
 
 /** The countdown in its ring (dial.tsx and time-field.tsx), without the custom-time editor. */
 function Dial({ secondsLeft, selectedTime, isRunning, caption }: DialProps) {
-  const { app } = useCopy();
   const time = formatTime(secondsLeft);
 
   return (
-    <section aria-label={app.popup.timer} className="relative mx-auto mt-2 mb-1 size-49">
+    <div className="relative mx-auto mt-2 mb-1 size-49">
       <ProgressRing isRunning={isRunning} progress={secondsLeft / selectedTime} />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5 text-center">
         <p
@@ -187,7 +185,7 @@ function Dial({ secondsLeft, selectedTime, isRunning, caption }: DialProps) {
         </p>
         <p className="min-h-4.5" />
       </div>
-    </section>
+    </div>
   );
 }
 

@@ -65,6 +65,7 @@
   --text-sm: 13px;
   --text-base: 14px;
   --text-md: 15px;
+  --text-lg: 17px;
   --text-2xl: 25px;
   /* The popup's countdown; the smaller one fits "h:mm:ss" in the ring. */
   --text-display-sm: 36px;

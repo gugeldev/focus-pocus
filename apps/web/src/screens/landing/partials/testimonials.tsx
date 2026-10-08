@@ -1,13 +1,15 @@
 'use client';
 
 import { cx } from '@focus-pocus/ui/cx';
-import { IconExternal, IconStar } from '@/components/icons';
-import { Reveal } from '@/components/ui/reveal';
+import { IconExternal } from '@focus-pocus/ui/icons';
+import { useMemo } from 'react';
+import { IconStar } from '@/components/icons';
+import { Reveal } from '@/components/motion';
 import { useCopy, useLocale } from '@/lib/i18n-provider';
 import { links } from '@/lib/links';
 import { anchors } from '@/lib/routes';
 import { type Review, reviewStars, reviews } from '../reviews';
-import { Section } from './section';
+import { Container } from './section';
 import { SectionHeading } from './section-heading';
 
 /** Two rows, alternating reviews, so neighbours in the list never sit side by side. */
@@ -23,16 +25,22 @@ const rows = [
  */
 export function Testimonials() {
   const { site } = useCopy();
+  const locale = useLocale();
+  // One formatter for every card: there are dozens of them.
+  const formatDate = useMemo(() => {
+    const format = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' });
+    return (date: string) => format.format(new Date(date));
+  }, [locale]);
 
   return (
-    <div className="py-16 md:py-24" id={anchors.reviews}>
-      <Section className="py-0 md:py-0">
+    <section className="py-16 md:py-24" id={anchors.reviews}>
+      <Container>
         <SectionHeading
           eyebrow={site.reviews.eyebrow}
-          intro={[site.reviews.intro, site.reviews.original].filter(Boolean).join(' ')}
+          intro={site.reviews.intro}
           title={site.reviews.title}
         />
-      </Section>
+      </Container>
       <Reveal className="mb-10 flex justify-center px-4" order={1}>
         <p className="inline-flex items-center gap-2.5 rounded-full bg-surface py-2 pr-4 pl-3 text-sm text-text-muted">
           <Stars />
@@ -41,10 +49,10 @@ export function Testimonials() {
       </Reveal>
       <Reveal className="flex flex-col gap-3 mask-x-from-85% mask-x-to-100%" order={2}>
         {rows.map((row, index) => (
-          <ReviewRow key={row[0]?.name} reverse={index === 1} row={row} />
+          <ReviewRow formatDate={formatDate} key={row[0]?.name} reverse={index === 1} row={row} />
         ))}
       </Reveal>
-      <Section className="flex justify-center py-0 pt-10 md:py-0 md:pt-12">
+      <Container className="flex justify-center pt-10 md:pt-12">
         <a
           className="focus-ring group inline-flex items-center gap-2 rounded-sm text-base text-text-muted transition-colors duration-(--duration) ease-fluid hover:text-text"
           href={links.chromeReviews}
@@ -56,8 +64,8 @@ export function Testimonials() {
             size={14}
           />
         </a>
-      </Section>
-    </div>
+      </Container>
+    </section>
   );
 }
 
@@ -71,7 +79,11 @@ const REPEATS_PER_HALF = 2;
  * One row: two identical halves, each its reviews repeated, sliding by one
  * half per turn. Only the first pass is read out; the repeats are hidden.
  */
-function ReviewRow({ row, reverse }: { row: Review[]; reverse: boolean }) {
+type RowProps = { row: Review[]; reverse: boolean; formatDate: DateFormatter };
+
+type DateFormatter = (date: string) => string;
+
+function ReviewRow({ row, reverse, formatDate }: RowProps) {
   const passes = Array.from({ length: REPEATS_PER_HALF * 2 }, (_, pass) => pass);
 
   return (
@@ -85,7 +97,7 @@ function ReviewRow({ row, reverse }: { row: Review[]; reverse: boolean }) {
         {passes.map((pass) =>
           row.map((review) => (
             <li aria-hidden={pass > 0 || undefined} className="pr-3" key={`${pass}-${review.name}`}>
-              <ReviewCard review={review} />
+              <ReviewCard formatDate={formatDate} review={review} />
             </li>
           )),
         )}
@@ -113,12 +125,7 @@ function Stars() {
 }
 
 /** A review as written, opened by a violet quote mark, under its stars, name and date. */
-function ReviewCard({ review }: { review: Review }) {
-  const locale = useLocale();
-  const date = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(
-    new Date(review.date),
-  );
-
+function ReviewCard({ review, formatDate }: { review: Review; formatDate: DateFormatter }) {
   return (
     <figure className="flex h-full w-80 flex-col gap-4 rounded-panel bg-surface p-7">
       <div className="flex items-center justify-between">
@@ -143,7 +150,7 @@ function ReviewCard({ review }: { review: Review }) {
         <span className="flex min-w-0 flex-col gap-0.5">
           <span className="truncate text-sm font-medium">{review.name}</span>
           <time className="text-xs text-text-faint" dateTime={review.date}>
-            {date}
+            {formatDate(review.date)}
           </time>
         </span>
       </figcaption>

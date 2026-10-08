@@ -1,8 +1,9 @@
 'use client';
 
 import { getNativeName } from '@focus-pocus/locales';
+import { Brand } from '@focus-pocus/ui/brand';
 import type { ReactNode } from 'react';
-import { Brand } from '@/components/brand';
+import logo from '@/assets/logo.png';
 import { LOCALES } from '@/lib/i18n';
 import { useCopy, useLocale } from '@/lib/i18n-provider';
 import { links } from '@/lib/links';
@@ -20,7 +21,7 @@ export function SiteFooter() {
     <footer className="mt-8 border-t border-border">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-x-8 gap-y-10 px-4 py-14 sm:px-6 md:grid-cols-[minmax(0,2fr)_repeat(3,minmax(0,1fr))]">
         <div className="col-span-2 flex flex-col items-start gap-4 md:col-span-1">
-          <Brand size="lg" />
+          <Brand logoSrc={logo.src} size="lg" />
           <p className="max-w-xs text-text-muted">{site.footer.tagline}</p>
         </div>
         <Column title={site.footer.get}>

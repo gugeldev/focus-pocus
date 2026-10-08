@@ -1,6 +1,6 @@
 'use client';
 
-import { Reveal } from '@/components/ui/reveal';
+import { Reveal } from '@/components/motion';
 import { useCopy } from '@/lib/i18n-provider';
 import { anchors } from '@/lib/routes';
 import { FocusScreenMock } from '../mocks/focus-screen-mock';

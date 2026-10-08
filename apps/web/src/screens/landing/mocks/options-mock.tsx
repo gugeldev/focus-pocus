@@ -1,5 +1,6 @@
 'use client';
 
+import { Brand } from '@focus-pocus/ui/brand';
 import { cx } from '@focus-pocus/ui/cx';
 import {
   IconAllowlist,
@@ -11,7 +12,7 @@ import {
   IconSupport,
 } from '@focus-pocus/ui/icons';
 import { type CSSProperties, useState } from 'react';
-import { Brand } from '@/components/brand';
+import logo from '@/assets/logo.png';
 import { useCopy } from '@/lib/i18n-provider';
 import { links } from '@/lib/links';
 import { BrowserFrame } from './browser-frame';
@@ -40,26 +41,23 @@ const navItemClasses =
 
 /** The settings page, working: switch tabs, flip the switches, add and remove sites. */
 export function OptionsMock() {
-  const { app, site } = useCopy();
+  const { site } = useCopy();
   const [activeTab, setActiveTab] = useState<TabId>('blocklist');
   const [lists, setLists] = useState(initialLists);
-  const [switches, setSwitches] = useState<Switches>({ 'victorious-notification': true });
+  const [switches, setSwitches] = useState<Switches>({});
 
   return (
     <BrowserFrame label={site.mocks.settings} url="chrome-extension://focuspocus/options">
       <div className="grid grid-cols-[minmax(0,1fr)] gap-3 p-3 wide:h-160 wide:grid-cols-[248px_minmax(0,1fr)]">
-        <nav
-          aria-label={app.options.sections}
-          className="flex flex-col p-1 wide:px-3 wide:pt-2 wide:pb-3"
-        >
-          <Brand className="pt-2 pb-3 wide:pb-7" size="md" />
+        <div className="flex flex-col p-1 wide:px-3 wide:pt-2 wide:pb-3">
+          <Brand logoSrc={logo.src} className="pt-2 pb-3 wide:pb-7" size="md" />
           <NavTabs
             activeTab={activeTab}
             counts={{ blocklist: lists.blocklist.length, allowlist: lists.allowlist.length }}
             onSelect={setActiveTab}
           />
           <SidebarFooter />
-        </nav>
+        </div>
         <div className="min-w-0 overflow-y-auto rounded-xl bg-surface shadow-card">
           {activeTab === 'general' ? (
             <GeneralPane onChange={setSwitches} switches={switches} />
@@ -67,7 +65,7 @@ export function OptionsMock() {
             <ListPane
               isActiveMode={(activeTab === 'allowlist') === Boolean(switches['allowlist-mode'])}
               key={activeTab}
-              onChange={(urls) => setLists({ ...lists, [activeTab]: urls })}
+              onChange={(urls) => setLists((current) => ({ ...current, [activeTab]: urls }))}
               type={activeTab}
               urls={lists[activeTab]}
             />

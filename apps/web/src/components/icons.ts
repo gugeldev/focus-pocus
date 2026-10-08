@@ -4,7 +4,6 @@
  * everything the two share. Deep imports, one module per glyph.
  */
 
-export { ArrowUpRightIcon as IconExternal } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
 export { BellRingingIcon as IconAlerts } from '@phosphor-icons/react/dist/csr/BellRinging';
 export { GithubLogoIcon as IconGithub } from '@phosphor-icons/react/dist/csr/GithubLogo';
 export { ShieldCheckIcon as IconPrivate } from '@phosphor-icons/react/dist/csr/ShieldCheck';

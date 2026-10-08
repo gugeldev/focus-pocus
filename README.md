@@ -65,7 +65,7 @@ bun run dev:web #http://localhost:3003
 The repository is a bun workspace:
 
 - `apps/extension`: the browser extension.
-- `apps/web`: the website (Next.js), with working copies of the popup and the settings page.
+- `apps/web`: the website (Next.js), with working copies of the popup, the settings page and the focus screen.
 - `packages/ui`: the design system both apps are built with.
 - `packages/locales`: the extension's text in English, Portuguese and Spanish.
 

@@ -10,8 +10,12 @@ The same as the extension's (root AGENTS.md section 5.2):
   page lives in `src/screens/<name>/page.tsx`, with `partials/` for the parts only it uses.
 - `src/screens/landing/mocks/` holds the **working drawings of the extension**: the popup, the
   settings page and the focus screen, in a `BrowserFrame` where the extension shows a page.
-- `src/components/` is for what the page and its sections share (header, footer, brand, store
-  buttons); the design-system kit is `@focus-pocus/ui` (`packages/ui`), never a copy of it.
+- `src/components/` is for what the page and its sections share (header, footer, store buttons,
+  icons, and `motion.tsx`: `Rise` for what is on screen at load, `Reveal` for what scrolls into
+  view); the design-system kit, `Brand` included, is `@focus-pocus/ui` (`packages/ui`), never a
+  copy of it.
+- `Section` is a band of the page; `Container` is its column alone, for a band that spans the
+  full width (the reviews).
 - `src/proxy.ts` sends a path without a locale to the browser's best match.
 
 ## Rules
@@ -19,7 +23,7 @@ The same as the extension's (root AGENTS.md section 5.2):
 - **Tokens only**, from `@focus-pocus/ui/theme.css` plus the page-sized ones in
   `src/app/globals.css`, the one file here allowed to hold a raw color or size.
 - **The drawings mirror the extension.** They use the kit's controls and repeat the class strings
-  of the screens they draw; each file says which. Change a screen in `apps/extension`, change its
+  (and small constants, like the duration presets) of the screens they draw; each file says which. Change a screen in `apps/extension`, change its
   drawing. They never reach storage or the network (no favicons: a letter tile instead).
 - **Copy:** the page's text is in `src/locales/` (`en` the source, the others typed against it);
   the drawings speak the extension's own copy from `@focus-pocus/locales`. A component gets both
@@ -31,8 +35,11 @@ The same as the extension's (root AGENTS.md section 5.2):
 - **Reviews** (`src/screens/landing/reviews.ts`) are real ones from the Chrome Web Store, copied as
   written with the name and date: never invent, edit or translate one, and never add a rating the
   source does not show.
-- `SITE_URL` (optional) is the deployed origin, so the language alternates in the metadata are
-  absolute URLs.
+- `SITE_URL` is the deployed origin; set it in production. The language alternates need absolute
+  URLs, so without it they are left out of the metadata.
+- Only `/en`, `/pt-BR` and `/es` exist (`dynamicParams = false`). Any other path under them hits
+  `[locale]/[...rest]`, which calls `notFound()`, so the locale's `not-found` page renders in its
+  language (a not-found file alone does not catch unmatched URLs).
 
 <!-- BEGIN:nextjs-agent-rules -->
 

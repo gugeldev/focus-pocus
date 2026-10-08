@@ -4,15 +4,20 @@ import type { ReactNode } from 'react';
 type Props = {
   id?: string;
   children: ReactNode;
-  /** How the section lays out its children; the frame and padding stay. */
+  /** How it lays out its children; the frame (and a Section's padding) stays. */
   className?: string;
 };
 
-/** A band of the page: centered, one gutter, and an anchor the header links to. */
+/** The page's column: centered, one gutter, no vertical space of its own. */
+export function Container({ children, className }: Omit<Props, 'id'>) {
+  return <div className={cx('mx-auto max-w-6xl px-4 sm:px-6', className)}>{children}</div>;
+}
+
+/** A band of the page: the column with room above and below, and an anchor the header links to. */
 export function Section({ id, children, className }: Props) {
   return (
-    <section className={cx('mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24', className)} id={id}>
-      {children}
+    <section className="py-16 md:py-24" id={id}>
+      <Container className={className}>{children}</Container>
     </section>
   );
 }

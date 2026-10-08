@@ -15,7 +15,10 @@ export function proxy(request: NextRequest) {
   url.pathname = named
     ? ['', named, ...rest].join('/')
     : `/${preferredLocale(request.headers.get('accept-language'))}${url.pathname === '/' ? '' : url.pathname}`;
-  return NextResponse.redirect(url);
+  const response = NextResponse.redirect(url);
+  // The target depends on the browser's languages: a cache must not hand one visitor's to the next.
+  response.headers.set('Vary', 'Accept-Language');
+  return response;
 }
 
 export const config = {

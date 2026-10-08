@@ -1,4 +1,4 @@
-import { Reveal } from '@/components/ui/reveal';
+import { Reveal } from '@/components/motion';
 
 type Props = {
   eyebrow: string;

@@ -66,9 +66,8 @@ export const en = {
   reviews: {
     eyebrow: 'Reviews',
     title: 'People who got their focus back',
-    intro: 'Real reviews from the Chrome Web Store, as they were written.',
-    /** Under the intro on the pages whose language is not the reviews' own; empty on pt-BR. */
-    original: 'In their original Portuguese.',
+    intro:
+      'Real reviews from the Chrome Web Store, as they were written, in their original Portuguese.',
     rating: '5.0 on the Chrome Web Store',
     stars: (count: number) => `${count} stars`,
     all: 'See them all on the Chrome Web Store',
@@ -91,6 +90,10 @@ export const en = {
     /** Around the maintainer's linked handle: "Made by @gugeldev and contributors." */
     madeBy: 'Made by',
     andContributors: 'and contributors.',
+  },
+  notFound: {
+    title: 'This page does not exist.',
+    back: 'Back to FocusPocus',
   },
   mocks: {
     popup: 'The FocusPocus popup',

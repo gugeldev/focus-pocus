@@ -8,11 +8,13 @@ import { IconAdd, IconAllowlist, IconBlocklist, IconRemove } from '@focus-pocus/
 import { Input } from '@focus-pocus/ui/input';
 import { Segmented } from '@focus-pocus/ui/segmented';
 import { Switch } from '@focus-pocus/ui/switch';
-import { type FormEvent, type ReactNode, useId, useState } from 'react';
+import { type FormEvent, type ReactNode, useState } from 'react';
 import { useCopy } from '@/lib/i18n-provider';
 
 // The settings page's two kinds of tab, drawn from
-// apps/extension/src/screens/options/partials/ with the same classes.
+// apps/extension/src/screens/options/partials/ with the same classes. Plain
+// elements instead of the page's sections and headings: inside the drawing
+// they are a picture, not landmarks of the website.
 
 export type ListType = 'blocklist' | 'allowlist';
 
@@ -38,33 +40,26 @@ type TabPageProps = {
 /** tab-page.tsx: title, description and content in one centered column. */
 function TabPage({ title, description, badge, children }: TabPageProps) {
   return (
-    <section className="mx-auto flex w-full max-w-160 animate-page-in flex-col gap-7 px-5 py-8 wide:px-8 wide:py-10">
-      <header>
+    <div className="mx-auto flex w-full max-w-160 animate-page-in flex-col gap-7 px-5 py-8 wide:px-8 wide:py-10">
+      <div>
         <div className="flex items-center gap-3.5">
           <p className="text-2xl leading-title font-bold tracking-title">{title}</p>
           {badge}
         </div>
         <p className={cx('text-md text-text-muted', badge ? 'mt-3' : 'mt-2')}>{description}</p>
-      </header>
+      </div>
       {children}
-    </section>
+    </div>
   );
 }
 
 /** settings-section.tsx: a titled group of rows under a hairline. */
 function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
-  const titleId = useId();
-
   return (
-    <section
-      aria-labelledby={titleId}
-      className="flex flex-col gap-3 not-first-of-type:border-t not-first-of-type:border-border not-first-of-type:pt-7"
-    >
-      <p className="text-xs font-semibold tracking-label text-text-faint uppercase" id={titleId}>
-        {title}
-      </p>
+    <div className="flex flex-col gap-3 not-first-of-type:border-t not-first-of-type:border-border not-first-of-type:pt-7">
+      <p className="text-xs font-semibold tracking-label text-text-faint uppercase">{title}</p>
       <div className="flex flex-col">{children}</div>
-    </section>
+    </div>
   );
 }
 

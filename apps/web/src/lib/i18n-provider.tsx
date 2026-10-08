@@ -1,9 +1,9 @@
 'use client';
 
-import { createContext, type ReactNode, use, useMemo } from 'react';
+import { createContext, type ReactNode, use } from 'react';
 import { type Copy, getCopy, type Locale } from '@/lib/i18n';
 
-const LocaleContext = createContext<Locale>('en');
+const LocaleContext = createContext<Locale | null>(null);
 
 /** Mounted once by the root layout with the locale from the URL. */
 export function I18nProvider({ locale, children }: { locale: Locale; children: ReactNode }) {
@@ -11,7 +11,9 @@ export function I18nProvider({ locale, children }: { locale: Locale; children: R
 }
 
 export function useLocale(): Locale {
-  return use(LocaleContext);
+  const locale = use(LocaleContext);
+  if (!locale) throw new Error('useLocale: no I18nProvider above this component');
+  return locale;
 }
 
 /**
@@ -19,7 +21,5 @@ export function useLocale(): Locale {
  * of the extension. A component reads it here, in whichever component shows it.
  */
 export function useCopy(): Copy {
-  const locale = useLocale();
-
-  return useMemo(() => getCopy(locale), [locale]);
+  return getCopy(useLocale());
 }

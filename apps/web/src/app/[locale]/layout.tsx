@@ -11,6 +11,9 @@ const jakarta = Plus_Jakarta_Sans({
   variable: '--font-jakarta',
 });
 
+// Only the three locales exist; any other first segment is a 404.
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }
@@ -20,17 +23,21 @@ export async function generateMetadata({ params }: LayoutProps<'/[locale]'>): Pr
   if (!isLocale(locale)) return {};
 
   const { meta } = getCopy(locale).site;
+  // The deployed origin. The language alternates need absolute URLs, so
+  // without it (a local build) they are left out rather than relative.
+  const siteUrl = process.env.SITE_URL;
   return {
-    // The deployed origin, so the language alternates resolve to absolute URLs.
-    metadataBase: process.env.SITE_URL ? new URL(process.env.SITE_URL) : undefined,
+    metadataBase: siteUrl ? new URL(siteUrl) : undefined,
     title: meta.title,
     description: meta.description,
-    alternates: {
-      languages: {
-        ...Object.fromEntries(LOCALES.map((other) => [other, `/${other}`])),
-        'x-default': '/',
-      },
-    },
+    alternates: siteUrl
+      ? {
+          languages: {
+            ...Object.fromEntries(LOCALES.map((other) => [other, `/${other}`])),
+            'x-default': '/',
+          },
+        }
+      : undefined,
     openGraph: { title: meta.title, description: meta.description, type: 'website' },
   };
 }

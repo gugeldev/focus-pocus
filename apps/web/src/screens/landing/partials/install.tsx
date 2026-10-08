@@ -2,8 +2,8 @@
 
 import { ButtonLink } from '@focus-pocus/ui/button';
 import { IconGithub } from '@/components/icons';
+import { Reveal } from '@/components/motion';
 import { StoreButtons } from '@/components/store-buttons';
-import { Reveal } from '@/components/ui/reveal';
 import { useCopy } from '@/lib/i18n-provider';
 import { links } from '@/lib/links';
 import { anchors } from '@/lib/routes';
@@ -22,7 +22,7 @@ export function Install() {
         />
         <div
           aria-hidden="true"
-          className="absolute -top-1/2 left-1/2 -z-10 h-full w-4/5 -translate-x-1/2 rounded-full bg-radial-[closest-side] from-glow to-transparent"
+          className="absolute -top-1/2 left-1/2 -z-10 h-full w-4/5 -translate-x-1/2 rounded-full bg-radial-[closest-side] from-accent-solid/28 to-transparent"
         />
         <h2 className="text-balance text-section font-medium tracking-section">
           {site.install.title}

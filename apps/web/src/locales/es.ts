@@ -63,8 +63,8 @@ export const es: SiteCopy = {
   reviews: {
     eyebrow: 'Reseñas',
     title: 'Quienes recuperaron el foco',
-    intro: 'Reseñas reales de la Chrome Web Store, tal como fueron escritas.',
-    original: 'En su portugués original.',
+    intro:
+      'Reseñas reales de la Chrome Web Store, tal como fueron escritas, en su portugués original.',
     rating: '5,0 en la Chrome Web Store',
     stars: (count: number) => `${count} estrellas`,
     all: 'Verlas todas en la Chrome Web Store',
@@ -86,6 +86,10 @@ export const es: SiteCopy = {
     license: 'Licencia MIT',
     madeBy: 'Hecho por',
     andContributors: 'y colaboradores.',
+  },
+  notFound: {
+    title: 'Esta página no existe.',
+    back: 'Volver a FocusPocus',
   },
   mocks: {
     popup: 'El popup de FocusPocus',

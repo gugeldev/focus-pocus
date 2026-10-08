@@ -133,7 +133,7 @@ apps/extension/src/
 │                         # setting-row, locked-notice, active-mode-badge, general-tab,
 │                         # language-picker, site-list-tab, add-site-form, site-list, site-row,
 │                         # site-icon, empty-list
-├── components/           # used by two or more screens: brand, toaster, site-lists (ListType, list icons)
+├── components/           # used by two or more screens: toaster, site-lists (ListType, list icons)
 ├── styles/theme.css      # Tailwind entry: Tailwind, the design system (packages/ui) and the font (see 5.1)
 ├── types/css.d.ts        # `import css from './x.css?raw'` is a string; plain `.css` imports are side effects
 └── lib/                  # logic and hooks, shared by every context
@@ -159,6 +159,7 @@ static/                   # copied as-is to dist/<browser>/
 packages/ui/src/          # @focus-pocus/ui, shared with the website
 ├── theme.css             # design tokens (@theme), the focus-ring utility, base styles (see 5.1)
 ├── button.tsx            # Button and ButtonLink (a link that looks like a Button)
+├── brand.tsx             # the wand logo and the name; each app passes its own logo URL
 ├── icon-button.tsx, input.tsx, switch.tsx, segmented.tsx, progress-ring.tsx
 ├── icons.ts              # every Phosphor icon the extension uses, with domain names
 ├── cx.ts                 # joins class names, skipping the falsy ones
@@ -170,7 +171,7 @@ packages/locales/src/     # @focus-pocus/locales: en.ts (source + Messages type)
 
 - **The popup and the options page are React 19 + Tailwind CSS 4.** The background and the content script (including the focus screen) stay plain TypeScript: the focus screen lives in a shadow root on every page, where Tailwind 4 does not work (it relies on `@property`, which only registers at document level) and React would be dead weight.
 - Pages read storage through `useStorage(...keys)` (`src/lib/use-storage.ts`): `null` until the first read, then kept in sync by `storage.onChanged`. Its `update(values)` writes storage and the local copy at once.
-- Icons come from [Phosphor](https://phosphoricons.com) (`@phosphor-icons/react`), re-exported with domain names by `packages/ui/src/icons.ts`: `<IconSettings size={18} />` or `<IconStreak weight="fill" />`. Never hand-write SVG icons. The only inline SVG is the popup's progress ring.
+- Icons come from [Phosphor](https://phosphoricons.com) (`@phosphor-icons/react`), re-exported with domain names by `packages/ui/src/icons.ts`: `<IconSettings size={18} />` or `<IconStreak weight="fill" />`. Never hand-write SVG icons. The only inline SVGs are the popup's progress ring and, on the website, the Chrome and Firefox marks (paths from Simple Icons).
 - Every extension API goes through **`webextension-polyfill`** (`import browser from 'webextension-polyfill'`), which provides a Promise-based API. **It does not unify `action`/`browserAction`:** the code calls `browser.action.*`, which only exists in Chrome MV3. In Firefox MV2 those calls throw `TypeError`.
 - **All storage access goes through `src/lib/storage.ts`:** `getStorage(keys)`, `setStorage(values)` and `onStorageChanged(listener)` use the `StorageState` type (table 3.1). Do not call `browser.storage.local` outside that module.
 - **All background messages go through `src/lib/messages.ts`:** `sendTimerMessage(type)` on the sending side and `onTimerMessage(listener)` in the background, which ignores anything that is not a valid `TimerMessage`. Do not call `browser.runtime.sendMessage`/`onMessage` directly.
@@ -221,7 +222,7 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
 ### 3.5 Website (`apps/web`)
 - **Next.js 16** (App Router, Turbopack) + Tailwind CSS 4, statically rendered once per language. `apps/web/AGENTS.md` has its layout and rules.
 - One page: a centered hero over the **settings page** in a browser with the **popup** hanging off its edge, the **focus screen**, the features, real Chrome Web Store reviews sliding by, and the install links (Chrome Web Store, Firefox Add-ons, GitHub), in English, Brazilian Portuguese and Spanish (`/en`, `/pt-BR`, `/es`; `src/proxy.ts` sends `/` to the browser's best match).
-- **The drawings of the extension are working React copies** (`apps/web/src/screens/landing/mocks/`), built from `@focus-pocus/ui` and the extension's copy from `@focus-pocus/locales`, run by local state. They repeat the class strings of the screens they draw, and each file names its source. **When you change the popup, the settings page or the focus screen, update its drawing.**
+- **The drawings of the extension are working React copies** (`apps/web/src/screens/landing/mocks/`), built from `@focus-pocus/ui` and the extension's copy from `@focus-pocus/locales`, run by local state. They repeat the class strings (and small constants such as the duration presets) of the screens they draw, and each file names its source. **When you change the popup, the settings page or the focus screen, update its drawing.**
 - Store and GitHub links live in `apps/web/src/lib/links.ts`.
 
 ---
@@ -313,7 +314,7 @@ The look is dark, violet and **minimal**, modeled on the maintainer's heysusi se
 - **Text** has three levels plus the placeholder: `--text`, `--text-muted`, `--text-faint`, `--text-placeholder`.
 - **Accent** (one flat violet, `--accent`) marks what is live, active or primary: the running ring, the active nav icon, focus rings, switches that are on. Filled violet that carries text (the primary button) uses the darker `--accent-solid` with **white** text, so it keeps 4.5:1 contrast. Never a large fill, a gradient or a glow.
 - **Danger** (`--danger*`) is for giving up and errors only.
-- **Controls** in `packages/ui/src/`: `Button` and `ButtonLink` (`variant` primary/secondary/danger/danger-solid, `size` md/lg), `ProgressRing`, `IconButton` (`icon`, `tone` neutral/danger), `Input`, `Switch`, `Segmented`; toasts are `toast()` from `src/lib/toast.ts`, drawn by `src/components/toaster.tsx`. Extend these instead of writing one-offs. Pass `pill` to `Button`, `IconButton` or `Segmented` to round it fully; the popup uses pills everywhere. A control's variants never set the same property as its base, so there is no class-order fight (and no `tailwind-merge`).
+- **Controls** in `packages/ui/src/`: `Button` and `ButtonLink` (`variant` primary/secondary/danger/danger-solid, `size` md/lg), `ProgressRing`, `IconButton` (`icon`, `tone` neutral/danger), `Input`, `Switch`, `Segmented`, `Brand`; toasts are `toast()` from `src/lib/toast.ts`, drawn by `src/components/toaster.tsx`. Extend these instead of writing one-offs. Pass `pill` to `Button`, `IconButton` or `Segmented` to round it fully; the popup uses pills everywhere. A control's variants never set the same property as its base, so there is no class-order fight (and no `tailwind-merge`).
 - **Motion:** CSS only. Entering takes `--duration-enter` (220ms), leaving `--duration-exit` (120ms), moving `--duration-layout`, all on `ease-fluid`; `ease-spring` is for small playful pops. Keyframes are `--animate-*` tokens in `theme.css`. `prefers-reduced-motion` is handled once at the end of `theme.css` (and separately in `overlay.css`).
 - **Focus:** a 2px accent ring offset by 2px on things you press (the `focus-ring` utility, built into `Button` and `IconButton`); inputs only lighten their border.
 - **Icons:** Phosphor, always through `packages/ui/src/icons.ts` (see 5.2), 18px by default; pass `size` explicitly.
@@ -324,7 +325,7 @@ The look is dark, violet and **minimal**, modeled on the maintainer's heysusi se
 Same rules as the maintainer's `obd` project.
 
 - **An entry file only mounts.** `src/popup/index.tsx` and `src/options/index.tsx` are `mount(<XScreen />)` and nothing else. The page lives in `src/screens/<name>/page.tsx` (default export `XScreen`), with `partials/` for the components only that screen uses. Screen-only helpers and config (`tabs.ts`, `parse-custom-time.ts`) sit next to `page.tsx`.
-- **`packages/ui` is the design-system kit; `src/components/` is only what two or more screens use** (`Brand`, `Toaster`). When a partial gains a second user, move it up rather than importing across screen folders; when the website needs it too, it goes to `packages/ui`. Never import from one app into another.
+- **`packages/ui` is the design-system kit; `src/components/` is only what two or more screens use** (`Toaster`, `site-lists`). When a partial gains a second user, move it up rather than importing across screen folders; when the website needs it too, it goes to `packages/ui`. Never import from one app into another.
 - **Logic and hooks live in `src/lib/`** (`useStorage`, `toast`, `shareStreak`…). A hook only one file needs lives in that file (`useCelebration` in the popup's `page.tsx`, `useTimeEditor` in `time-field.tsx`).
 - **Icons come from `packages/ui/src/icons.ts` (`@focus-pocus/ui/icons`), never from the package directly.** Add one there with a domain name (`IconBlocklist`, not `Prohibit`), deep-imported per glyph (`@phosphor-icons/react/dist/csr/<Name>`): the package's root re-exports ~1500 icons and a development build bundles them all.
 - **A screen is a composition of named parts**, not one function full of ternaries. When a component crosses Biome's `noExcessiveCognitiveComplexity` (15), split it (a helper, a lookup table, a partial); never suppress it.

@@ -6,6 +6,7 @@
   "type": "module",
   "exports": {
     "./theme.css": "./src/theme.css",
+    "./brand": "./src/brand.tsx",
     "./button": "./src/button.tsx",
     "./cx": "./src/cx.ts",
     "./format-time": "./src/format-time.ts",

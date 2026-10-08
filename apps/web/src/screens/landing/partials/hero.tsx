@@ -1,9 +1,8 @@
 'use client';
 
+import { Rise } from '@/components/motion';
 import { StoreButtons } from '@/components/store-buttons';
-import { Rise } from '@/components/ui/rise';
 import { useCopy } from '@/lib/i18n-provider';
-import { anchors } from '@/lib/routes';
 import { OptionsMock } from '../mocks/options-mock';
 import { PopupMock } from '../mocks/popup-mock';
 import { Section } from './section';
@@ -17,7 +16,7 @@ export function Hero() {
   const { site } = useCopy();
 
   return (
-    <Section className="flex flex-col items-center pt-16 text-center md:pt-24">
+    <Section className="flex flex-col items-center text-center">
       <Rise className="max-w-4xl">
         <h1 className="text-balance text-hero font-medium tracking-hero">
           {site.hero.titleLead}{' '}
@@ -46,11 +45,11 @@ export function Hero() {
  */
 function Demo() {
   return (
-    <div className="relative scroll-mt-24 lg:pr-24" id={anchors.demo}>
+    <div className="relative lg:pr-24">
       {/* A violet halo under both, so they read as lit from the page. */}
       <div
         aria-hidden="true"
-        className="absolute inset-x-0 -inset-y-24 -z-10 rounded-full bg-radial-[closest-side] from-glow to-transparent"
+        className="absolute inset-x-0 -inset-y-24 -z-10 rounded-full bg-radial-[closest-side] from-accent-solid/28 to-transparent"
       />
       <div className="hidden lg:block">
         <OptionsMock />
