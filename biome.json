@@ -6,7 +6,15 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/node_modules", "!**/dist", "!**/*.min.*", "!**/*.svg"]
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/.next",
+      "!**/next-env.d.ts",
+      "!**/*.min.*",
+      "!**/*.svg"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -61,7 +69,7 @@
   },
   "overrides": [
     {
-      "includes": ["src/content/overlay.css"],
+      "includes": ["apps/extension/src/content/overlay.css"],
       "linter": {
         "rules": {
           "complexity": {

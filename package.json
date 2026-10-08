@@ -1,42 +1,28 @@
 {
   "name": "focus-pocus",
-  "version": "1.1.2",
-  "description": "A extension that will help you to focus on your work",
+  "private": true,
+  "description": "FocusPocus: the browser extension and its website",
+  "license": "MIT",
+  "packageManager": "bun@1.4.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev:chrome": "BROWSER_TARGET=chrome webpack --mode development",
-    "dev:firefox": "BROWSER_TARGET=firefox webpack --mode development",
-    "build:chrome": "BROWSER_TARGET=chrome webpack --mode production",
-    "build:firefox": "BROWSER_TARGET=firefox webpack --mode production",
-    "typecheck": "tsc --noEmit -p .",
+    "dev:chrome": "bun --filter @focus-pocus/extension dev:chrome",
+    "dev:firefox": "bun --filter @focus-pocus/extension dev:firefox",
+    "build:chrome": "bun --filter @focus-pocus/extension build:chrome",
+    "build:firefox": "bun --filter @focus-pocus/extension build:firefox",
+    "dev:web": "bun --filter @focus-pocus/web dev",
+    "build:web": "bun --filter @focus-pocus/web build",
+    "typecheck": "bun --filter '*' typecheck",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "prepare": "husky"
   },
-  "keywords": [],
-  "author": "@jotavetech",
-  "license": "ISC",
-  "packageManager": "bun@1.4.2",
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",
-    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
-    "@phosphor-icons/react": "^2.1.10",
-    "@tailwindcss/postcss": "^4.3.3",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "@types/webextension-polyfill": "^0.12.6",
-    "copy-webpack-plugin": "^14.0.0",
-    "css-loader": "^7.1.5",
     "husky": "^9.1.7",
-    "mini-css-extract-plugin": "^2.10.2",
-    "postcss": "^8.5.28",
-    "postcss-loader": "^8.2.1",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "tailwindcss": "^4.3.3",
-    "ts-loader": "^9.6.2",
-    "typescript": "^6.0.3",
-    "webextension-polyfill": "^0.12.0",
-    "webpack": "^5.111.1",
-    "webpack-cli": "^7.2.3"
+    "typescript": "^6.0.3"
   }
 }

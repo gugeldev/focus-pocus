@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@import "@focus-pocus/ui/theme.css";
+
+/*
+ * The website: the extension's design system (packages/ui), so the drawings
+ * of its screens are drawn with the same tokens and controls, plus the few
+ * tokens a page needs that a 320px popup does not. This is the one file in
+ * apps/web allowed to hold a raw value; components use the class names.
+ */
+@theme {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* The page's own type: fluid, so one size reads from a phone to a desktop. */
+  --text-hero: clamp(38px, 6vw, 64px);
+  --text-hero--line-height: 1.04;
+  --text-section: clamp(28px, 4vw, 42px);
+  --text-section--line-height: 1.1;
+  --text-lead: clamp(16px, 1.8vw, 18px);
+  --text-lead--line-height: 1.6;
+  --text-lg: 17px;
+  --tracking-hero: -0.04em;
+
+  /* The focus screen's sizes (apps/extension/src/content/overlay.css). */
+  --text-overlay-title: 30px;
+  --text-overlay-title--line-height: 1.2;
+  --text-overlay-time: 48px;
+  --text-overlay-time--line-height: 1;
+  --tracking-overlay-title: -0.025em;
+  --tracking-overlay-time: -0.035em;
+
+  /* The focus screen's backdrop: the canvas at 96%, over a blur. */
+  --color-overlay: rgb(11 10 16 / 0.96);
+  --radius-overlay-logo: 14px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* The sticky header's height, so a section it links to is not hidden under it. */
+    scroll-padding-top: 4rem;
+  }
+}

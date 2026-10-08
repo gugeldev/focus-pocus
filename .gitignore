@@ -3,3 +3,8 @@ dist
 focus-pocus.zip
 dist.crx
 dist.pem
+
+# next.js
+.next/
+next-env.d.ts
+*.tsbuildinfo

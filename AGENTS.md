@@ -9,11 +9,27 @@ Guide for AI agents (and humans) working in this repository. It describes **how 
 **FocusPocus** ("Stay focused as if under a magical spell") is an open source browser extension for **Chrome (Manifest V3)** and **Firefox (Manifest V2)**. It helps users stay focused with a **focus timer**: while the timer runs, distracting websites are covered by a blocking screen. Completing sessions builds a **streak**; giving up resets the whole streak.
 
 - Published name: `FocusPocus: Block Distractions & Stay Focused`
-- Current version: `1.1.2` (in `package.json` and both manifests; keep the three in sync)
+- Current version: `1.1.2` (in `apps/extension/package.json` and both manifests; keep the three in sync)
 - Original author: `@jotavetech`. Current remote: `gugeldev/focus-pocus`
 - Published on the [Chrome Web Store](https://chromewebstore.google.com/detail/focuspocus-in-magical-foc/mhfhegccdlndlipjicelombmchnpdebc) and [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/focuspocus-in-magical-focus/)
-- License: **MIT** (`LICENSE`). The `license` field in `package.json` says `ISC` and is outdated.
+- License: **MIT** (`LICENSE`).
+- Website: a landing page in `apps/web` (Next.js) that links to the stores and GitHub, with working drawings of the popup, the settings page and the focus screen (see section 3.5).
 - **Language: everything in this repository is in English**: code, comments, docs and commit messages (see section 5). The UI is translated into English, Brazilian Portuguese and Spanish (see 2.6).
+
+### 1.1 Repository layout (bun workspaces)
+
+```
+apps/
+├── extension/   # @focus-pocus/extension: the browser extension (webpack). Sections 2 to 5 describe it.
+└── web/         # @focus-pocus/web: the website (Next.js), see 3.5 and apps/web/AGENTS.md
+packages/
+├── ui/          # @focus-pocus/ui: the design system, tokens (theme.css) and the shared controls
+└── locales/     # @focus-pocus/locales: the extension's UI copy in every language
+```
+
+- **Paths in sections 2 to 5 are relative to `apps/extension/`** (`src/lib/storage.ts` is `apps/extension/src/lib/storage.ts`) unless they start with `packages/` or `apps/web/`.
+- The packages ship TypeScript source, no build step: webpack (ts-loader) and Next compile them with the app. Each exports its files one by one (`@focus-pocus/ui/button`, `@focus-pocus/ui/icons`…; see its `package.json` `exports`).
+- Biome, husky, `bunfig.toml`, `tsconfig.base.json` and the root scripts are shared by every workspace; dependencies are declared by the workspace that uses them.
 
 ---
 
@@ -40,7 +56,7 @@ There are two modes, toggled by the Blocklist / Allowlist control in the popup o
 - **Allowlist mode**: blocks **every** page whose URL **does not contain** any `allowlist` entry.
 - Matching uses `window.location.href.includes(entry)`: substring matching, not exact domains.
 - The "block" is the **focus screen** (`src/content/overlay.ts`): a `div#focus-pocus-overlay` host appended to `<html>` with an open **shadow root**, so the page's CSS cannot restyle it and its CSS cannot leak into the page. It is fixed, full screen, at the maximum `z-index`, blurs the page behind it and shows the logo and the remaining session time live. The logo comes from `assets/logo/` (a web-accessible resource in both manifests).
-  - Its styles are `src/content/overlay.css`, bundled into `content.js` as a string (see section 4) and injected into the shadow root. They repeat the colors of `src/styles/theme.css` because a shadow root cannot see the extension's stylesheets. The `:host` rules are `!important`: a page rule that matches the host beats a normal `:host` rule, but not an important one.
+  - Its styles are `src/content/overlay.css`, bundled into `content.js` as a string (see section 4) and injected into the shadow root. They repeat the colors of `packages/ui/src/theme.css` because a shadow root cannot see the extension's stylesheets. The `:host` rules are `!important`: a page rule that matches the host beats a normal `:host` rule, but not an important one.
   - A shadow root cannot declare `@font-face`, so the overlay registers Plus Jakarta Sans on the page's `document.fonts` under the private name `FocusPocus Jakarta`, loaded from `assets/fonts/` (a web-accessible resource in both manifests). If it fails, the system font stack takes over.
 - The content script runs on `<all_urls>`. On page load it applies the overlay if `isRunning` is already `true`. Then it reacts through `storage.onChanged`: when `isRunning` becomes `true` it applies the overlay, when it becomes `false` it fades it out, and every `timer` change updates the countdown. List or mode changes update the in-memory copy but only take effect on the next evaluation.
 
@@ -80,20 +96,20 @@ Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in
 ### 2.6 Languages (i18n)
 - The UI speaks **English** (`en`), **Brazilian Portuguese** (`pt-BR`) and **Spanish** (`es`): the popup, the options page, the toasts, the focus screen, the share text and the notification.
 - The **Language** section of the General tab is a segmented control: **Automatic** (the default) and each language, named in its own words. It writes `language` (table 3.1); every open page and every page's focus screen switch live through `storage.onChanged` (a focus screen already on screen keeps its text until it is shown again).
-- **Automatic** follows `browser.i18n.getUILanguage()`: any `pt-*` gets `pt-BR`, any `es-*` gets `es`, everything else English (`src/lib/i18n.ts`).
-- **The copy lives in `src/locales/`:** `en.ts` is the source and its shape is the `Messages` type; `pt-br.ts` and `es.ts` are typed `Messages`, so a missing or extra key fails `typecheck`. Text that interpolates is a function (`remove: (url) => ...`).
+- **Automatic** follows `browser.i18n.getUILanguage()`: any `pt-*` gets `pt-BR`, any `es-*` gets `es`, everything else English (`src/lib/i18n.ts`, on top of `findLocaleForTag` from `packages/locales`).
+- **The copy lives in `packages/locales/src/`** (shared with the website's drawings of the extension): `en.ts` is the source and its shape is the `Messages` type; `pt-br.ts` and `es.ts` are typed `Messages`, so a missing or extra key fails `typecheck`. Text that interpolates is a function (`remove: (url) => ...`).
   - React reads it with `useMessages()` (`src/lib/use-messages.tsx`); `mount()` wraps every page in the `MessagesProvider`, which reads `language`, sets `<html lang>` and renders nothing until the language is known (no English flash).
   - Outside React: the content script keeps the resolved `Locale` and passes it to `showOverlay()`; the background calls `loadMessages()` for the notification.
   - Lib helpers that show text take the copy as an argument (`shareStreak(streak, t.share)`) instead of reading the language themselves.
 - **The manifest** name and description come from `static/_locales/<en|pt_BR|es>/messages.json` (`__MSG_extName__`, `__MSG_extDescription__`, `default_locale: "en"`), so the browser and the stores show them in the browser's language. That follows the browser, not the in-app setting.
-- **Adding a language:** add `src/locales/<code>.ts` typed `Messages`, add one row to `languages` in `src/lib/i18n.ts` (its copy, its native name and the browser language prefix it answers to), and add `static/_locales/<code>/messages.json`.
+- **Adding a language:** add `packages/locales/src/<code>.ts` typed `Messages`, add one row to `languages` in `packages/locales/src/index.ts` (its copy, its native name and the language-tag prefix it answers to), add `static/_locales/<code>/messages.json`, and add the website's copy in `apps/web/src/locales/`.
 
 ---
 
 ## 3. Architecture
 
 ```
-src/
+apps/extension/src/
 ├── background/           # "background" entry: service worker (Chrome) / background script (Firefox)
 │   ├── index.ts          # message listener, 1 s setInterval, seeds storage defaults
 │   └── services/
@@ -109,7 +125,7 @@ src/
 │   ├── popup/
 │   │   ├── page.tsx      # PopupScreen: reads storage, composes the partials
 │   │   ├── parse-custom-time.ts
-│   │   └── partials/     # top-bar, streak-button, dial, progress-ring, time-field, session-settings, start-button
+│   │   └── partials/     # top-bar, streak-button, dial, time-field, session-settings, start-button
 │   └── options/
 │       ├── page.tsx      # OptionsScreen: tab state + location hash, sidebar + the open tab
 │       ├── tabs.ts       # the tabs and getTabFromHash
@@ -118,17 +134,13 @@ src/
 │                         # language-picker, site-list-tab, add-site-form, site-list, site-row,
 │                         # site-icon, empty-list
 ├── components/           # used by two or more screens: brand, toaster, site-lists (ListType, list icons)
-│   └── ui/               # the design-system kit: button, icon-button, input, switch, segmented, icons.ts
-├── locales/              # the UI copy: en.ts (source + Messages type), pt-br.ts, es.ts (see 2.6)
-├── styles/theme.css      # Tailwind entry: design tokens (@theme), font, base styles (see 5.1)
+├── styles/theme.css      # Tailwind entry: Tailwind, the design system (packages/ui) and the font (see 5.1)
 ├── types/css.d.ts        # `import css from './x.css?raw'` is a string; plain `.css` imports are side effects
 └── lib/                  # logic and hooks, shared by every context
-    ├── cx.ts                  # joins class names, skipping the falsy ones
     ├── mount.tsx              # renders a screen into #root with the Toaster, the theme CSS and the MessagesProvider
     ├── use-storage.ts         # useStorage(...keys): a storage slice kept in sync, plus an optimistic update
     ├── toast.ts               # toast(message, error?) and the store the Toaster reads
     ├── share-streak.ts        # shareStreak(streak, copy): copies a ready-made text, confirms with a toast
-    ├── format-time.ts         # "mm:ss" / "h:mm:ss", shared by the popup and the focus screen
     ├── play-popup-sounds.ts   # playSound("giveup" | "finished" | "button"), respects the switches
     ├── storage.ts             # typed storage.local contract: getStorage, setStorage, onStorageChanged, seedStorageDefaults
     ├── messages.ts            # typed background message contract: sendTimerMessage, onTimerMessage
@@ -143,11 +155,22 @@ static/                   # copied as-is to dist/<browser>/
     ├── logo/  icon-16/32/64/128.png, icon-32-active.png
     └── sounds/ finished.mp3, lose.wav, press.mp3
 # assets/fonts/ is not in static/: webpack copies it from @fontsource-variable/plus-jakarta-sans.
+
+packages/ui/src/          # @focus-pocus/ui, shared with the website
+├── theme.css             # design tokens (@theme), the focus-ring utility, base styles (see 5.1)
+├── button.tsx            # Button and ButtonLink (a link that looks like a Button)
+├── icon-button.tsx, input.tsx, switch.tsx, segmented.tsx, progress-ring.tsx
+├── icons.ts              # every Phosphor icon the extension uses, with domain names
+├── cx.ts                 # joins class names, skipping the falsy ones
+└── format-time.ts        # "mm:ss" / "h:mm:ss", shared by the popup, the focus screen and the website
+
+packages/locales/src/     # @focus-pocus/locales: en.ts (source + Messages type), pt-br.ts, es.ts,
+                          # index.ts (the languages table, getMessages, findLocaleForTag) (see 2.6)
 ```
 
 - **The popup and the options page are React 19 + Tailwind CSS 4.** The background and the content script (including the focus screen) stay plain TypeScript: the focus screen lives in a shadow root on every page, where Tailwind 4 does not work (it relies on `@property`, which only registers at document level) and React would be dead weight.
 - Pages read storage through `useStorage(...keys)` (`src/lib/use-storage.ts`): `null` until the first read, then kept in sync by `storage.onChanged`. Its `update(values)` writes storage and the local copy at once.
-- Icons come from [Phosphor](https://phosphoricons.com) (`@phosphor-icons/react`), re-exported with domain names by `src/components/ui/icons.ts`: `<IconSettings size={18} />` or `<IconStreak weight="fill" />`. Never hand-write SVG icons. The only inline SVG is the popup's progress ring.
+- Icons come from [Phosphor](https://phosphoricons.com) (`@phosphor-icons/react`), re-exported with domain names by `packages/ui/src/icons.ts`: `<IconSettings size={18} />` or `<IconStreak weight="fill" />`. Never hand-write SVG icons. The only inline SVG is the popup's progress ring.
 - Every extension API goes through **`webextension-polyfill`** (`import browser from 'webextension-polyfill'`), which provides a Promise-based API. **It does not unify `action`/`browserAction`:** the code calls `browser.action.*`, which only exists in Chrome MV3. In Firefox MV2 those calls throw `TypeError`.
 - **All storage access goes through `src/lib/storage.ts`:** `getStorage(keys)`, `setStorage(values)` and `onStorageChanged(listener)` use the `StorageState` type (table 3.1). Do not call `browser.storage.local` outside that module.
 - **All background messages go through `src/lib/messages.ts`:** `sendTimerMessage(type)` on the sending side and `onTimerMessage(listener)` in the background, which ignores anything that is not a valid `TimerMessage`. Do not call `browser.runtime.sendMessage`/`onMessage` directly.
@@ -195,6 +218,12 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
 - The code uses `browser.action` in both builds, but the Firefox manifest declares `browser_action` (see section 3).
 - Permissions in both: `storage` and `notifications`. The content script runs on `<all_urls>` and injects `content.js` (the focus screen's styles are bundled into it as a string).
 
+### 3.5 Website (`apps/web`)
+- **Next.js 16** (App Router, Turbopack) + Tailwind CSS 4, statically rendered once per language. `apps/web/AGENTS.md` has its layout and rules.
+- One page: the hero with the **popup**, the **settings page**, the **focus screen**, the features and the install links (Chrome Web Store, Firefox Add-ons, GitHub), in English, Brazilian Portuguese and Spanish (`/en`, `/pt-BR`, `/es`; `src/proxy.ts` sends `/` to the browser's best match).
+- **The drawings of the extension are working React copies** (`apps/web/src/screens/landing/mocks/`), built from `@focus-pocus/ui` and the extension's copy from `@focus-pocus/locales`, run by local state. They repeat the class strings of the screens they draw, and each file names its source. **When you change the popup, the settings page or the focus screen, update its drawing.**
+- Store and GitHub links live in `apps/web/src/lib/links.ts`.
+
 ---
 
 ## 4. Build and development
@@ -204,27 +233,31 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
   - `install.minimumReleaseAge = 604800`: bun only installs versions published at least 7 days ago. It protects against compromised packages; do not remove it.
   - `run.shell = "bun"`: scripts run in bun's shell on every OS, so `BROWSER_TARGET=chrome webpack` works without `cross-env`.
 - Build stack: **webpack 5 + webpack-cli 7 + ts-loader 9 + copy-webpack-plugin 14**, plus **postcss-loader + `@tailwindcss/postcss` + css-loader + mini-css-extract-plugin** for the pages' CSS. There is no dev server or HMR: `dev:*` rebuilds `dist/` on save (TSX and CSS, including new Tailwind classes) and you reopen the popup or reload the page. webpack runs on both Node and the bun runtime (`bun --bun run ...`).
-- TypeScript **6** with `strict: true`, `target: es2022`, `module: ES2022`, `rootDir: ./src`.
+- TypeScript **6** with `strict: true`, `target: es2022`, `moduleResolution: bundler`, `verbatimModuleSyntax`, shared by every workspace through `tsconfig.base.json`.
 - **Why not TypeScript 7:** TS 7 is the native (Go) compiler and lacks the JavaScript API that `ts-loader` uses, so the build breaks. To migrate, replace `ts-loader` with a transpile-only loader (e.g. `esbuild-loader` or `swc-loader`) and keep `tsc --noEmit` for type-checking.
 
+Run everything from the repository root; the root scripts forward to the workspace with `bun --filter`.
+
 ```bash
-bun install
-bun run dev:chrome      # webpack --mode development  -> dist/chrome (watch)
-bun run dev:firefox     # -> dist/firefox
+bun install             # every workspace, and the git hooks
+bun run dev:chrome      # webpack --mode development  -> apps/extension/dist/chrome (watch)
+bun run dev:firefox     # -> apps/extension/dist/firefox
 bun run build:chrome    # --mode production
 bun run build:firefox
-bun run typecheck       # tsc --noEmit
-bun run lint            # biome check .
+bun run dev:web         # next dev on http://localhost:3003
+bun run build:web       # next build
+bun run typecheck       # tsc --noEmit in every workspace
+bun run lint            # biome check . (the whole repository)
 bun run lint:fix        # biome check --write .
 ```
 
-- How webpack works here (`webpack.config.js`):
+- How webpack works here (`apps/extension/webpack.config.js`):
   - the `BROWSER_TARGET` variable (`chrome` | `firefox`) picks the manifest, which is copied as `manifest.json`;
-  - output goes to **`dist/<browser>/`**;
+  - output goes to **`apps/extension/dist/<browser>/`**;
   - four bundles are generated: `popup.js`, `background.js`, `content.js` and `options.js`, all at the root of `dist`;
   - the HTML pages reference them as `../popup.js` and `../options.js`;
   - `static/` is copied whole, plus the Plus Jakarta Sans `latin` and `latin-ext` woff2 files into `assets/fonts/`;
-  - `import './x.css'` goes through Tailwind (`postcss.config.mjs`) and is extracted next to its bundle as `popup.css` / `options.css`. css-loader runs with `url: false`, so the font URLs (`/assets/fonts/...`, absolute from the extension root) stay as written. CSS is minified in `production` mode only;
+  - `import './x.css'` goes through Tailwind (`postcss.config.mjs`; `packages/ui/src/theme.css` adds its own folder as a Tailwind `@source`, so the kit's classes are generated) and is extracted next to its bundle as `popup.css` / `options.css`. css-loader runs with `url: false`, so the font URLs (`/assets/fonts/...`, absolute from the extension root) stay as written. CSS is minified in `production` mode only;
   - `import css from './x.css?raw'` is the file as a string (`type: 'asset/source'`), which is how the focus screen gets its styles into a shadow root;
   - `performance.hints` is off: the extension loads from disk, so the web bundle-size warnings do not apply;
   - `output.clean` empties `dist/<browser>/` before every build, so removed files do not linger;
@@ -232,30 +265,32 @@ bun run lint:fix        # biome check --write .
   - **`watch: true` is hardcoded in the config**, so even the `build:*` scripts stay in watch mode (stop with Ctrl+C, or pass `--no-watch`: `bun run build:chrome --no-watch`);
   - `devtool: "source-map"`.
 - **Loading the extension:**
-  - Chrome: `chrome://extensions`, enable developer mode, "Load unpacked" and pick `dist/chrome`.
-  - Firefox: `about:debugging`, "Load Temporary Add-on" and pick `dist/firefox/manifest.json`.
+  - Chrome: `chrome://extensions`, enable developer mode, "Load unpacked" and pick `apps/extension/dist/chrome`.
+  - Firefox: `about:debugging`, "Load Temporary Add-on" and pick `apps/extension/dist/firefox/manifest.json`.
 - **There are no automated tests.** Validate in the browser, on both builds.
 - **Lint and formatting: Biome** (`biome.json`, same config as the maintainer's `obd` project):
   - single quotes, semicolons, trailing commas, 100-column lines, 2-space indentation;
   - `recommended` preset, plus `noExcessiveCognitiveComplexity`, `noUnusedVariables`/`noUnusedImports`, `useConst` and `useImportType` as errors;
   - Biome also checks HTML, CSS (with Tailwind directives enabled) and JSON (`static/`, manifests);
   - `noLabelWithoutControl` knows `Switch` and `Input` are inputs, so `<label>` can wrap them;
-  - override: `src/content/overlay.css` may use `!important`, because the focus screen's host has to beat the page's CSS;
+  - override: `apps/extension/src/content/overlay.css` may use `!important`, because the focus screen's host has to beat the page's CSS;
   - when a rule must be ignored locally, use `biome-ignore` **with the reason**.
 - **Git hooks (husky):** `bun install` enables them through the `prepare` script.
   - `pre-commit`: `bunx biome check --staged --no-errors-on-unmatched --error-on-warnings`. **Warnings block the commit too**, including the rules `biome.json` sets to `warn`: `noNonNullAssertion`, `noExplicitAny` and `noConsole` (`console.error`/`warn`/`info` are allowed).
   - `commit-msg`: rejects subjects that are not Conventional Commits or that contain non-ASCII characters (a heuristic for "English only"; see section 5). It reads the subject after `git stripspace`, like git does, and lets git's default merge, revert, `fixup!`, `squash!` and `amend!` subjects through.
   - `pre-push`: `bun run typecheck`.
-- **Dependencies:**
-  - runtime: none;
-  - dev: everything is a devDependency, including what ships in the build (`react`, `react-dom`, `@phosphor-icons/react`, `webextension-polyfill` in the bundles, Tailwind in the CSS, `@fontsource-variable/plus-jakarta-sans` as the font files).
-- `.gitignore` ignores `node_modules`, `dist`, `focus-pocus.zip`, `dist.crx` and `dist.pem`.
+- **Dependencies:** each workspace declares what it uses (bun's isolated installs only link a package's own dependencies into it).
+  - root: Biome, husky, TypeScript;
+  - extension: everything is a devDependency, including what ships in the build (`react`, `react-dom`, `@phosphor-icons/react`, `webextension-polyfill` in the bundles, Tailwind in the CSS, `@fontsource-variable/plus-jakarta-sans` as the font files);
+  - web: `next`, `react`, `react-dom`, `@phosphor-icons/react` and `simple-icons` (the Chrome and Firefox marks, which Phosphor does not draw);
+  - `packages/ui`: `@phosphor-icons/react`, with `react` as a peer.
+- `.gitignore` ignores `node_modules`, `dist`, `.next`, `next-env.d.ts`, `focus-pocus.zip`, `dist.crx` and `dist.pem`.
 
 ---
 
 ## 5. Conventions
 
-- **Everything in English:** code, comments, docs (including this file) and commit messages. UI text is never hardcoded: it goes in `src/locales/`, in all three languages (see 2.6).
+- **Everything in English:** code, comments, docs (including this file) and commit messages. UI text is never hardcoded: the extension's goes in `packages/locales/src/`, the website's in `apps/web/src/locales/`, in all three languages (see 2.6).
 - **Commits always follow [Conventional Commits](https://www.conventionalcommits.org):** `type(scope)!: subject`, in English, imperative mood, lowercase type.
   - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
   - Examples: `feat(popup): add pause button`, `fix(content): remove overlay when session ends`, `build(deps): bump webpack`.
@@ -269,18 +304,19 @@ bun run lint:fix        # biome check --write .
 
 ### 5.1 Design system
 
-The look is dark, violet and **minimal**, modeled on the maintainer's heysusi settings window: flat colors, no gradients, no glows, no decorative animation. Motion only explains a change of state. `src/styles/theme.css` holds the tokens as Tailwind theme variables (`bg-surface`, `text-text-muted`, `rounded-md`, `shadow-card`, `ease-fluid`, `duration-(--duration-enter)`, `animate-fade-up`…) and `src/components/ui/` the shared controls; pages only lay things out with utilities. Tailwind's default palette, type scale, letter spacing, radii, shadows and easings are switched off, so an off-token color, font size or radius has no utility; spacing and sizes keep Tailwind's 4px scale (`size-8`, `px-3.5`). An arbitrary value for any of those (`text-[#...]`, `text-[44px]`, `tracking-[...]`) is a smell: add a token. Arbitrary values are fine for layout math (`grid-cols-[...]`, `w-[calc(...)]`).
+The look is dark, violet and **minimal**, modeled on the maintainer's heysusi settings window: flat colors, no gradients, no glows, no decorative animation. Motion only explains a change of state. `packages/ui/src/theme.css` holds the tokens as Tailwind theme variables (`bg-surface`, `text-text-muted`, `rounded-md`, `shadow-card`, `ease-fluid`, `duration-(--duration-enter)`, `animate-fade-up`…) and `packages/ui/src/` the shared controls (used by the extension and the website); pages only lay things out with utilities. Tailwind's default palette, type scale, letter spacing, radii, shadows and easings are switched off, so an off-token color, font size or radius has no utility; spacing and sizes keep Tailwind's 4px scale (`size-8`, `px-3.5`). An arbitrary value for any of those (`text-[#...]`, `text-[44px]`, `tracking-[...]`) is a smell: add a token. Arbitrary values are fine for layout math (`grid-cols-[...]`, `w-[calc(...)]`).
 - **Cascade layers:** Chrome gives extension pages its own *unlayered* stylesheet (`body { font-family: <system>; font-size: 75% }`), which beats anything Tailwind puts in a layer. That is why the `body` rules in `theme.css` sit outside `@layer`.
+- **Each app's stylesheet** imports Tailwind, then `@focus-pocus/ui/theme.css`, then adds its font: the extension's `src/styles/theme.css` self-hosts it with `@font-face`, the website sets `--font-sans` to `next/font`'s variable. The website adds its page-sized tokens in `apps/web/src/app/globals.css`.
 
 - **Font:** Plus Jakarta Sans (variable), self-hosted. Never load fonts from a CDN.
 - **Surfaces** stack in one direction, never pure black: `--sunken` → `--canvas` → `--surface` → `--raised` → `--raised-hover`. Separation comes from surface and space; hairlines (`--border`) only divide content inside a surface.
 - **Text** has three levels plus the placeholder: `--text`, `--text-muted`, `--text-faint`, `--text-placeholder`.
 - **Accent** (one flat violet, `--accent`) marks what is live, active or primary: the running ring, the active nav icon, focus rings, switches that are on. Filled violet that carries text (the primary button) uses the darker `--accent-solid` with **white** text, so it keeps 4.5:1 contrast. Never a large fill, a gradient or a glow.
 - **Danger** (`--danger*`) is for giving up and errors only.
-- **Controls** in `src/components/ui/`: `Button` (`variant` primary/secondary/danger/danger-solid, `size` md/lg), `IconButton` (`icon`, `tone` neutral/danger), `Input`, `Switch`, `Segmented`; toasts are `toast()` from `src/lib/toast.ts`, drawn by `src/components/toaster.tsx`. Extend these instead of writing one-offs. Pass `pill` to `Button`, `IconButton` or `Segmented` to round it fully; the popup uses pills everywhere. A control's variants never set the same property as its base, so there is no class-order fight (and no `tailwind-merge`).
+- **Controls** in `packages/ui/src/`: `Button` and `ButtonLink` (`variant` primary/secondary/danger/danger-solid, `size` md/lg), `ProgressRing`, `IconButton` (`icon`, `tone` neutral/danger), `Input`, `Switch`, `Segmented`; toasts are `toast()` from `src/lib/toast.ts`, drawn by `src/components/toaster.tsx`. Extend these instead of writing one-offs. Pass `pill` to `Button`, `IconButton` or `Segmented` to round it fully; the popup uses pills everywhere. A control's variants never set the same property as its base, so there is no class-order fight (and no `tailwind-merge`).
 - **Motion:** CSS only. Entering takes `--duration-enter` (220ms), leaving `--duration-exit` (120ms), moving `--duration-layout`, all on `ease-fluid`; `ease-spring` is for small playful pops. Keyframes are `--animate-*` tokens in `theme.css`. `prefers-reduced-motion` is handled once at the end of `theme.css` (and separately in `overlay.css`).
 - **Focus:** a 2px accent ring offset by 2px on things you press (the `focus-ring` utility, built into `Button` and `IconButton`); inputs only lighten their border.
-- **Icons:** Phosphor, always through `src/components/ui/icons.ts` (see 5.2), 18px by default; pass `size` explicitly.
+- **Icons:** Phosphor, always through `packages/ui/src/icons.ts` (see 5.2), 18px by default; pass `size` explicitly.
 - **Logo:** the magic wand on violet (the Chrome Web Store icon, from the abandoned `gugeldev/focuspocus` project) in `static/assets/logo/` is used in the toolbar, the popup, the sidebar and the focus screen. `icon-32-active.png` is the same wand with a red dot, shown during a session.
 
 ### 5.2 React: layout and components
@@ -288,9 +324,9 @@ The look is dark, violet and **minimal**, modeled on the maintainer's heysusi se
 Same rules as the maintainer's `obd` project.
 
 - **An entry file only mounts.** `src/popup/index.tsx` and `src/options/index.tsx` are `mount(<XScreen />)` and nothing else. The page lives in `src/screens/<name>/page.tsx` (default export `XScreen`), with `partials/` for the components only that screen uses. Screen-only helpers and config (`tabs.ts`, `parse-custom-time.ts`) sit next to `page.tsx`.
-- **`src/components/ui/` is the design-system kit; `src/components/` is only what two or more screens use** (`Brand`, `Toaster`). When a partial gains a second user, move it up rather than importing across screen folders.
-- **Logic and hooks live in `src/lib/`** (`useStorage`, `toast`, `shareStreak`, `formatTime`…). A hook only one file needs lives in that file (`useCelebration` in the popup's `page.tsx`, `useTimeEditor` in `time-field.tsx`).
-- **Icons come from `src/components/ui/icons.ts`, never from the package directly.** Add one there with a domain name (`IconBlocklist`, not `Prohibit`), deep-imported per glyph (`@phosphor-icons/react/dist/csr/<Name>`): the package's root re-exports ~1500 icons and a development build bundles them all.
+- **`packages/ui` is the design-system kit; `src/components/` is only what two or more screens use** (`Brand`, `Toaster`). When a partial gains a second user, move it up rather than importing across screen folders; when the website needs it too, it goes to `packages/ui`. Never import from one app into another.
+- **Logic and hooks live in `src/lib/`** (`useStorage`, `toast`, `shareStreak`…). A hook only one file needs lives in that file (`useCelebration` in the popup's `page.tsx`, `useTimeEditor` in `time-field.tsx`).
+- **Icons come from `packages/ui/src/icons.ts` (`@focus-pocus/ui/icons`), never from the package directly.** Add one there with a domain name (`IconBlocklist`, not `Prohibit`), deep-imported per glyph (`@phosphor-icons/react/dist/csr/<Name>`): the package's root re-exports ~1500 icons and a development build bundles them all.
 - **A screen is a composition of named parts**, not one function full of ternaries. When a component crosses Biome's `noExcessiveCognitiveComplexity` (15), split it (a helper, a lookup table, a partial); never suppress it.
 - **Props are a `type Props`** next to the component (a second component in the same file names its own, e.g. `NavTabProps`); a one-prop component may type it inline (`{ streak }: { streak: number }`). Every component, and every prop whose meaning is not obvious, gets a `/** … */` comment saying what it is.
 - **Storage in React goes through `useStorage`**; a screen reads it once and passes values and callbacks down. Partials never reach storage, not even through a helper that does (`handleStartTimer`, `playSound` are called from the screen and handed down as callbacks).
@@ -305,7 +341,7 @@ Same rules as the maintainer's `obd` project.
 - **One release branch per upcoming version:** `release/<version>` (e.g. `release/1.2.0`), created from `main`. Only one release branch at a time.
 - **Every change goes through a pull request into the current release branch.** Work in a short-lived branch named like the commit type (`feat/pause-button`, `fix/overlay-flicker`, `build/bun-tooling`), open a PR to `release/<version>`, merge it, delete the branch.
 - **Releasing:**
-  1. On the release branch, bump the version in `package.json`, `manifest.chrome.json` and `manifest.firefox.json` (`chore(release): v1.2.0`).
+  1. On the release branch, bump the version in `apps/extension/package.json`, `manifest.chrome.json` and `manifest.firefox.json` (`chore(release): v1.2.0`).
   2. Open a PR from `release/<version>` to `main` and merge it.
   3. Tag the merge commit (`git tag v1.2.0 && git push origin v1.2.0`).
   4. Build both browsers, upload to the Chrome Web Store and Firefox Add-ons.
@@ -328,12 +364,13 @@ Same rules as the maintainer's `obd` project.
 
 ## 8. Checklist when changing something
 
-- [ ] Do `bun run lint`, `bun run typecheck` and both browser builds pass?
+- [ ] Do `bun run lint`, `bun run typecheck`, both browser builds and `bun run build:web` pass?
 - [ ] Changed a storage key? Update `StorageState` in `src/lib/storage.ts` and table 3.1, and check **every** context that reads it (background, content, popup, options).
 - [ ] New or changed UI follows 5.1 (tokens) and 5.2 (screens, partials, kit, icons)?
-- [ ] New or changed UI text is in `src/locales/` in **all three** languages (see 2.6)?
+- [ ] New or changed UI text is in `packages/locales/src/` (or the website's `apps/web/src/locales/`) in **all three** languages (see 2.6)?
+- [ ] Changed the popup, the settings page or the focus screen? Update its drawing on the website (see 3.5).
 - [ ] Added a permission or capability? Update **both** manifests.
-- [ ] Bumped the version? Update `package.json`, `manifest.chrome.json` and `manifest.firefox.json`.
+- [ ] Bumped the version? Update `apps/extension/package.json`, `manifest.chrome.json` and `manifest.firefox.json`.
 - [ ] Tested in **both** browsers (Chrome MV3 and Firefox MV2)?
 - [ ] Is the commit message a Conventional Commit in English?
 - [ ] Is the PR targeting the current release branch (not `main`)?
