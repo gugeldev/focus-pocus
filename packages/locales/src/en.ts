@@ -37,7 +37,6 @@ export const en = {
     streakTitle: 'Copy your streak to share it',
     /** Follows the streak count in the sidebar: "12 in a row". */
     inARow: 'in a row',
-    support: 'Support FocusPocus',
     general: {
       title: 'General',
       description:

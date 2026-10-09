@@ -9,5 +9,4 @@ export const links = {
   maintainer: 'https://github.com/gugeldev',
   issues: 'https://github.com/gugeldev/focus-pocus/issues',
   license: 'https://github.com/gugeldev/focus-pocus/blob/main/LICENSE',
-  support: 'https://www.pixme.bio/jotavetech',
 };

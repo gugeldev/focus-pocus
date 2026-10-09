@@ -20,7 +20,6 @@ export {
 export { CopyIcon as IconCopy } from '@phosphor-icons/react/dist/csr/Copy';
 export { FlameIcon as IconStreak } from '@phosphor-icons/react/dist/csr/Flame';
 export { GearSixIcon as IconSettings } from '@phosphor-icons/react/dist/csr/GearSix';
-export { HeartIcon as IconSupport } from '@phosphor-icons/react/dist/csr/Heart';
 export { MonitorIcon as IconThemeAuto } from '@phosphor-icons/react/dist/csr/Monitor';
 export { MoonIcon as IconThemeDark } from '@phosphor-icons/react/dist/csr/Moon';
 export { PlusIcon as IconAdd } from '@phosphor-icons/react/dist/csr/Plus';
