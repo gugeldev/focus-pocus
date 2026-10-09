@@ -16,7 +16,7 @@ function SmallTile() {
 
   return (
     <section className="relative isolate flex h-70 w-110 flex-col items-center justify-center overflow-hidden bg-canvas text-center">
-      <Backdrop />
+      <Backdrop size="sm" />
       <div className="relative grid size-28 place-items-center">
         <div className="absolute inset-0">
           <ProgressRing isRunning progress={0.62} />
