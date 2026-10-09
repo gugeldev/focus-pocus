@@ -80,7 +80,6 @@ export const ptBR: SiteCopy = {
     languages: 'Idiomas',
     source: 'Código-fonte',
     issues: 'Reportar um bug',
-    support: 'Apoie o FocusPocus',
     license: 'Licença MIT',
     madeBy: 'Feito por',
     andContributors: 'e contribuidores.',

@@ -6,15 +6,12 @@ import {
   IconAllowlist,
   IconBlocklist,
   type IconComponent,
-  IconExternal,
   IconGeneral,
   IconStreak,
-  IconSupport,
 } from '@focus-pocus/ui/icons';
 import { type CSSProperties, useState } from 'react';
 import logo from '@/assets/logo.png';
 import { useCopy } from '@/lib/i18n-provider';
-import { links } from '@/lib/links';
 import { BrowserFrame } from './browser-frame';
 import { GeneralPane, ListPane, type ListType, type Switches } from './options-panes';
 
@@ -140,7 +137,7 @@ function NavTabs({ activeTab, counts, onSelect }: NavTabsProps) {
   );
 }
 
-/** The streak and the support link at the sidebar's foot (sidebar-footer.tsx). */
+/** The streak at the sidebar's foot (sidebar-footer.tsx). */
 function SidebarFooter() {
   const { app } = useCopy();
 
@@ -152,20 +149,6 @@ function SidebarFooter() {
           <span className="tabular-nums">12</span> {app.options.inARow}
         </span>
       </span>
-      <a
-        className={cx(navItemClasses, 'group hover:bg-item-hover hover:text-text')}
-        href={links.support}
-        rel="noreferrer"
-        target="_blank"
-      >
-        <IconSupport aria-hidden="true" className="shrink-0" size={18} />
-        <span className="min-w-0 flex-1 truncate">{app.options.support}</span>
-        <IconExternal
-          aria-hidden="true"
-          className="shrink-0 text-text-faint opacity-0 transition-opacity duration-(--duration) ease-fluid group-hover:opacity-100 group-focus-visible:opacity-100"
-          size={14}
-        />
-      </a>
     </div>
   );
 }
