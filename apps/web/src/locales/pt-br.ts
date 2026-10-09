@@ -18,8 +18,8 @@ export const ptBR: SiteCopy = {
     firefox: 'Adicionar ao Firefox',
   },
   hero: {
-    titleLead: 'Mantenha o foco como se',
-    titleAccent: 'estivesse sob um feitiço',
+    titleLead: 'Transforme sua produtividade',
+    titleAccent: 'como um passe de mágica.',
     lead: 'Uma extensão que bloqueia os sites que te distraem enquanto o timer de foco roda.',
   },
   focusScreen: {

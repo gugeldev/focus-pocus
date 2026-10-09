@@ -21,8 +21,8 @@ export const en = {
   },
   hero: {
     /** The title's two lines; the second is set in the accent gradient. */
-    titleLead: 'Stay focused as if',
-    titleAccent: 'under a magical spell',
+    titleLead: 'Transform your productivity',
+    titleAccent: 'like magic.',
     lead: 'A browser extension that blocks distracting sites while your focus timer runs.',
   },
   focusScreen: {
