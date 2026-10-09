@@ -8,7 +8,7 @@ import { IconButton } from '@focus-pocus/ui/icon-button';
 import { IconAllowlist, IconBlocklist, IconSettings, IconStreak } from '@focus-pocus/ui/icons';
 import { ProgressRing } from '@focus-pocus/ui/progress-ring';
 import { Segmented } from '@focus-pocus/ui/segmented';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import logo from '@/assets/logo.png';
 import { useCopy } from '@/lib/i18n-provider';
 import { useInterval } from '@/lib/use-interval';
@@ -40,11 +40,14 @@ const phases = {
   armed: { label: 'confirmGiveUp', variant: 'danger-solid' },
 } as const;
 
+/** The streak the drawing opens with. */
+export const DEMO_STREAK = 12;
+
 /** A session that counts down for real; finishing it adds to the streak, giving up zeroes it. */
-function useDemoSession() {
+function useDemoSession(runningFrom: number | null) {
   const [selectedTime, setSelectedTime] = useState(1500);
-  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
-  const [streak, setStreak] = useState(12);
+  const [secondsLeft, setSecondsLeft] = useState(runningFrom);
+  const [streak, setStreak] = useState(DEMO_STREAK);
   const [isCelebrating, setIsCelebrating] = useState(false);
   const isRunning = secondsLeft !== null;
 
@@ -75,12 +78,21 @@ function useDemoSession() {
   };
 }
 
+type Props = {
+  /** Opens the drawing mid-session with this many seconds left; idle when null. */
+  runningFrom?: number | null;
+};
+
 /** The toolbar popup, working: pick a mode and a time, start, and give up (twice) or finish. */
-export function PopupMock() {
+export function PopupMock({ runningFrom = null }: Props) {
   const { app, site } = useCopy();
-  const session = useDemoSession();
+  const session = useDemoSession(runningFrom);
   const [mode, setMode] = useState<Mode>('blocklist');
-  const [caption, setCaption] = useState('');
+  // A page can show the popup twice (the store screenshots), so its radio groups need their own names.
+  const id = useId();
+  const [caption, setCaption] = useState(
+    runningFrom === null ? '' : (app.popup.encouragements[0] ?? ''),
+  );
 
   const start = () => {
     const { encouragements } = app.popup;
@@ -126,7 +138,7 @@ export function PopupMock() {
           <legend className="sr-only">{app.popup.sessionSettings}</legend>
           <Segmented
             disabled={session.isRunning}
-            name="demo-mode"
+            name={`${id}-mode`}
             onChange={setMode}
             options={[
               { value: 'blocklist', label: app.popup.modes.blocklist, icon: IconBlocklist },
@@ -138,7 +150,7 @@ export function PopupMock() {
           <Segmented
             className="tabular-nums"
             disabled={session.isRunning}
-            name="demo-duration"
+            name={`${id}-duration`}
             onChange={session.setSelectedTime}
             options={presets}
             pill

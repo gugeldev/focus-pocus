@@ -6,5 +6,8 @@ dist.pem
 
 # next.js
 .next/
+
+# the store screenshots, exported by `bun run store:shots`
+apps/web/store-shots/
 next-env.d.ts
 *.tsbuildinfo

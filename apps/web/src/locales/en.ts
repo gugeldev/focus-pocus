@@ -93,6 +93,45 @@ export const en = {
     title: 'This page does not exist.',
     back: 'Back to FocusPocus',
   },
+  store: {
+    /** The page that lays out the store screenshots before they are exported. */
+    title: 'Store screenshots',
+    /** The promo tiles' names in that page; the store asks for them at these sizes. */
+    tiles: {
+      small: 'Small promo tile (440x280)',
+      marquee: 'Marquee promo tile (1400x560)',
+    },
+    /** The small promo tile's line under the name. */
+    tagline: 'Block distractions. Stay focused.',
+    slides: {
+      timer: {
+        eyebrow: 'Focus timer',
+        // The landing page's headline, word for word: the store and the site open with the same claim.
+        title: 'Transform your productivity like magic.',
+        lead: 'Start a timer and the sites that steal your attention are blocked until it ends.',
+      },
+      focusScreen: {
+        eyebrow: 'Focus screen',
+        title: 'Distracting sites, blocked',
+        lead: 'Open one during a session and the focus screen covers it, with the time left.',
+      },
+      lists: {
+        eyebrow: 'Your rules',
+        title: 'Blocklist or allowlist',
+        lead: 'Block a handful of sites, or everything except the tools you work with.',
+      },
+      streak: {
+        eyebrow: 'Streak',
+        title: 'Any length. A streak to protect.',
+        lead: 'From 1 minute to 1 hour, or type your own. Every finished session adds one.',
+      },
+      yours: {
+        eyebrow: 'Private by design',
+        title: 'Speaks your language',
+        lead: 'English, Portuguese and Spanish. No account, no tracking: it all stays in your browser.',
+      },
+    },
+  },
   mocks: {
     popup: 'The FocusPocus popup',
     settings: 'The FocusPocus settings page',

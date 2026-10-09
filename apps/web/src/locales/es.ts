@@ -89,6 +89,42 @@ export const es: SiteCopy = {
     title: 'Esta página no existe.',
     back: 'Volver a FocusPocus',
   },
+  store: {
+    title: 'Imágenes de la tienda',
+    tiles: {
+      small: 'Mosaico pequeño (440x280)',
+      marquee: 'Mosaico de marquesina (1400x560)',
+    },
+    tagline: 'Bloquea distracciones. Mantén el foco.',
+    slides: {
+      timer: {
+        eyebrow: 'Temporizador de foco',
+        // The landing page's headline, word for word: the store and the site open with the same claim.
+        title: 'Transforma tu productividad como por arte de magia.',
+        lead: 'Inicia un temporizador y los sitios que roban tu atención quedan bloqueados hasta que termine.',
+      },
+      focusScreen: {
+        eyebrow: 'Pantalla de foco',
+        title: 'Sitios que distraen, bloqueados',
+        lead: 'Abre uno durante una sesión y la pantalla de foco lo cubre, con el tiempo restante.',
+      },
+      lists: {
+        eyebrow: 'Tus reglas',
+        title: 'Bloqueados o permitidos',
+        lead: 'Bloquea algunos sitios, o todo menos las herramientas con las que trabajas.',
+      },
+      streak: {
+        eyebrow: 'Racha',
+        title: 'Cualquier duración. Una racha que proteger.',
+        lead: 'De 1 minuto a 1 hora, o escribe el tuyo. Cada sesión terminada suma uno.',
+      },
+      yours: {
+        eyebrow: 'Privada por diseño',
+        title: 'Habla tu idioma',
+        lead: 'Español, inglés y portugués. Sin cuenta, sin rastreo: todo se queda en tu navegador.',
+      },
+    },
+  },
   mocks: {
     popup: 'El popup de FocusPocus',
     settings: 'La página de configuración de FocusPocus',

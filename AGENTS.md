@@ -236,8 +236,9 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
 ### 3.5 Website (`apps/web`)
 - **Next.js 16** (App Router, Turbopack) + Tailwind CSS 4, statically rendered once per language. `apps/web/AGENTS.md` has its layout and rules.
 - One light page (the site pins the kit's `light-dark()` colors to their light side, see `apps/web/AGENTS.md`): a centered hero over the **settings page** in a browser with the **popup** hanging off its edge, the **focus screen**, the features on a grid laid over the page's guide lines, real Chrome Web Store reviews sliding by (translated), and the install links (Chrome Web Store, Firefox Add-ons, GitHub), in English, Brazilian Portuguese and Spanish (`/en`, `/pt-BR`, `/es`; `src/proxy.ts` sends `/` to the browser's best match).
-- **The drawings of the extension are working React copies** (`apps/web/src/screens/landing/mocks/`), built from `@focus-pocus/ui` and the extension's copy from `@focus-pocus/locales`, run by local state. They repeat the class strings (and small constants such as the duration presets) of the screens they draw, and each file names its source. **When you change the popup, the settings page or the focus screen, update its drawing.**
+- **The drawings of the extension are working React copies** (`apps/web/src/components/mocks/`), built from `@focus-pocus/ui` and the extension's copy from `@focus-pocus/locales`, run by local state. They repeat the class strings (and small constants such as the duration presets) of the screens they draw, and each file names its source. **When you change the popup, the settings page or the focus screen, update its drawing.**
 - Store and GitHub links live in `apps/web/src/lib/links.ts`.
+- **Store images:** `/<locale>/store` lays out the Chrome Web Store images (five 1280x800 carousel slides and the 440x280 and 1400x560 promo tiles, built from the same drawings) for review, and `bun run store:shots` exports them as PNGs in every language into `apps/web/store-shots/` (see `apps/web/AGENTS.md`). They follow the drawings, so after changing a screen re-export them.
 
 ---
 
@@ -261,6 +262,7 @@ bun run build:chrome    # --mode production
 bun run build:firefox
 bun run dev:web         # next dev on http://localhost:3003
 bun run build:web       # next build
+bun run store:shots     # builds the site and exports the store images (needs Chrome)
 bun run typecheck       # tsc --noEmit in every workspace
 bun run lint            # biome check . (the whole repository)
 bun run lint:fix        # biome check --write .

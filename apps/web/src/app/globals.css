@@ -130,6 +130,12 @@
   --text-stat--line-height: 1;
   --tracking-stat: -0.035em;
 
+  /* The store screenshots' type, set for their fixed 1280x800 canvas. */
+  --text-slide-title: 52px;
+  --text-slide-title--line-height: 1.08;
+  --text-slide-lead: 20px;
+  --text-slide-lead--line-height: 1.55;
+
   /* The focus screen's sizes (apps/extension/src/content/overlay.css). */
   --text-overlay-title: 30px;
   --text-overlay-title--line-height: 1.2;

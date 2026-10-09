@@ -1,9 +1,9 @@
 'use client';
 
+import { FocusScreenMock } from '@/components/mocks/focus-screen-mock';
 import { Reveal } from '@/components/motion';
 import { useCopy } from '@/lib/i18n-provider';
 import { anchors } from '@/lib/routes';
-import { FocusScreenMock } from '../mocks/focus-screen-mock';
 import { Section } from './section';
 import { SectionHeading } from './section-heading';
 

@@ -8,8 +8,13 @@ The same as the extension's (root AGENTS.md section 5.2):
 
 - Every route sits under `src/app/[locale]/`, and **a route file is a one-line re-export**; the
   page lives in `src/screens/<name>/page.tsx`, with `partials/` for the parts only it uses.
-- `src/screens/landing/mocks/` holds the **working drawings of the extension**: the popup, the
-  settings page and the focus screen, in a `BrowserFrame` where the extension shows a page.
+- `src/components/mocks/` holds the **working drawings of the extension**: the popup, the
+  settings page and the focus screen, in a `BrowserFrame` where the extension shows a page. The
+  landing page and the store images both use them; `PopupMock runningFrom` opens the popup
+  mid-session.
+- **A drawing cannot switch to the dark theme.** Tailwind compiles the kit's `light-dark()` for
+  older browsers into variables resolved once, on `:root`, so a `data-theme` below `<html>`
+  changes nothing.
 - `src/components/` is for what the page and its sections share (header, footer, store buttons,
   icons, and `motion.tsx`: `Rise` for what is on screen at load, `Reveal` for what scrolls into
   view); the design-system kit, `Brand` included, is `@focus-pocus/ui` (`packages/ui`), never a
@@ -22,9 +27,15 @@ The same as the extension's (root AGENTS.md section 5.2):
 - The hero's own decoration: `silk.tsx` (the ribbon behind the demo) and `sparkles.tsx` (the wand
   logo's sparkles around the title). Their SVG colors are the `--color-silk-*` tokens.
 - `src/proxy.ts` sends a path without a locale to the browser's best match.
-
-## Rules
-
+- **Store images** (`src/components/store/`): the Chrome Web Store's five carousel slides
+  (1280x800) and its two promo tiles (small 440x280, marquee 1400x560), drawn from the same mocks.
+  `catalog.ts` lists them and their sizes (server-safe), `slides.tsx` holds each slide's layout
+  and drawing, `slide.tsx` and `tiles.tsx` draw them; their copy is `site.store`.
+  `/<locale>/store` shows them all to review (`src/screens/store/`); `/<locale>/store/<n>` is slide
+  `n` alone and `/<locale>/store/tile/<small|marquee>` a tile alone (`src/screens/store-slide/`,
+  `src/screens/store-tile/`). `bun run store:shots` (`scripts/store-shots.ts`) builds the site,
+  serves it on port 3005 and captures each page with headless Chrome into
+  `store-shots/<locale>/` (git-ignored). The store pages are `noindex`.
 - **Tokens only**, from `@focus-pocus/ui/theme.css` plus the page-sized ones in
   `src/app/globals.css`, the one file here allowed to hold a raw color or size.
 - **The site is light.** The kit's colors are `light-dark()` pairs; `globals.css` sets

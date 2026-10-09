@@ -17,7 +17,7 @@ import { Input } from '@focus-pocus/ui/input';
 import { Segmented } from '@focus-pocus/ui/segmented';
 import { Switch } from '@focus-pocus/ui/switch';
 import type { ThemeSetting } from '@focus-pocus/ui/theme';
-import { type FormEvent, type ReactNode, useState } from 'react';
+import { type FormEvent, type ReactNode, useId, useState } from 'react';
 import { useCopy } from '@/lib/i18n-provider';
 
 // The settings page's two kinds of tab, drawn from
@@ -106,6 +106,8 @@ export function GeneralPane({ switches, onChange }: GeneralPaneProps) {
   const copy = app.options.general;
   const [theme, setTheme] = useState<ThemeSetting>('light');
   const [language, setLanguage] = useState<'auto' | Locale>('auto');
+  // A page can show this pane twice (the store screenshots), so its radio groups need their own names.
+  const id = useId();
   const row = (key: SwitchKey, { label, description }: { label: string; description: string }) => (
     <SettingRow
       checked={Boolean(switches[key])}
@@ -120,7 +122,7 @@ export function GeneralPane({ switches, onChange }: GeneralPaneProps) {
       <SettingsSection title={copy.appearance.title}>
         <div className="flex flex-col gap-2.5">
           <Segmented<ThemeSetting>
-            name="demo-theme"
+            name={`${id}-theme`}
             onChange={setTheme}
             options={[
               { value: 'auto', label: copy.appearance.auto, icon: IconThemeAuto },
@@ -135,7 +137,7 @@ export function GeneralPane({ switches, onChange }: GeneralPaneProps) {
       <SettingsSection title={copy.language.title}>
         <div className="flex flex-col gap-2.5">
           <Segmented<'auto' | Locale>
-            name="demo-language"
+            name={`${id}-language`}
             onChange={setLanguage}
             options={[
               { value: 'auto', label: copy.language.auto },
