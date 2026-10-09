@@ -53,7 +53,7 @@ The same as the extension's (root AGENTS.md section 5.2):
 - **Icons:** the kit's from `@focus-pocus/ui/icons`; the ones only the site uses from
   `src/components/icons.ts`, deep-imported per glyph. The Chrome and Firefox marks come from
   Simple Icons (`src/components/store-mark.tsx`).
-- **Links** to the stores, GitHub and support live in `src/lib/links.ts`.
+- **Links** to the stores and GitHub live in `src/lib/links.ts`.
 - **Reviews** (`src/screens/landing/reviews.ts`) are real ones from the Chrome Web Store, with the
   name and date. The Portuguese is exactly as written; the English and Spanish are faithful
   translations. Never invent or edit one, and never add a rating the source does not show.

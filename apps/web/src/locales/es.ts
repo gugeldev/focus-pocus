@@ -80,7 +80,6 @@ export const es: SiteCopy = {
     languages: 'Idiomas',
     source: 'Código fuente',
     issues: 'Reportar un error',
-    support: 'Apoya FocusPocus',
     license: 'Licencia MIT',
     madeBy: 'Hecho por',
     andContributors: 'y colaboradores.',

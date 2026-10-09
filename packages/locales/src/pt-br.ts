@@ -33,7 +33,6 @@ export const ptBR: Messages = {
     sections: 'Seções das configurações',
     streakTitle: 'Copie sua sequência para compartilhar',
     inARow: 'em sequência',
-    support: 'Apoie o FocusPocus',
     general: {
       title: 'Geral',
       description:

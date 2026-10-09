@@ -86,7 +86,7 @@ Each switch is a `<SettingRow optionKey="...">` in `src/screens/options/partials
 
 ### 2.5 Options page (Settings)
 Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in its own tab. The layout is a **sidebar** on the canvas next to a **content pane** (modeled on the maintainer's heysusi desktop settings). Below 760px wide the sidebar becomes a top bar. The page fills the window and never scrolls: the content pane scrolls on its own, so the sidebar (or top bar) stays put.
-- **Sidebar:** brand, three tabs (General, Blocklist, Allowlist; the lists show their entry count), the streak card (click to copy) and the support link (`https://www.pixme.bio/jotavetech`).
+- **Sidebar:** brand, three tabs (General, Blocklist, Allowlist; the lists show their entry count) and the streak card (click to copy).
   - One indicator surface slides to the active tab (`src/screens/options/partials/nav-tabs.tsx`). Its offset is computed from the tab index (`--active-tab`), never measured. Only the active page is rendered, so its entrance animation replays on every tab switch. The open tab is mirrored in the location hash, so `#blocklist` opens the blocklist directly (`#general`, `#blocklist`, `#allowlist`).
 - **General:** the appearance picker (2.7), the language picker (2.6), then the switches of 2.4, grouped in Sounds, Notifications and Blocking. While a session is running, the Allowlist mode switch is **disabled** and a notice explains why.
 - **Blocklist / Allowlist:** a form to add a website and the list. Rows show the site icon, the entry and a remove button that appears on hover or focus. Rows animate in and collapse out. An empty list shows an empty state. The page of the active mode carries an "Active mode" badge.

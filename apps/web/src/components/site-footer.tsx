@@ -39,9 +39,6 @@ export function SiteFooter() {
           <a className={link} href={links.issues}>
             {site.footer.issues}
           </a>
-          <a className={link} href={links.support}>
-            {site.footer.support}
-          </a>
           <a className={link} href={links.license}>
             {site.footer.license}
           </a>

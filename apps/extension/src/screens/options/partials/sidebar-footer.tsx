@@ -1,14 +1,12 @@
 import { cx } from '@focus-pocus/ui/cx';
-import { IconCopy, IconExternal, IconStreak, IconSupport } from '@focus-pocus/ui/icons';
+import { IconCopy, IconStreak } from '@focus-pocus/ui/icons';
 import { shareStreak } from '@/lib/share-streak';
 import { useMessages } from '@/lib/use-messages';
 import { NavHint, NavLabel, navItemClasses } from '@/screens/options/partials/nav-item';
 
-const SUPPORT_URL = 'https://www.pixme.bio/jotavetech';
-
 const rowClasses = cx(navItemClasses, 'group hover:bg-item-hover hover:text-text');
 
-/** The streak (click to copy it) and the support link, at the sidebar's foot. */
+/** The streak (click to copy it), at the sidebar's foot. */
 export function SidebarFooter({ streak }: { streak: number }) {
   const t = useMessages();
 
@@ -26,11 +24,6 @@ export function SidebarFooter({ streak }: { streak: number }) {
         </NavLabel>
         <NavHint icon={IconCopy} />
       </button>
-      <a className={rowClasses} href={SUPPORT_URL} target="_blank" rel="noreferrer">
-        <IconSupport size={18} aria-hidden="true" className="shrink-0" />
-        <NavLabel>{t.options.support}</NavLabel>
-        <NavHint icon={IconExternal} />
-      </a>
     </div>
   );
 }

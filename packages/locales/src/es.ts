@@ -33,7 +33,6 @@ export const es: Messages = {
     sections: 'Secciones de la configuración',
     streakTitle: 'Copia tu racha para compartirla',
     inARow: 'al hilo',
-    support: 'Apoya a FocusPocus',
     general: {
       title: 'General',
       description:

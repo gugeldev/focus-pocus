@@ -83,7 +83,6 @@ export const en = {
     languages: 'Languages',
     source: 'Source code',
     issues: 'Report a bug',
-    support: 'Support FocusPocus',
     license: 'MIT license',
     /** Around the maintainer's linked handle: "Made by @gugeldev and contributors." */
     madeBy: 'Made by',
