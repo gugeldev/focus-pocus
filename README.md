@@ -76,7 +76,6 @@ The git hooks check most of this for you: Biome on commit, the commit message fo
 Thanks to everyone who has contributed to FocusPocus.
 
 <a href="https://github.com/gugeldev"><img src="https://github.com/gugeldev.png?size=128" alt="gugeldev" width="64" /></a>
-<a href="https://github.com/jotavetech"><img src="https://avatars.githubusercontent.com/u/92704272?v=4" alt="jotavetech" width="64" /></a>
 <a href="https://github.com/Ryrden"><img src="https://avatars.githubusercontent.com/u/76923948?v=4" alt="Ryrden" width="64" /></a>
 <a href="https://github.com/gabireze"><img src="https://avatars.githubusercontent.com/u/31194373?v=4" alt="gabireze" width="64" /></a>
 <a href="https://github.com/fatekkl"><img src="https://avatars.githubusercontent.com/u/111793799?v=4" alt="fatekkl" width="64" /></a>
