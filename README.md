@@ -31,8 +31,6 @@ A free, open source browser extension that blocks distracting sites while your f
 - **Light and dark, in your language:** English, Brazilian Portuguese and Spanish.
 - **Private:** no account, no tracking, no servers. Your lists and your streak stay in your browser.
 
-Watch the [demo video](https://www.youtube.com/watch?v=AeRzctRV-4s).
-
 ## Run it locally
 
 Requires [Bun](https://bun.sh).
