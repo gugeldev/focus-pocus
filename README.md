@@ -31,27 +31,7 @@ A free, open source browser extension that blocks distracting sites while your f
 - **Light and dark, in your language:** English, Brazilian Portuguese and Spanish.
 - **Private:** no account, no tracking, no servers. Your lists and your streak stay in your browser.
 
-<table>
-  <tr>
-    <td><img src="assets/store/en/02-focusScreen.png" alt="A blocked site covered by the focus screen" /></td>
-    <td><img src="assets/store/en/03-lists.png" alt="The blocklist in the settings page" /></td>
-  </tr>
-  <tr>
-    <td><img src="assets/store/en/04-streak.png" alt="The popup and the streak" /></td>
-    <td><img src="assets/store/en/05-yours.png" alt="The popup in English, Portuguese and Spanish" /></td>
-  </tr>
-</table>
-
 Watch the [demo video](https://www.youtube.com/watch?v=AeRzctRV-4s).
-
-## Roadmap
-
-- [x] Custom timer
-- [x] Allowlist mode
-- [x] Firefox support
-- [x] Confirmation before giving up
-- [x] English, Brazilian Portuguese and Spanish
-- [ ] Groups for the blocklist
 
 ## Run it locally
 

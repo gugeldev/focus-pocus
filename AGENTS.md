@@ -372,7 +372,7 @@ Same rules as the maintainer's `obd` project.
 
 ---
 
-## 7. Known roadmap (from the README)
+## 7. Known roadmap
 
 - [x] Custom timer
 - [x] Allowlist mode
