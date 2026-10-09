@@ -60,7 +60,7 @@ Then load the build in your browser:
 
 ## Contributing
 
-`main` always matches the published version. The next one is built in a `release/<version>` branch (currently `release/1.2.0`), and every change reaches it through a pull request.
+`main` always matches the published version. The next one is built in a `release/<version>` branch (currently `release/3.0.0`), and every change reaches it through a pull request.
 
 1. Fork the repository and branch off the current release branch, named after the kind of change (`feat/pause-button`, `fix/overlay-flicker`).
 2. Write commit messages in English following [Conventional Commits](https://www.conventionalcommits.org) (`feat(popup): add pause button`).

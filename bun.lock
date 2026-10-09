@@ -12,7 +12,7 @@
     },
     "apps/extension": {
       "name": "@focus-pocus/extension",
-      "version": "1.1.2",
+      "version": "3.0.0",
       "devDependencies": {
         "@focus-pocus/locales": "workspace:*",
         "@focus-pocus/ui": "workspace:*",
