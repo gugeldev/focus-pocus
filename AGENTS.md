@@ -19,6 +19,8 @@ Guide for AI agents (and humans) working in this repository. It describes **how 
 ### 1.1 Repository layout (bun workspaces)
 
 ```
+assets/
+└── store/       # the Chrome Web Store images, per language, exported by `bun run store:shots` (see 3.5)
 apps/
 ├── extension/   # @focus-pocus/extension: the browser extension (webpack). Sections 2 to 5 describe it.
 └── web/         # @focus-pocus/web: the website (Next.js), see 3.5 and apps/web/AGENTS.md
@@ -238,7 +240,7 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
 - One light page (the site pins the kit's `light-dark()` colors to their light side, see `apps/web/AGENTS.md`): a centered hero over the **settings page** in a browser with the **popup** hanging off its edge, the **focus screen**, the features on a grid laid over the page's guide lines, real Chrome Web Store reviews sliding by (translated), and the install links (Chrome Web Store, Firefox Add-ons, GitHub), in English, Brazilian Portuguese and Spanish (`/en`, `/pt-BR`, `/es`; `src/proxy.ts` sends `/` to the browser's best match).
 - **The drawings of the extension are working React copies** (`apps/web/src/components/mocks/`), built from `@focus-pocus/ui` and the extension's copy from `@focus-pocus/locales`, run by local state. They repeat the class strings (and small constants such as the duration presets) of the screens they draw, and each file names its source. **When you change the popup, the settings page or the focus screen, update its drawing.**
 - Store and GitHub links live in `apps/web/src/lib/links.ts`.
-- **Store images:** `/<locale>/store` lays out the Chrome Web Store images (five 1280x800 carousel slides and the 440x280 and 1400x560 promo tiles, built from the same drawings) for review, and `bun run store:shots` exports them as PNGs in every language into `apps/web/store-shots/` (see `apps/web/AGENTS.md`). They follow the drawings, so after changing a screen re-export them.
+- **Store images:** `/<locale>/store` lays out the Chrome Web Store images (five 1280x800 carousel slides and the 440x280 and 1400x560 promo tiles, built from the same drawings) for review, and `bun run store:shots` exports them as PNGs in every language into `assets/store/<locale>/` (versioned, so the README and anything else can use them; see `apps/web/AGENTS.md`). They follow the drawings, so after changing a screen re-export them and commit the PNGs.
 
 ---
 

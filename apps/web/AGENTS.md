@@ -34,8 +34,9 @@ The same as the extension's (root AGENTS.md section 5.2):
   `/<locale>/store` shows them all to review (`src/screens/store/`); `/<locale>/store/<n>` is slide
   `n` alone and `/<locale>/store/tile/<small|marquee>` a tile alone (`src/screens/store-slide/`,
   `src/screens/store-tile/`). `bun run store:shots` (`scripts/store-shots.ts`) builds the site,
-  serves it on port 3005 and captures each page with headless Chrome into
-  `store-shots/<locale>/` (git-ignored). The store pages are `noindex`.
+  serves it on port 3005 and captures each page with headless Chrome into the repository's
+  `assets/store/<locale>/`, which is versioned: commit the PNGs it rewrites. The store pages are
+  `noindex`.
 - **Tokens only**, from `@focus-pocus/ui/theme.css` plus the page-sized ones in
   `src/app/globals.css`, the one file here allowed to hold a raw color or size.
 - **The site is light.** The kit's colors are `light-dark()` pairs; `globals.css` sets

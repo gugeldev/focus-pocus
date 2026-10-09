@@ -2,7 +2,8 @@
  * Exports the store images (src/components/store/) as PNGs: builds the site,
  * serves it in production (no dev overlay in the pictures), and has headless
  * Chrome capture each image's page at its exact size in every language, into
- * `store-shots/<locale>/`: the carousel's slides as `<place>-<slide>.png`,
+ * `assets/store/<locale>/` at the repository root (versioned, so the README and
+ * other places can use them): the carousel's slides as `<place>-<slide>.png`,
  * then the promo tiles as `tile-<tile>.png`.
  *
  * Run it from the repository root with `bun run store:shots`. Set CHROME to the
@@ -19,7 +20,7 @@ const PORT = 3005;
 const ORIGIN = `http://localhost:${PORT}`;
 const CHROME = process.env.CHROME ?? 'google-chrome';
 const WEB_DIR = join(import.meta.dirname, '..');
-const OUTPUT_DIR = join(WEB_DIR, 'store-shots');
+const OUTPUT_DIR = join(WEB_DIR, '..', '..', 'assets', 'store');
 const NEXT = join(WEB_DIR, 'node_modules', '.bin', 'next');
 
 /** Whether anything answers on the port. */
