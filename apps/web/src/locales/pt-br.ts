@@ -18,8 +18,8 @@ export const ptBR: SiteCopy = {
     firefox: 'Adicionar ao Firefox',
   },
   hero: {
-    titleLead: 'Mantenha o foco como se',
-    titleAccent: 'estivesse sob um feitiço',
+    titleLead: 'Transforme sua produtividade',
+    titleAccent: 'como um passe de mágica.',
     lead: 'Uma extensão que bloqueia os sites que te distraem enquanto o timer de foco roda.',
   },
   focusScreen: {
@@ -87,6 +87,42 @@ export const ptBR: SiteCopy = {
   notFound: {
     title: 'Esta página não existe.',
     back: 'Voltar ao FocusPocus',
+  },
+  store: {
+    title: 'Imagens da loja',
+    tiles: {
+      small: 'Mosaico pequeno (440x280)',
+      marquee: 'Mosaico promocional (1400x560)',
+    },
+    tagline: 'Bloqueie distrações. Mantenha o foco.',
+    slides: {
+      timer: {
+        eyebrow: 'Timer de foco',
+        // The landing page's headline, word for word: the store and the site open with the same claim.
+        title: 'Transforme sua produtividade como um passe de mágica.',
+        lead: 'Inicie um timer e os sites que roubam sua atenção ficam bloqueados até ele acabar.',
+      },
+      focusScreen: {
+        eyebrow: 'Tela de foco',
+        title: 'Sites que distraem, bloqueados',
+        lead: 'Abra um durante uma sessão e a tela de foco cobre ele, com o tempo restante.',
+      },
+      lists: {
+        eyebrow: 'Suas regras',
+        title: 'Bloqueados ou permitidos',
+        lead: 'Bloqueie alguns sites, ou tudo menos as ferramentas com que você trabalha.',
+      },
+      streak: {
+        eyebrow: 'Sequência',
+        title: 'Qualquer duração. Uma sequência pra proteger.',
+        lead: 'De 1 minuto a 1 hora, ou digite o seu. Cada sessão concluída soma um.',
+      },
+      yours: {
+        eyebrow: 'Privada por padrão',
+        title: 'Fala a sua língua',
+        lead: 'Português, inglês e espanhol. Sem conta, sem rastreamento: tudo fica no seu navegador.',
+      },
+    },
   },
   mocks: {
     popup: 'O popup do FocusPocus',

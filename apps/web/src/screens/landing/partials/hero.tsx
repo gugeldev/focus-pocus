@@ -1,10 +1,10 @@
 'use client';
 
+import { OptionsMock } from '@/components/mocks/options-mock';
+import { PopupMock } from '@/components/mocks/popup-mock';
 import { Rise } from '@/components/motion';
 import { StoreButtons } from '@/components/store-buttons';
 import { useCopy } from '@/lib/i18n-provider';
-import { OptionsMock } from '../mocks/options-mock';
-import { PopupMock } from '../mocks/popup-mock';
 import { Section } from './section';
 import { Silk } from './silk';
 import { Sparkles } from './sparkles';

@@ -7,7 +7,8 @@
     "dev": "next dev -p 3003",
     "build": "next build",
     "start": "next start -p 3003",
-    "typecheck": "next typegen && tsc --noEmit -p ."
+    "typecheck": "next typegen && tsc --noEmit -p .",
+    "store:shots": "bun scripts/store-shots.ts"
   },
   "dependencies": {
     "@focus-pocus/locales": "workspace:*",

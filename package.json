@@ -15,6 +15,7 @@
     "build:firefox": "bun --filter @focus-pocus/extension build:firefox",
     "dev:web": "bun --filter @focus-pocus/web dev",
     "build:web": "bun --filter @focus-pocus/web build",
+    "store:shots": "bun --filter @focus-pocus/web store:shots",
     "typecheck": "bun --filter '*' typecheck",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
