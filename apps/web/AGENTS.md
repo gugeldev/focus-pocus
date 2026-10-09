@@ -1,0 +1,74 @@
+# apps/web: the FocusPocus website
+
+Read [`../../AGENTS.md`](../../AGENTS.md) first: its conventions (sections 5 and 8) apply here too.
+
+## Layout
+
+The same as the extension's (root AGENTS.md section 5.2):
+
+- Every route sits under `src/app/[locale]/`, and **a route file is a one-line re-export**; the
+  page lives in `src/screens/<name>/page.tsx`, with `partials/` for the parts only it uses.
+- `src/components/mocks/` holds the **working drawings of the extension**: the popup, the
+  settings page and the focus screen, in a `BrowserFrame` where the extension shows a page. The
+  landing page and the store images both use them; `PopupMock runningFrom` opens the popup
+  mid-session.
+- **A drawing cannot switch to the dark theme.** Tailwind compiles the kit's `light-dark()` for
+  older browsers into variables resolved once, on `:root`, so a `data-theme` below `<html>`
+  changes nothing.
+- `src/components/` is for what the page and its sections share (header, footer, store buttons,
+  icons, and `motion.tsx`: `Rise` for what is on screen at load, `Reveal` for what scrolls into
+  view); the design-system kit, `Brand` included, is `@focus-pocus/ui` (`packages/ui`), never a
+  copy of it.
+- `Section` is a band of the page (`<main>` divides the bands with hairlines); `Container` is its
+  column alone, and sets its gutter as `--gutter`. The page's background
+  (`screens/landing/page.tsx`) draws the column's guide lines all the way down, and the spell
+  (`spell.tsx`, the faint turning vortex at the top); the features grid sits 1px inside the guide
+  lines (`--gutter` less 1px), so they are its sides.
+- The hero's own decoration: `silk.tsx` (the ribbon behind the demo) and `sparkles.tsx` (the wand
+  logo's sparkles around the title). Their SVG colors are the `--color-silk-*` tokens.
+- `src/proxy.ts` sends a path without a locale to the browser's best match.
+- **Store images** (`src/components/store/`): the Chrome Web Store's five carousel slides
+  (1280x800) and its two promo tiles (small 440x280, marquee 1400x560), drawn from the same mocks.
+  `catalog.ts` lists them and their sizes (server-safe), `slides.tsx` holds each slide's layout
+  and drawing, `slide.tsx` and `tiles.tsx` draw them; their copy is `site.store`.
+  `/<locale>/store` shows them all to review (`src/screens/store/`); `/<locale>/store/<n>` is slide
+  `n` alone and `/<locale>/store/tile/<small|marquee>` a tile alone (`src/screens/store-slide/`,
+  `src/screens/store-tile/`). `bun run store:shots` (`scripts/store-shots.ts`) builds the site,
+  serves it on port 3005 and captures each page with headless Chrome into the repository's
+  `assets/store/<locale>/`, which is versioned: commit the PNGs it rewrites. The store pages are
+  `noindex`.
+- **Tokens only**, from `@focus-pocus/ui/theme.css` plus the page-sized ones in
+  `src/app/globals.css`, the one file here allowed to hold a raw color or size.
+- **The site is light.** The kit's colors are `light-dark()` pairs; `globals.css` sets
+  `color-scheme: light`, so every kit class (`bg-surface`, `text-text-muted`, `shadow-subtle`…)
+  draws light, the drawings of the extension included. The extension's Appearance setting is
+  drawn, but it does not switch the site.
+- **The drawings mirror the extension**, in the site's light colors. They use the kit's controls
+  and repeat the class strings (and small constants, like the duration presets) of the screens
+  they draw; each file says which. Change a screen in `apps/extension`, change its drawing.
+  They never reach storage or the network (no favicons: a letter tile instead).
+- **Copy:** the page's text is in `src/locales/` (`en` the source, the others typed against it);
+  the drawings speak the extension's own copy from `@focus-pocus/locales`. A component gets both
+  from `useCopy()` (`src/lib/i18n-provider.tsx`): `site` and `app`.
+- **Icons:** the kit's from `@focus-pocus/ui/icons`; the ones only the site uses from
+  `src/components/icons.ts`, deep-imported per glyph. The Chrome and Firefox marks come from
+  Simple Icons (`src/components/store-mark.tsx`).
+- **Links** to the stores and GitHub live in `src/lib/links.ts`.
+- **Reviews** (`src/screens/landing/reviews.ts`) are real ones from the Chrome Web Store, with the
+  name and date. The Portuguese is exactly as written; the English and Spanish are faithful
+  translations. Never invent or edit one, and never add a rating the source does not show.
+- `SITE_URL` is the deployed origin; set it in production. The language alternates need absolute
+  URLs, so without it they are left out of the metadata.
+- Only `/en`, `/pt-BR` and `/es` exist (`dynamicParams = false`). Any other path under them hits
+  `[locale]/[...rest]`, which calls `notFound()`, so the locale's `not-found` page renders in its
+  language (a not-found file alone does not catch unmatched URLs).
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

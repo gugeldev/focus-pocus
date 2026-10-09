@@ -1,0 +1,38 @@
+{
+  "name": "@focus-pocus/extension",
+  "version": "3.0.0",
+  "private": true,
+  "description": "A extension that will help you to focus on your work",
+  "author": "@jotavetech",
+  "license": "MIT",
+  "scripts": {
+    "dev:chrome": "BROWSER_TARGET=chrome webpack --mode development --watch",
+    "dev:firefox": "BROWSER_TARGET=firefox webpack --mode development --watch",
+    "build:chrome": "BROWSER_TARGET=chrome webpack --mode production",
+    "build:firefox": "BROWSER_TARGET=firefox webpack --mode production",
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "devDependencies": {
+    "@focus-pocus/locales": "workspace:*",
+    "@focus-pocus/ui": "workspace:*",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@phosphor-icons/react": "^2.1.10",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/webextension-polyfill": "^0.12.6",
+    "copy-webpack-plugin": "^14.0.0",
+    "css-loader": "^7.1.5",
+    "mini-css-extract-plugin": "^2.10.2",
+    "postcss": "^8.5.28",
+    "postcss-loader": "^8.2.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwindcss": "^4.3.3",
+    "ts-loader": "^9.6.2",
+    "typescript": "^6.0.3",
+    "webextension-polyfill": "^0.12.0",
+    "webpack": "^5.111.1",
+    "webpack-cli": "^7.2.3"
+  }
+}

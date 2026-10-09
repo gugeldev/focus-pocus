@@ -1,0 +1,249 @@
+/* FocusPocus design system: the tokens the extension's pages (popup and
+   options) and the website are built from, as Tailwind theme variables.
+   AGENTS.md section 5.1 explains when to reach for each one. The default
+   Tailwind palette, type scale, radii and shadows are switched off, so a
+   utility that is not backed by a token here does not exist. The shared
+   controls sit next to this file. Each app imports it from its own stylesheet,
+   right after Tailwind itself, and adds the font: the extension self-hosts it,
+   the website uses next/font. */
+
+/* The kit's classes live in this package, outside the app that imports it. */
+@source "./";
+
+@theme {
+  --color-*: initial;
+  --text-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+  --ease-*: initial;
+  --animate-*: initial;
+
+  /* ---- Every color is light-dark(light, dark): `color-scheme` picks the
+     side. A page follows the system's mode unless it, or an element in it,
+     carries data-theme="light" or "dark" (the base rules below). ---- */
+
+  /* ---- Surfaces: never pure black in the dark. They stack in one
+     direction: sunken -> canvas -> surface -> raised. ---- */
+  --color-canvas: light-dark(#ffffff, #0b0a10);
+  --color-surface: light-dark(#fcfcfe, #121019);
+  --color-raised: light-dark(#f6f6fa, #1a1724);
+  --color-raised-hover: light-dark(#efeff5, #221e2f);
+  --color-sunken: light-dark(#f8f8fb, #0e0c14);
+  --color-item-hover: light-dark(#f7f7fb, #1a1724);
+  --color-item-active: light-dark(#efeafe, #231f32);
+  --color-border: light-dark(#eeeef4, #25212f);
+  --color-border-strong: light-dark(#d6d6e3, #363044);
+  --color-border-focus: light-dark(#a99cf0, #5d5573);
+
+  /* ---- Text: three levels plus the placeholder ---- */
+  --color-text: light-dark(#12111c, #f4f3f8);
+  --color-text-muted: light-dark(#55536a, #b4afc4);
+  --color-text-faint: light-dark(#8c8aa0, #8a849d);
+  --color-text-placeholder: light-dark(#a9a7bb, #6c6680);
+
+  /* ---- Accent: one flat violet. A spotlight for the live and primary state,
+     never a large fill, never a gradient or a glow. ---- */
+  --color-accent: light-dark(#7c3aed, #a78bfa);
+  --color-accent-strong: #8b5cf6;
+  /* Filled violet that carries white text (4.5:1 or better). */
+  --color-accent-solid: #7c3aed;
+  --color-accent-solid-hover: #8b4cf7;
+  --color-accent-dim: light-dark(#d4c8fd, #5b4a8c);
+  --color-accent-wash: light-dark(#f4f0ff, #1a1430);
+
+  /* ---- Status ---- */
+  --color-success: #4ade9b;
+  --color-streak: #fb923c;
+  --color-danger: light-dark(#e5374e, #ff6b7a);
+  --color-danger-soft: light-dark(#d0354a, #ffa1ab);
+  --color-danger-wash: light-dark(#fff1f3, #1f1016);
+  --color-danger-line: light-dark(#ffd0d7, #44202a);
+  --color-danger-solid: #d0354a;
+  --color-white: #fff;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* ---- Type. Sizes carry no line height: text inherits the body's 1.55. ---- */
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 17px;
+  --text-2xl: 25px;
+  /* The popup's countdown; the smaller one fits "h:mm:ss" in the ring. */
+  --text-display-sm: 36px;
+  --text-display: 44px;
+
+  --tracking-*: initial;
+  --tracking-display: -0.03em;
+  --tracking-title: -0.026em;
+  --tracking-brand: -0.01em;
+  --tracking-label: 0.08em;
+  --leading-title: 1.2;
+
+  /* ---- Layout: from this width the options page shows its sidebar; below it
+     the sidebar becomes a top bar. ---- */
+  --breakpoint-wide: 761px;
+
+  /* ---- Shape: inner radius = outer radius - the gap between them ---- */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 18px;
+
+  /* ---- Elevation: carried by surface color, shadows stay quiet. In the
+     light a lift is a hairline instead (white on white needs an edge), so each
+     shadow holds both layers and the scheme makes one of them transparent. ---- */
+  --shadow-subtle:
+    0 0 0 1px light-dark(var(--color-border), transparent),
+    0 1px 2px light-dark(transparent, rgb(0 0 0 / 0.3));
+  --shadow-card:
+    0 0 0 1px light-dark(var(--color-border), transparent),
+    0 1px 2px light-dark(transparent, rgb(0 0 0 / 0.25));
+  --shadow-popover: 0 16px 40px -12px light-dark(rgb(30 20 80 / 0.18), rgb(0 0 0 / 0.75));
+
+  /* ---- Motion: entering is slower than leaving, because what arrives has to
+     be read. Durations are used as duration-(--duration-enter). ---- */
+  --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration: 140ms;
+  --duration-enter: 220ms;
+  --duration-exit: 120ms;
+  --duration-layout: 260ms;
+
+  --animate-fade-up: fade-up var(--duration-enter) var(--ease-fluid) both;
+  --animate-page-in: fade-up-far var(--duration-enter) var(--ease-fluid) both;
+  --animate-toast-in: fade-up-far var(--duration-enter) var(--ease-fluid) both;
+  --animate-toast-out: toast-out var(--duration-exit) var(--ease-fluid) both;
+  --animate-site-in: site-in var(--duration-enter) var(--ease-fluid) both;
+  --animate-site-out: site-out var(--duration-layout) var(--ease-fluid) both;
+  --animate-bump: bump 400ms var(--ease-fluid);
+  --animate-ripple: ripple 1.8s ease-out infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+
+  @keyframes fade-up-far {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  @keyframes toast-out {
+    to {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+
+  @keyframes site-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  @keyframes site-out {
+    to {
+      opacity: 0;
+      transform: translateX(12px);
+      min-height: 0;
+      padding-block: 0;
+      margin-bottom: -1px;
+      height: 0;
+    }
+  }
+
+  @keyframes bump {
+    40% {
+      transform: scale(1.12);
+    }
+  }
+
+  @keyframes ripple {
+    to {
+      opacity: 0;
+      transform: scale(2.6);
+    }
+  }
+}
+
+/* A 2px accent ring offset by 2px on things you press. Inputs only lighten
+   their border instead. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+/* A thin scrollbar in the theme's colors, for a pane that scrolls inside the page. */
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+@layer base {
+  /* The system's mode, unless the page (or a part of it) picks one. */
+  :root {
+    color-scheme: light dark;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+  }
+
+  [data-theme="dark"] {
+    color-scheme: dark;
+  }
+
+  ::selection {
+    background: var(--color-accent-dim);
+    color: var(--color-text);
+  }
+
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Unlayered on purpose: Chrome gives extension pages its own unlayered
+   stylesheet (body { font-family: <system font>; font-size: 75% }), and an
+   unlayered rule always beats one in a layer, however specific. */
+html,
+body {
+  background: var(--color-canvas);
+}
+
+body {
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- Reduced motion: every animation and transition finishes at once. A
+   1ms duration instead of `none` keeps animationend firing, which the toast
+   and the list rows wait on before removing themselves. ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    /* biome-ignore lint/complexity/noImportantStyles: must beat every component's own animation */
+    animation-duration: 1ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must beat every component's own animation */
+    animation-iteration-count: 1 !important;
+    /* biome-ignore lint/complexity/noImportantStyles: must beat every component's own transition */
+    transition-duration: 1ms !important;
+  }
+}

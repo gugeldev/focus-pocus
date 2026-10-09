@@ -1,0 +1,37 @@
+{
+  "name": "@focus-pocus/ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The FocusPocus design system: Tailwind tokens and the shared controls",
+  "type": "module",
+  "exports": {
+    "./theme.css": "./src/theme.css",
+    "./brand": "./src/brand.tsx",
+    "./button": "./src/button.tsx",
+    "./confirm-timing": "./src/confirm-timing.ts",
+    "./cx": "./src/cx.ts",
+    "./format-time": "./src/format-time.ts",
+    "./icon-button": "./src/icon-button.tsx",
+    "./icons": "./src/icons.ts",
+    "./input": "./src/input.tsx",
+    "./progress-ring": "./src/progress-ring.tsx",
+    "./progress-ring-geometry": "./src/progress-ring-geometry.ts",
+    "./segmented": "./src/segmented.tsx",
+    "./switch": "./src/switch.tsx",
+    "./theme": "./src/theme.ts",
+    "./use-confirm-twice": "./src/use-confirm-twice.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10"
+  },
+  "peerDependencies": {
+    "react": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "react": "^19.3.0"
+  }
+}

@@ -1,0 +1,118 @@
+# Publishes a GitHub release when a release/<version> branch is merged into main:
+# reads the version, builds both browsers, writes the changelog and uploads the zips.
+# It can also be run by hand on main (Actions > Release > Run workflow), e.g. for a hotfix
+# or to retry a failed run; an existing release for the version is updated in place.
+name: Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: >-
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event.pull_request.merged &&
+        startsWith(github.event.pull_request.head.ref, 'release/') &&
+        github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      SHA: ${{ github.event.pull_request.merge_commit_sha || github.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.SHA }}
+          # The whole history and the tags, to find the previous release for the changelog.
+          fetch-depth: 0
+
+      - name: Read the version
+        id: version
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          version=$(jq -r .version apps/extension/package.json)
+          for manifest in apps/extension/manifest.chrome.json apps/extension/manifest.firefox.json; do
+            if [ "$(jq -r .version "$manifest")" != "$version" ]; then
+              echo "::error file=$manifest::version is not $version (apps/extension/package.json)"
+              exit 1
+            fi
+          done
+          if [ -n "$HEAD_REF" ] && [ "$HEAD_REF" != "release/$version" ]; then
+            echo "::error::$HEAD_REF was merged, but the extension's version is $version"
+            exit 1
+          fi
+          # A squash or rebase merge leaves no merge commit, and the changelog would only
+          # see its last commit.
+          if [ -n "$HEAD_REF" ] && [ "$(git rev-list --parents -n 1 "$SHA" | wc -w)" -ne 3 ]; then
+            echo "::error::merge release branches into main with a merge commit, not squash or rebase"
+            exit 1
+          fi
+          # Re-running is fine, but an existing version must not get a build of another commit.
+          if git rev-parse -q --verify "refs/tags/v$version" > /dev/null &&
+            [ "$(git rev-parse "v$version^{commit}")" != "$SHA" ]; then
+            echo "::error::v$version is already released at another commit; bump the version"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: package.json
+
+      - run: bun install --frozen-lockfile
+      - run: bun run build:chrome
+      - run: bun run build:firefox
+
+      - name: Package
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          for browser in chrome firefox; do
+            (cd "apps/extension/dist/$browser" && zip -qr "$GITHUB_WORKSPACE/focus-pocus-$browser-$VERSION.zip" .)
+          done
+
+      - name: Write the changelog
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          # The previous v* tag before this commit. The first release has none, so it falls
+          # back to the merge's first parent, i.e. everything the release branch brought in.
+          if previous=$(git describe --tags --abbrev=0 --match 'v[0-9]*' "$SHA^1" 2>/dev/null); then
+            compare="**Full changelog:** https://github.com/$GITHUB_REPOSITORY/compare/$previous...$TAG"
+          elif git rev-parse -q --verify "$SHA^2" > /dev/null; then
+            previous="$SHA^1"
+            compare=''
+          else
+            echo "::error::no previous v* tag and $SHA is not a merge commit, so the changelog has no start"
+            exit 1
+          fi
+          {
+            bash .github/scripts/release-notes.sh "$previous" "$SHA" "$GITHUB_REPOSITORY"
+            echo "$compare"
+          } > "$RUNNER_TEMP/notes.md"
+          cat "$RUNNER_TEMP/notes.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish the release
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          assets=("focus-pocus-chrome-$VERSION.zip" "focus-pocus-firefox-$VERSION.zip")
+          notes="$RUNNER_TEMP/notes.md"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" "${assets[@]}" --clobber
+            gh release edit "$TAG" --title "$TAG" --notes-file "$notes" --draft=false --latest
+          else
+            gh release create "$TAG" "${assets[@]}" --target "$SHA" --title "$TAG" --notes-file "$notes" --latest
+          fi

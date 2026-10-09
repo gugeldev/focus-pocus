@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+# Enforces Conventional Commits in English: "type(scope)!: subject" in plain ASCII.
+# Reads the subject the way git will store it (comments and blank lines stripped).
+subject=$(git stripspace --strip-comments < "$1" | head -n 1 | tr -d '\r')
+
+# Let git report an empty message itself.
+[ -z "$subject" ] && exit 0
+
+case "$subject" in
+  "Merge branch "* | "Merge remote-tracking branch "* | "Merge pull request "* | "Merge tag "* | "Merge commit "*) exit 0 ;;
+  "Revert \""* | "fixup! "* | "squash! "* | "amend! "*) exit 0 ;;
+esac
+
+if ! printf '%s\n' "$subject" | grep -Eq '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9._/-]+\))?!?: .+'; then
+  echo "commit-msg: use Conventional Commits, e.g. 'feat(popup): add pause button'" >&2
+  echo "  allowed types: feat fix docs style refactor perf test build ci chore revert" >&2
+  exit 1
+fi
+
+if printf '%s\n' "$subject" | LC_ALL=C grep -q '[^ -~]'; then
+  echo "commit-msg: write the subject in English, plain ASCII (no accents or emoji)" >&2
+  exit 1
+fi
