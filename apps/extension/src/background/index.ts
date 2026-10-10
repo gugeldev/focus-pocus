@@ -14,9 +14,13 @@ onTimerMessage((type) => {
     clearTickInterval();
     browser.action.setIcon({ path: 'assets/logo/icon-32.png' });
   } else if (type === 'TIMER_GIVEN_UP') {
-    // Every give up lands here, from the popup or the focus screen.
-    clearTickInterval();
-    giveUp();
+    // Every give up lands here, from the popup or the focus screen. With No
+    // giving up on neither offers it; a stray message is ignored all the same.
+    getStorage(['options']).then((res) => {
+      if (res.options?.['no-give-up']) return;
+      clearTickInterval();
+      giveUp();
+    });
   }
 });
 
@@ -48,5 +52,11 @@ function startTimer() {
 function clearTickInterval() {
   if (interval) clearInterval(interval);
 }
+
+// The welcome screen, once: on a fresh install, not on updates.
+browser.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason === 'install')
+    browser.tabs.create({ url: browser.runtime.getURL('welcome/index.html') });
+});
 
 seedStorageDefaults();

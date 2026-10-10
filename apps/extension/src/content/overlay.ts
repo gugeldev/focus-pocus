@@ -23,6 +23,8 @@ type OverlayOptions = {
   /** The user's language, which the page around it may not share. */
   locale: Locale;
   theme: ThemeSetting | undefined;
+  /** The No giving up switch: the card says so instead of offering Give up. */
+  noGiveUp: boolean;
   /** Runs on the confirming second click of Give up. */
   onGiveUp: () => void;
 };
@@ -119,7 +121,18 @@ function bindGiveUpButton(
   button.addEventListener('blur', disarm);
 }
 
-function showOverlay({ timer, totalSeconds, locale, theme, onGiveUp }: OverlayOptions) {
+// Give up and its warning, or only a note when No giving up is on.
+function renderActions(copy: Messages['overlay'], noGiveUp: boolean) {
+  if (noGiveUp) return `<p class="note">${copy.noGiveUp}</p>`;
+
+  return `
+    <button class="give-up" type="button">
+      <span class="give-up-live" aria-live="polite"><span class="give-up-label">${copy.giveUp}</span></span>
+    </button>
+    <p class="warning">${copy.warning}</p>`;
+}
+
+function showOverlay({ timer, totalSeconds, locale, theme, noGiveUp, onGiveUp }: OverlayOptions) {
   if (getActiveOverlay()) return updateOverlayTime(timer, totalSeconds);
 
   document.getElementById(HOST_ID)?.remove();
@@ -154,12 +167,7 @@ function showOverlay({ timer, totalSeconds, locale, theme, onGiveUp }: OverlayOp
             <p class="time-label">${copy.timeLabel}</p>
           </div>
         </div>
-        <div class="actions" style="--order: 5">
-          <button class="give-up" type="button">
-            <span class="give-up-live" aria-live="polite"><span class="give-up-label">${copy.giveUp}</span></span>
-          </button>
-          <p class="warning">${copy.warning}</p>
-        </div>
+        <div class="actions" style="--order: 5">${renderActions(copy, noGiveUp)}</div>
       </div>
     </div>`;
 

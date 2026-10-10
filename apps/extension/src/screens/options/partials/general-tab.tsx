@@ -1,11 +1,11 @@
 import type { ThemeSetting } from '@focus-pocus/ui/theme';
+import { SettingRow } from '@/components/setting-row';
+import { SettingsSection } from '@/components/settings-section';
+import { TabPage } from '@/components/tab-page';
 import type { LanguageSetting } from '@/lib/i18n';
 import { useMessages } from '@/lib/use-messages';
 import { LanguagePicker } from '@/screens/options/partials/language-picker';
 import { LockedNotice } from '@/screens/options/partials/locked-notice';
-import { SettingRow } from '@/screens/options/partials/setting-row';
-import { SettingsSection } from '@/screens/options/partials/settings-section';
-import { TabPage } from '@/screens/options/partials/tab-page';
 import { ThemePicker } from '@/screens/options/partials/theme-picker';
 
 type Options = Record<string, boolean>;
@@ -17,11 +17,17 @@ type Props = {
   onLanguageChange: (language: LanguageSetting) => void;
   theme: ThemeSetting;
   onThemeChange: (theme: ThemeSetting) => void;
-  /** Locks the allowlist mode: the content scripts already decided what to block. */
+  /**
+   * Locks No giving up (turning it off would bring Give up back mid-session) and
+   * the allowlist mode (the content scripts already decided what to block).
+   */
   isRunning: boolean;
 };
 
-/** The appearance, language, sounds, notifications and the blocking mode. Every switch starts off. */
+/**
+ * The appearance, language, sounds, notifications, session and the blocking
+ * mode. Every switch starts off.
+ */
 export function GeneralTab({
   options,
   onChange,
@@ -74,6 +80,15 @@ export function GeneralTab({
           {...bind('victorious-notification')}
           label={copy.notifications.finished.label}
           description={copy.notifications.finished.description}
+        />
+      </SettingsSection>
+
+      <SettingsSection title={copy.session.title}>
+        <SettingRow
+          {...bind('no-give-up')}
+          label={copy.session.noGiveUp.label}
+          description={copy.session.noGiveUp.description}
+          disabled={isRunning}
         />
       </SettingsSection>
 

@@ -9,7 +9,7 @@ Guide for AI agents (and humans) working in this repository. It describes **how 
 **FocusPocus** ("Stay focused as if under a magical spell") is an open source browser extension for **Chrome (Manifest V3)** and **Firefox (Manifest V2)**. It helps users stay focused with a **focus timer**: while the timer runs, distracting websites are covered by a blocking screen. Completing sessions builds a **streak**; giving up resets the whole streak.
 
 - Published name: `FocusPocus: Block Distractions & Stay Focused`
-- Current version: `3.0.0` (in `apps/extension/package.json` and both manifests; keep the three in sync)
+- Current version: `3.1.0` (in `apps/extension/package.json` and both manifests; keep the three in sync)
 - Original author: `@jotavetech`. Current remote: `gugeldev/focus-pocus`
 - Published on the [Chrome Web Store](https://chromewebstore.google.com/detail/focuspocus-in-magical-foc/mhfhegccdlndlipjicelombmchnpdebc) and [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/focuspocus-in-magical-focus/)
 - License: **MIT** (`LICENSE`).
@@ -44,6 +44,7 @@ packages/
 - **Mode:** a full-width Blocklist / Allowlist segmented control, above the presets, that writes `options['allowlist-mode']`.
 - **Start focusing** button: starts the session. During the session the same button becomes **Give up** (danger style).
 - **Give up takes two clicks** (`src/screens/popup/partials/start-button.tsx`), because it resets the streak: the first click arms the button (solid red, "Click again to give up", `popup.confirmGiveUp` in the locales); a second click within 3 s gives up (a click sooner than 400 ms is ignored, so a double-click does not give up). It disarms on its own after 3 s, on blur, or when the session ends.
+- **No giving up** (the `no-give-up` switch, 2.4) turns that around: starting takes the two clicks instead (same timing, "Click again to start", `popup.confirmStart`), and during the session the button is replaced by a note of the same height (`partials/no-give-up-note.tsx`, copy in `popup.noGiveUp`), so there is no way to give up from the popup.
 - Everything that changes between idle and a session follows the stored `isRunning` (`src/screens/popup/page.tsx`). During a session:
   - the accent progress ring appears and empties as time passes;
   - the presets, the mode control and the custom time are disabled;
@@ -59,7 +60,7 @@ There are two modes, toggled by the Blocklist / Allowlist control in the popup o
 - Matching uses `window.location.href.includes(entry)`: substring matching, not exact domains.
 - The "block" is the **focus screen** (`src/content/overlay.ts`): a `div#focus-pocus-overlay` host appended to `<html>` with an open **shadow root**, so the page's CSS cannot restyle it and its CSS cannot leak into the page. It is fixed, full screen, at the maximum `z-index`, blurs the page behind it and shows the logo, the copy and the remaining session time live inside a ring that empties as the session runs (measured against `selectedTime`). The logo comes from `assets/logo/` (a web-accessible resource in both manifests).
   - Motion: the card's parts rise in turn (each has an `--order`), two violet clouds drift behind it, the "Focus mode" pill has a pulsing live dot and a faint dotted ring turns around the countdown. The logo stays still. Under `prefers-reduced-motion` the card only fades in and nothing loops.
-  - **Give up** sits under the countdown and takes two clicks, like the popup's button (same timing, `packages/ui/src/confirm-timing.ts`; copy in `overlay.giveUp` / `overlay.confirmGiveUp`). The confirming click sends `TIMER_GIVEN_UP` to the background (a content script cannot reach `browser.action`) and plays the give-up sound if its switch is on; `assets/sounds/` is a web-accessible resource in both manifests for that. A page's CSP or autoplay policy may still block the sound, which is ignored.
+  - **Give up** sits under the countdown (unless No giving up is on: then a note, `overlay.noGiveUp`, replaces it and its warning) and takes two clicks, like the popup's button (same timing, `packages/ui/src/confirm-timing.ts`; copy in `overlay.giveUp` / `overlay.confirmGiveUp`). The confirming click sends `TIMER_GIVEN_UP` to the background (a content script cannot reach `browser.action`) and plays the give-up sound if its switch is on; `assets/sounds/` is a web-accessible resource in both manifests for that. A page's CSP or autoplay policy may still block the sound, which is ignored.
   - It follows the user's theme (2.7), live: `data-theme` on the `.overlay` element.
   - Its styles are `src/content/overlay.css`, bundled into `content.js` as a string (see section 4) and injected into the shadow root. They repeat the colors of `packages/ui/src/theme.css` (as the same `light-dark()` pairs) because a shadow root cannot see the extension's stylesheets. The `:host` rules are `!important`: a page rule that matches the host beats a normal `:host` rule, but not an important one.
   - A shadow root cannot declare `@font-face`, so the overlay registers Plus Jakarta Sans on the page's `document.fonts` under the private name `FocusPocus Jakarta`, loaded from `assets/fonts/` (a web-accessible resource in both manifests). If it fails, the system font stack takes over.
@@ -80,26 +81,33 @@ They live in the **General** tab of the options. All start **off**, because `opt
 | Sounds › Victory                  | `victorious-sound`        | plays `assets/sounds/finished.mp3` on completion (see 3.2, step 5) |
 | Sounds › Giving up                | `give-up-sound`           | plays `assets/sounds/lose.wav` on give up           |
 | Notifications › Session finished  | `victorious-notification` | "Finished a session! Now you can take a break!" notification (Chrome only; in Firefox `streak.ts` throws on `browser.action` before creating the notification) |
+| Session › No giving up            | `no-give-up`              | hides Give up during a session (popup and focus screen) and makes starting take two clicks (see 2.1) |
 | Blocking › Allowlist mode         | `allowlist-mode`          | toggles blocklist/allowlist (see 2.2)               |
 
-Each switch is a `<SettingRow optionKey="...">` in `src/screens/options/partials/general-tab.tsx` (a `<label>` wrapping a `<Switch>`). **`optionKey` is the key** saved in `options`, so adding a new option only takes a new row and reading `options[key]`.
+Each switch is a `<SettingRow>` (`src/components/setting-row.tsx`, a `<label>` wrapping a `<Switch>`) in `src/screens/options/partials/general-tab.tsx`, bound with `bind('<key>')`. **That key is the one** saved in `options`, so adding a new option only takes a new row and reading `options[key]`.
 
 ### 2.5 Options page (Settings)
 Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in its own tab. The layout is a **sidebar** on the canvas next to a **content pane** (modeled on the maintainer's heysusi desktop settings). Below 760px wide the sidebar becomes a top bar. The page fills the window and never scrolls: the content pane scrolls on its own, so the sidebar (or top bar) stays put.
 - **Sidebar:** brand, three tabs (General, Blocklist, Allowlist; the lists show their entry count) and the streak card (click to copy).
   - One indicator surface slides to the active tab (`src/screens/options/partials/nav-tabs.tsx`). Its offset is computed from the tab index (`--active-tab`), never measured. Only the active page is rendered, so its entrance animation replays on every tab switch. The open tab is mirrored in the location hash, so `#blocklist` opens the blocklist directly (`#general`, `#blocklist`, `#allowlist`).
-- **General:** the appearance picker (2.7), the language picker (2.6), then the switches of 2.4, grouped in Sounds, Notifications and Blocking. While a session is running, the Allowlist mode switch is **disabled** and a notice explains why.
+- **General:** the appearance picker (2.7), the language picker (2.6), then the switches of 2.4, grouped in Sounds, Notifications, Session and Blocking. While a session is running, the No giving up and Allowlist mode switches are **disabled** (turning No giving up off would bring Give up back mid-session) and a notice explains why.
 - **Blocklist / Allowlist:** a form to add a website and the list. Rows show the site icon, the entry and a remove button that appears on hover or focus. Rows animate in and collapse out. An empty list shows an empty state. The page of the active mode carries an "Active mode" badge.
   - The icon is the site's own `https://<host>/favicon.ico`, loaded straight from the site (no third-party favicon service, so the list never leaves the browser except to the listed sites). It only loads when the entry looks like a domain; otherwise, or if it fails, the tile shows the first letter of the host.
 - List rules:
   - the value is trimmed; empty and duplicate values are rejected (error toast);
   - **you cannot add or remove entries while focus mode is running** (the input, the add button and the remove buttons are disabled, and a notice says why);
   - otherwise the text is saved as typed, without normalization.
-- The running lock is the stored `isRunning`, passed down as a prop: the list inputs, add/remove buttons and the Allowlist mode switch are disabled while it is `true`.
+- The running lock is the stored `isRunning`, passed down as a prop: the list inputs, add/remove buttons and the No giving up and Allowlist mode switches are disabled while it is `true`.
 - Toasts come from `src/lib/toast.ts` (no dependency): `toast(message, error?)` from anywhere, drawn by the `<Toaster />` (`src/components/toaster.tsx`) that `mount()` adds to every page. Bottom center, 2.4 s, red for errors.
 
+### 2.5.1 Welcome screen
+- Opened once, in a new tab, when the extension is **installed** (`runtime.onInstalled` with `reason === 'install'` in `src/background/index.ts`; updates do not open it). It is `welcome/index.html`, a React page like the options page (`src/screens/welcome/`).
+- It suggests distracting sites to block (`src/screens/welcome/suggested-sites.ts`), all picked at first, as setting rows (the site's icon, name and address, and a switch). It is laid out like the settings page below its `wide` breakpoint, from the same pieces (`TabPage`, `SettingsSection`, `SettingRow`, `EmptyState` in `src/components/`). **Block N sites** adds the picks to `blocklist` (skipping any already there); **Skip for now** adds nothing. Both then show an "all set" card with how many sites the blocklist holds, a hint to pin the extension and an **Open settings** button.
+- Its rows load the suggested sites' own favicons (`SiteIcon`, see 2.5), so opening it contacts those eight sites even before any is blocked.
+- Suggestions are saved as substrings like any blocklist entry (2.2), so none may be part of an unrelated address: X is left out because `x.com` is inside `netflix.com`.
+
 ### 2.6 Languages (i18n)
-- The UI speaks **English** (`en`), **Brazilian Portuguese** (`pt-BR`) and **Spanish** (`es`): the popup, the options page, the toasts, the focus screen, the share text and the notification.
+- The UI speaks **English** (`en`), **Brazilian Portuguese** (`pt-BR`) and **Spanish** (`es`): the popup, the options page, the welcome screen, the toasts, the focus screen, the share text and the notification.
 - The **Language** section of the General tab is a segmented control: **Automatic** (the default) and each language, named in its own words. It writes `language` (table 3.1); every open page and every page's focus screen switch live through `storage.onChanged` (a focus screen already on screen keeps its text until it is shown again).
 - **Automatic** follows `browser.i18n.getUILanguage()`: any `pt-*` gets `pt-BR`, any `es-*` gets `es`, everything else English (`src/lib/i18n.ts`, on top of `findLocaleForTag` from `packages/locales`).
 - **The copy lives in `packages/locales/src/`** (shared with the website's drawings of the extension): `en.ts` is the source and its shape is the `Messages` type; `pt-br.ts` and `es.ts` are typed `Messages`, so a missing or extra key fails `typecheck`. Text that interpolates is a function (`remove: (url) => ...`).
@@ -131,19 +139,25 @@ apps/extension/src/
 │   └── overlay.css       # focus screen styles, bundled as a string
 ├── popup/index.tsx       # "popup" entry: mount(<PopupScreen />), nothing else
 ├── options/index.tsx     # "options" entry: mount(<OptionsScreen />), nothing else
+├── welcome/index.tsx     # "welcome" entry: mount(<WelcomeScreen />), nothing else
 ├── screens/              # one folder per page (see 5.2)
 │   ├── popup/
 │   │   ├── page.tsx      # PopupScreen: reads storage, composes the partials
 │   │   ├── parse-custom-time.ts
-│   │   └── partials/     # top-bar, streak-button, dial, time-field, session-settings, start-button
-│   └── options/
+│   │   └── partials/     # top-bar, streak-button, dial, time-field, session-settings, start-button,
+│   │                     # no-give-up-note
+│   ├── options/
 │       ├── page.tsx      # OptionsScreen: tab state + location hash, sidebar + the open tab
 │       ├── tabs.ts       # the tabs and getTabFromHash
-│       └── partials/     # sidebar, nav-tabs, nav-item, sidebar-footer, tab-page, settings-section,
-│                         # setting-row, locked-notice, active-mode-badge, general-tab,
-│                         # language-picker, theme-picker, site-list-tab, add-site-form, site-list, site-row,
-│                         # site-icon, empty-list
-├── components/           # used by two or more screens: toaster, site-lists (ListType, list icons)
+│       └── partials/     # sidebar, nav-tabs, nav-item, sidebar-footer, locked-notice, active-mode-badge,
+│                         # general-tab, language-picker, theme-picker, site-list-tab, add-site-form,
+│                         # site-list, site-row
+│   └── welcome/
+│       ├── page.tsx      # WelcomeScreen: the picks, then the "all set" card (see 2.5.1)
+│       ├── suggested-sites.ts
+│       └── partials/     # site-picker, all-set
+├── components/           # used by two or more screens: toaster, site-lists (ListType, list icons), site-icon,
+│                         # content-pane, tab-page, settings-section, setting-row (optional leading icon), empty-state
 ├── styles/theme.css      # Tailwind entry: Tailwind, the design system (packages/ui) and the font (see 5.1)
 ├── types/css.d.ts        # `import css from './x.css?raw'` is a string; plain `.css` imports are side effects
 └── lib/                  # logic and hooks, shared by every context
@@ -161,6 +175,7 @@ static/                   # copied as-is to dist/<browser>/
 ├── _locales/             # en, pt_BR, es: the manifest's name and description (see 2.6)
 ├── popup/index.html      # just #root, ../popup.css and ../popup.js (320px wide popup)
 ├── options/index.html    # just #root, ../options.css and ../options.js
+├── welcome/index.html    # just #root, ../welcome.css and ../welcome.js
 └── assets/
     ├── logo/  icon-16/32/64/128.png, icon-32-active.png
     └── sounds/ finished.mp3, lose.wav, press.mp3 (web-accessible, for the focus screen's give up)
@@ -183,7 +198,7 @@ packages/locales/src/     # @focus-pocus/locales: en.ts (source + Messages type)
                           # index.ts (the languages table, getMessages, findLocaleForTag) (see 2.6)
 ```
 
-- **The popup and the options page are React 19 + Tailwind CSS 4.** The background and the content script (including the focus screen) stay plain TypeScript: the focus screen lives in a shadow root on every page, where Tailwind 4 does not work (it relies on `@property`, which only registers at document level) and React would be dead weight.
+- **The popup, the options page and the welcome screen are React 19 + Tailwind CSS 4.** The background and the content script (including the focus screen) stay plain TypeScript: the focus screen lives in a shadow root on every page, where Tailwind 4 does not work (it relies on `@property`, which only registers at document level) and React would be dead weight.
 - Pages read storage through `useStorage(...keys)` (`src/lib/use-storage.ts`): `null` until the first read, then kept in sync by `storage.onChanged`. Its `update(values)` writes storage and the local copy at once.
 - Icons come from [Phosphor](https://phosphoricons.com) (`@phosphor-icons/react`), re-exported with domain names by `packages/ui/src/icons.ts`: `<IconSettings size={18} />` or `<IconStreak weight="fill" />`. Never hand-write SVG icons. The only inline SVGs are the progress rings (the popup's and the focus screen's) and, on the website, the Chrome and Firefox marks (paths from Simple Icons).
 - Every extension API goes through **`webextension-polyfill`** (`import browser from 'webextension-polyfill'`), which provides a Promise-based API. **It does not unify `action`/`browserAction`:** the code calls `browser.action.*`, which only exists in Chrome MV3. In Firefox MV2 those calls throw `TypeError`.
@@ -209,7 +224,7 @@ Storage is the **source of truth**. Every context syncs through `storage.onChang
 The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written by `seedStorageDefaults()` (`src/lib/storage.ts`) when the background loads; existing values are kept. That is why those four keys are required in `StorageState` and the others are optional.
 
 ### 3.2 Session lifecycle
-1. **Start** (popup → `handleStartTimer`): writes `{ isRunning: true, timer: 0 }`, sends `TIMER_STARTED` and switches to the active icon.
+1. **Start** (popup → `handleStartTimer`, after a confirming second click when No giving up is on): writes `{ isRunning: true, timer: 0 }`, sends `TIMER_STARTED` and switches to the active icon.
 2. **Background** receives `TIMER_STARTED` and creates a 1 s `setInterval`. Each tick does `timer + 1`.
 3. **Content scripts** see `isRunning: true` and apply the overlay if the URL matches the mode's rule.
 4. **Popup** (if open) sees `timer` change and re-renders the remaining time (`selectedTime - timer`).
@@ -219,7 +234,7 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
    - the interval is cleared directly in the background (`src/background/index.ts`);
    - `checkAndStopTimer()` calls `stopTimer()`, which resets `timer` and restores the normal icon. The `TIMER_FINISHED` it sends from here reaches nobody, because a context does not receive its own messages;
    - victory sound: the popup plays it when it sees `streak` go up, so it only plays with the popup open. The background's own `playSound("finished")` in `checkAndStopTimer()` never plays: in Chrome `Audio` does not exist in an MV3 service worker, and in Firefox `stopTimer()` throws on `browser.action` before reaching it.
-6. **Give up** (confirmed second click while `isRunning`, from the popup (2.1) or the focus screen (2.2)): the page sends `TIMER_GIVEN_UP` and plays the give-up sound; the background clears its interval and runs `giveUp()` (`src/background/services/timer.ts`: `resetStreak()`, so streak = 0, then `stopTimer()`). The streak is reset first because in Firefox `stopTimer()` throws on `browser.action`.
+6. **Give up** (confirmed second click while `isRunning`, from the popup (2.1) or the focus screen (2.2); neither offers it when No giving up is on, and the background ignores `TIMER_GIVEN_UP` then): the page sends `TIMER_GIVEN_UP` and plays the give-up sound; the background clears its interval and runs `giveUp()` (`src/background/services/timer.ts`: `resetStreak()`, so streak = 0, then `stopTimer()`). The streak is reset first because in Firefox `stopTimer()` throws on `browser.action`.
 7. Every time the popup opens during an active session it re-sends `TIMER_STARTED`. That recreates the interval if Chrome unloaded the service worker.
 
 ### 3.3 Messages (`src/lib/messages.ts`)
@@ -227,7 +242,7 @@ The defaults for `timer`, `selectedTime`, `isRunning` and `streak` are written b
 | ---------------- | --------------------- | ----------------------------------------------------- |
 | `TIMER_STARTED`  | popup                 | (re)starts the `setInterval` and sets the active icon |
 | `TIMER_FINISHED` | `stopTimer()` (always in the background, on completion or give up, so it reaches nobody) | clears the interval and restores the normal icon |
-| `TIMER_GIVEN_UP` | Give up, in the popup or on the focus screen | clears the interval and runs `giveUp()` (resets the streak, stops the session, restores the icon) |
+| `TIMER_GIVEN_UP` | Give up, in the popup or on the focus screen | clears the interval and runs `giveUp()` (resets the streak, stops the session, restores the icon), unless No giving up is on |
 
 ### 3.4 Manifest differences
 - `manifest.chrome.json`: **MV3**, `action`, `background.service_worker`, `options_page`.
@@ -273,10 +288,10 @@ bun run lint:fix        # biome check --write .
 - How webpack works here (`apps/extension/webpack.config.js`):
   - the `BROWSER_TARGET` variable (`chrome` | `firefox`) picks the manifest, which is copied as `manifest.json`;
   - output goes to **`apps/extension/dist/<browser>/`**;
-  - four bundles are generated: `popup.js`, `background.js`, `content.js` and `options.js`, all at the root of `dist`;
-  - the HTML pages reference them as `../popup.js` and `../options.js`;
+  - five bundles are generated: `popup.js`, `background.js`, `content.js`, `options.js` and `welcome.js`, all at the root of `dist`;
+  - the HTML pages reference them as `../popup.js`, `../options.js` and `../welcome.js`;
   - `static/` is copied whole, plus the Plus Jakarta Sans `latin` and `latin-ext` woff2 files into `assets/fonts/`;
-  - `import './x.css'` goes through Tailwind (`postcss.config.mjs`; `packages/ui/src/theme.css` adds its own folder as a Tailwind `@source`, so the kit's classes are generated) and is extracted next to its bundle as `popup.css` / `options.css`. css-loader runs with `url: false`, so the font URLs (`/assets/fonts/...`, absolute from the extension root) stay as written. CSS is minified in `production` mode only;
+  - `import './x.css'` goes through Tailwind (`postcss.config.mjs`; `packages/ui/src/theme.css` adds its own folder as a Tailwind `@source`, so the kit's classes are generated) and is extracted next to its bundle as `popup.css` / `options.css` / `welcome.css`. css-loader runs with `url: false`, so the font URLs (`/assets/fonts/...`, absolute from the extension root) stay as written. CSS is minified in `production` mode only;
   - `import css from './x.css?raw'` is the file as a string (`type: 'asset/source'`), which is how the focus screen gets its styles into a shadow root;
   - `performance.hints` is off: the extension loads from disk, so the web bundle-size warnings do not apply;
   - `output.clean` empties `dist/<browser>/` before every build, so removed files do not linger;
@@ -368,7 +383,7 @@ Same rules as the maintainer's `obd` project.
   5. Delete the release branch and create the next one from `main`.
 - **Re-running a release:** Actions > Release > Run workflow on `main` releases the version in `apps/extension/package.json`; if that release already exists at the same commit, its zips and notes are replaced; if `main` has moved since, the run fails and asks for a version bump.
 - **Hotfix for the published version:** branch `fix/<name>` from `main`, PR to `main`, bump the patch version (`v1.2.1`) in the PR, release it by running the Release workflow by hand on `main`, then merge `main` into the current release branch so the fix is not lost.
-- Current release branch: **`release/3.0.0`**.
+- Current release branch: **`release/3.1.0`**.
 
 ---
 
@@ -378,6 +393,7 @@ Same rules as the maintainer's `obd` project.
 - [x] Allowlist mode
 - [x] Support for other browsers (Firefox)
 - [ ] Groups for the blocklist
+- [x] Welcome screen with suggested sites to block
 - [x] Confirmation before giving up
 - [x] Languages: English, Brazilian Portuguese and Spanish
 

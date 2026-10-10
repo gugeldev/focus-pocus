@@ -16,9 +16,13 @@ export const en = {
     sessionSettings: 'Session settings',
     modes: { blocklist: 'Blocklist', allowlist: 'Allowlist' },
     start: 'Start focusing',
+    /** Start focusing while it waits for the confirming click (No giving up is on). */
+    confirmStart: 'Click again to start',
     giveUp: 'Give up',
     /** The Give up button while it waits for the confirming click. */
     confirmGiveUp: 'Click again to give up',
+    /** Shown instead of Give up during a session when No giving up is on. */
+    noGiveUp: 'No giving up. See it through!',
     /** One is picked at random as the caption while a session runs. */
     encouragements: [
       'Keep going!',
@@ -41,7 +45,7 @@ export const en = {
       title: 'General',
       description:
         'Choose how FocusPocus looks, speaks, sounds, notifies and blocks while you focus.',
-      locked: 'A focus session is running. Blocking settings unlock when it ends.',
+      locked: 'A focus session is running. Session and blocking settings unlock when it ends.',
       language: {
         title: 'Language',
         description: 'Automatic follows your browser’s language.',
@@ -74,6 +78,14 @@ export const en = {
         finished: {
           label: 'Session finished',
           description: "A system notification telling you it's time for a break.",
+        },
+      },
+      session: {
+        title: 'Session',
+        noGiveUp: {
+          label: 'No giving up',
+          description:
+            'Hides Give up while you focus. Starting takes a second click, since there is no way out once it begins.',
         },
       },
       blocking: {
@@ -135,6 +147,27 @@ export const en = {
     giveUp: 'Give up',
     /** The Give up button while it waits for the confirming click. */
     confirmGiveUp: 'Click again to give up',
+    /** Shown instead of Give up and its warning when No giving up is on. */
+    noGiveUp: 'Giving up is off for this session. Hang in there.',
+  },
+  welcome: {
+    title: 'Welcome to FocusPocus',
+    lead: 'Pick the sites that pull you away. While a focus session runs, they are covered by the focus screen.',
+    sitesTitle: 'Suggested sites',
+    sitesHint: 'You can change your blocklist anytime in the settings.',
+    /** The primary button: how many of the suggestions it adds. */
+    block: (count: number) => (count === 1 ? 'Block 1 site' : `Block ${count} sites`),
+    pickOne: 'Pick a site to block',
+    skip: 'Skip for now',
+    doneTitle: 'You are all set',
+    /** The blocklist's size once the picks are in (0 when it is empty). */
+    doneText: (count: number) =>
+      count === 0
+        ? 'Your blocklist is empty for now. Add sites whenever you are ready.'
+        : `${count === 1 ? '1 site is' : `${count} sites are`} on your blocklist.`,
+    pinTip:
+      'Open FocusPocus from the toolbar to start your first session. Pin it from the extensions menu so it is one click away.',
+    openSettings: 'Open settings',
   },
   notification: {
     title: 'Finished a session!',

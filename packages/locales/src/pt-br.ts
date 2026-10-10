@@ -14,9 +14,13 @@ export const ptBR: Messages = {
     sessionSettings: 'Configurações da sessão',
     modes: { blocklist: 'Bloqueados', allowlist: 'Permitidos' },
     start: 'Começar a focar',
+    /** Start focusing while it waits for the confirming click (No giving up is on). */
+    confirmStart: 'Clique de novo para começar',
     giveUp: 'Desistir',
     /** The Give up button while it waits for the confirming click. */
     confirmGiveUp: 'Clique de novo para desistir',
+    /** Shown instead of Give up during a session when No giving up is on. */
+    noGiveUp: 'Sem desistir. Vá até o fim!',
     encouragements: [
       'Continue assim!',
       'Nunca desista!',
@@ -38,7 +42,7 @@ export const ptBR: Messages = {
       description:
         'Escolha a aparência, o idioma, os sons, as notificações e o bloqueio enquanto você foca.',
       locked:
-        'Uma sessão de foco está em andamento. As configurações de bloqueio são liberadas quando ela terminar.',
+        'Uma sessão de foco está em andamento. As configurações de sessão e de bloqueio são liberadas quando ela terminar.',
       language: {
         title: 'Idioma',
         description: 'Automático segue o idioma do seu navegador.',
@@ -71,6 +75,14 @@ export const ptBR: Messages = {
         finished: {
           label: 'Sessão concluída',
           description: 'Uma notificação do sistema avisando que é hora de uma pausa.',
+        },
+      },
+      session: {
+        title: 'Sessão',
+        noGiveUp: {
+          label: 'Sem desistência',
+          description:
+            'Esconde o botão Desistir enquanto você foca. Começar pede um segundo clique, porque depois não tem volta.',
         },
       },
       blocking: {
@@ -134,6 +146,24 @@ export const ptBR: Messages = {
     warning: 'Desistir zera sua sequência.',
     giveUp: 'Desistir',
     confirmGiveUp: 'Clique de novo para desistir',
+    noGiveUp: 'Desistir está desligado nesta sessão. Aguenta firme.',
+  },
+  welcome: {
+    title: 'Boas-vindas ao FocusPocus',
+    lead: 'Escolha os sites que tiram sua atenção. Enquanto uma sessão de foco roda, eles ficam cobertos pela tela de foco.',
+    sitesTitle: 'Sites sugeridos',
+    sitesHint: 'Você pode mudar seus sites bloqueados quando quiser nas configurações.',
+    block: (count: number) => (count === 1 ? 'Bloquear 1 site' : `Bloquear ${count} sites`),
+    pickOne: 'Escolha um site para bloquear',
+    skip: 'Pular por agora',
+    doneTitle: 'Tudo pronto',
+    doneText: (count: number) =>
+      count === 0
+        ? 'Sua lista de bloqueio está vazia por enquanto. Adicione sites quando quiser.'
+        : `${count === 1 ? '1 site está' : `${count} sites estão`} na sua lista de bloqueio.`,
+    pinTip:
+      'Abra o FocusPocus pela barra de ferramentas para começar sua primeira sessão. Fixe-o pelo menu de extensões para deixá-lo a um clique.',
+    openSettings: 'Abrir configurações',
   },
   notification: {
     title: 'Sessão concluída!',

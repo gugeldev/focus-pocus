@@ -2,8 +2,8 @@ import { cx } from '@focus-pocus/ui/cx';
 import { IconButton } from '@focus-pocus/ui/icon-button';
 import { IconRemove } from '@focus-pocus/ui/icons';
 import type { MouseEvent } from 'react';
+import { SiteIcon } from '@/components/site-icon';
 import { useMessages } from '@/lib/use-messages';
-import { SiteIcon } from '@/screens/options/partials/site-icon';
 
 type Props = {
   url: string;
