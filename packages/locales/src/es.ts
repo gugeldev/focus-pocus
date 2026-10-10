@@ -134,6 +134,24 @@ export const es: Messages = {
     giveUp: 'Rendirme',
     confirmGiveUp: 'Haz clic de nuevo para rendirte',
   },
+  welcome: {
+    pageTitle: 'Te damos la bienvenida a FocusPocus',
+    title: 'Te damos la bienvenida a FocusPocus',
+    lead: 'Elige los sitios que te distraen. Mientras dura una sesión de concentración, la pantalla de concentración los cubre.',
+    sitesTitle: 'Sitios sugeridos',
+    sitesHint: 'Puedes cambiar tus sitios bloqueados cuando quieras en la configuración.',
+    block: (count: number) => (count === 1 ? 'Bloquear 1 sitio' : `Bloquear ${count} sitios`),
+    pickOne: 'Elige un sitio para bloquear',
+    skip: 'Omitir por ahora',
+    doneTitle: 'Todo listo',
+    doneText: (count: number) =>
+      count === 0
+        ? 'Tu lista de bloqueo está vacía por ahora. Agrega sitios cuando quieras.'
+        : `${count === 1 ? '1 sitio está' : `${count} sitios están`} en tu lista de bloqueo.`,
+    pinTip:
+      'Abre FocusPocus desde la barra de herramientas para empezar tu primera sesión. Fíjalo desde el menú de extensiones para tenerlo a un clic.',
+    openSettings: 'Abrir configuración',
+  },
   notification: {
     title: '¡Sesión terminada!',
     message: '¡Ahora puedes tomar un descanso!',
