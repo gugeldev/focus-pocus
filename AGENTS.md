@@ -82,7 +82,7 @@ They live in the **General** tab of the options. All start **off**, because `opt
 | Notifications › Session finished  | `victorious-notification` | "Finished a session! Now you can take a break!" notification (Chrome only; in Firefox `streak.ts` throws on `browser.action` before creating the notification) |
 | Blocking › Allowlist mode         | `allowlist-mode`          | toggles blocklist/allowlist (see 2.2)               |
 
-Each switch is a `<SettingRow optionKey="...">` in `src/screens/options/partials/general-tab.tsx` (a `<label>` wrapping a `<Switch>`). **`optionKey` is the key** saved in `options`, so adding a new option only takes a new row and reading `options[key]`.
+Each switch is a `<SettingRow>` (`src/components/setting-row.tsx`) bound to its key in `src/screens/options/partials/general-tab.tsx` (a `<label>` wrapping a `<Switch>`). **`optionKey` is the key** saved in `options`, so adding a new option only takes a new row and reading `options[key]`.
 
 ### 2.5 Options page (Settings)
 Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in its own tab. The layout is a **sidebar** on the canvas next to a **content pane** (modeled on the maintainer's heysusi desktop settings). Below 760px wide the sidebar becomes a top bar. The page fills the window and never scrolls: the content pane scrolls on its own, so the sidebar (or top bar) stays put.
@@ -100,7 +100,7 @@ Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in
 
 ### 2.5.1 Welcome screen
 - Opened once, in a new tab, when the extension is **installed** (`runtime.onInstalled` with `reason === 'install'` in `src/background/index.ts`; updates do not open it). It is `welcome/index.html`, a React page like the options page (`src/screens/welcome/`).
-- It suggests distracting sites to block (`src/screens/welcome/suggested-sites.ts`), all picked at first, as checkbox tiles with the site's icon. **Block N sites** adds the picks to `blocklist` (skipping any already there); **Skip for now** adds nothing. Both then show an "all set" card with how many sites the blocklist holds, a hint to pin the extension and an **Open settings** button.
+- It suggests distracting sites to block (`src/screens/welcome/suggested-sites.ts`), all picked at first, as setting rows (the site's icon, name and address, and a switch). It is laid out like the settings page below its `wide` breakpoint, from the same pieces (`TabPage`, `SettingsSection`, `SettingRow`, `EmptyState` in `src/components/`). **Block N sites** adds the picks to `blocklist` (skipping any already there); **Skip for now** adds nothing. Both then show an "all set" card with how many sites the blocklist holds, a hint to pin the extension and an **Open settings** button.
 - Suggestions are saved as substrings like any blocklist entry (2.2), so none may be part of an unrelated address: X is left out because `x.com` is inside `netflix.com`.
 
 ### 2.6 Languages (i18n)
@@ -145,15 +145,15 @@ apps/extension/src/
 │   └── options/
 │       ├── page.tsx      # OptionsScreen: tab state + location hash, sidebar + the open tab
 │       ├── tabs.ts       # the tabs and getTabFromHash
-│       └── partials/     # sidebar, nav-tabs, nav-item, sidebar-footer, tab-page, settings-section,
-│                         # setting-row, locked-notice, active-mode-badge, general-tab,
-│                         # language-picker, theme-picker, site-list-tab, add-site-form, site-list, site-row,
-│                         # empty-list
+│       └── partials/     # sidebar, nav-tabs, nav-item, sidebar-footer, locked-notice, active-mode-badge,
+│                         # general-tab, language-picker, theme-picker, site-list-tab, add-site-form,
+│                         # site-list, site-row
 │   └── welcome/
 │       ├── page.tsx      # WelcomeScreen: the picks, then the "all set" card (see 2.5.1)
 │       ├── suggested-sites.ts
-│       └── partials/     # site-picker, site-option, all-set
-├── components/           # used by two or more screens: toaster, site-lists (ListType, list icons), site-icon
+│       └── partials/     # site-picker, all-set
+├── components/           # used by two or more screens: toaster, site-lists (ListType, list icons), site-icon,
+│                         # tab-page, settings-section, setting-row (optional leading icon), empty-state
 ├── styles/theme.css      # Tailwind entry: Tailwind, the design system (packages/ui) and the font (see 5.1)
 ├── types/css.d.ts        # `import css from './x.css?raw'` is a string; plain `.css` imports are side effects
 └── lib/                  # logic and hooks, shared by every context

@@ -1,6 +1,7 @@
 import { Brand } from '@focus-pocus/ui/brand';
 import { useEffect, useState } from 'react';
 import browser from 'webextension-polyfill';
+import { TabPage } from '@/components/tab-page';
 import { useMessages } from '@/lib/use-messages';
 import { useStorage } from '@/lib/use-storage';
 import { AllSet } from '@/screens/welcome/partials/all-set';
@@ -9,7 +10,9 @@ import { suggestedSites } from '@/screens/welcome/suggested-sites';
 
 /**
  * The page the background opens once, when the extension is installed: a few
- * distracting sites to block in one click, then where to go next.
+ * distracting sites to block in one click, then where to go next. Laid out like
+ * the settings page below its `wide` breakpoint: the brand on the canvas over
+ * a content pane that scrolls on its own.
  */
 export default function WelcomeScreen() {
   const [state, update] = useStorage('blocklist');
@@ -32,25 +35,25 @@ export default function WelcomeScreen() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-160 flex-col gap-7 px-5 py-10 wide:py-16">
-      <Brand logoSrc="../assets/logo/icon-64.png" size="md" />
-      <header className="flex flex-col gap-2">
-        <h1 className="text-2xl leading-title font-bold tracking-title">{t.welcome.title}</h1>
-        <p className="text-md text-text-muted">{t.welcome.lead}</p>
-      </header>
-      {isDone ? (
-        <AllSet
-          blockedCount={blocklist.length}
-          onOpenSettings={() => browser.runtime.openOptionsPage()}
-        />
-      ) : (
-        <SitePicker
-          picked={picked}
-          onPickedChange={setPicked}
-          onBlock={block}
-          onSkip={() => setIsDone(true)}
-        />
-      )}
+    <div className="grid h-screen grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] gap-3 p-3">
+      <Brand logoSrc="../assets/logo/icon-64.png" size="md" className="px-1 pt-3 pb-3" />
+      <main className="min-w-0 overflow-y-auto overscroll-contain rounded-xl scrollbar-thin bg-surface shadow-card">
+        <TabPage id="welcome-page" title={t.welcome.title} description={t.welcome.lead}>
+          {isDone ? (
+            <AllSet
+              blockedCount={blocklist.length}
+              onOpenSettings={() => browser.runtime.openOptionsPage()}
+            />
+          ) : (
+            <SitePicker
+              picked={picked}
+              onPickedChange={setPicked}
+              onBlock={block}
+              onSkip={() => setIsDone(true)}
+            />
+          )}
+        </TabPage>
+      </main>
     </div>
   );
 }
