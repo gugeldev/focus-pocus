@@ -5,6 +5,7 @@ import { playSound } from '@/lib/play-sound';
 import { useMessages } from '@/lib/use-messages';
 import { useStorage } from '@/lib/use-storage';
 import { Dial } from '@/screens/popup/partials/dial';
+import { NoGiveUpNote } from '@/screens/popup/partials/no-give-up-note';
 import { SessionSettings } from '@/screens/popup/partials/session-settings';
 import { StartButton } from '@/screens/popup/partials/start-button';
 import { TopBar } from '@/screens/popup/partials/top-bar';
@@ -55,7 +56,7 @@ function startOrGiveUp() {
 
 /**
  * The toolbar popup: the countdown, the mode and duration, and the button that
- * starts a session or gives it up.
+ * starts a session or gives it up (unless No giving up is on).
  */
 export default function PopupScreen() {
   const [state, update] = useStorage('timer', 'selectedTime', 'isRunning', 'options', 'streak');
@@ -71,6 +72,7 @@ export default function PopupScreen() {
   if (!state) return null;
 
   const { timer, selectedTime, options, streak } = state;
+  const noGiveUp = Boolean(options?.['no-give-up']);
   const isPreset = presets.some((preset) => preset.value === selectedTime);
   const idleCaption = isPreset ? '' : t.popup.customSession;
 
@@ -94,7 +96,11 @@ export default function PopupScreen() {
           }
           onTimeChange={(seconds) => update({ selectedTime: seconds })}
         />
-        <StartButton isRunning={isRunning} onPress={startOrGiveUp} />
+        {isRunning && noGiveUp ? (
+          <NoGiveUpNote />
+        ) : (
+          <StartButton isRunning={isRunning} confirmStart={noGiveUp} onPress={startOrGiveUp} />
+        )}
       </main>
     </>
   );

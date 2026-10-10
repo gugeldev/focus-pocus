@@ -35,6 +35,7 @@ type SwitchKey =
   | 'victorious-sound'
   | 'give-up-sound'
   | 'victorious-notification'
+  | 'no-give-up'
   | 'allowlist-mode';
 
 const listIcons = { blocklist: IconBlocklist, allowlist: IconAllowlist };
@@ -98,8 +99,8 @@ type GeneralPaneProps = {
 };
 
 /**
- * general-tab.tsx: the appearance, language, sounds, notifications and the
- * blocking mode. The site stays light whatever the appearance picks.
+ * general-tab.tsx: the appearance, language, sounds, notifications, session
+ * and the blocking mode. The site stays light whatever the appearance picks.
  */
 export function GeneralPane({ switches, onChange }: GeneralPaneProps) {
   const { app } = useCopy();
@@ -155,6 +156,9 @@ export function GeneralPane({ switches, onChange }: GeneralPaneProps) {
       </SettingsSection>
       <SettingsSection title={copy.notifications.title}>
         {row('victorious-notification', copy.notifications.finished)}
+      </SettingsSection>
+      <SettingsSection title={copy.session.title}>
+        {row('no-give-up', copy.session.noGiveUp)}
       </SettingsSection>
       <SettingsSection title={copy.blocking.title}>
         {row('allowlist-mode', copy.blocking.allowlistMode)}

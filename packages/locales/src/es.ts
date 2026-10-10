@@ -14,9 +14,13 @@ export const es: Messages = {
     sessionSettings: 'Configuración de la sesión',
     modes: { blocklist: 'Bloqueados', allowlist: 'Permitidos' },
     start: 'Empezar a concentrarme',
+    /** Start focusing while it waits for the confirming click (No giving up is on). */
+    confirmStart: 'Haz clic de nuevo para empezar',
     giveUp: 'Rendirme',
     /** The Give up button while it waits for the confirming click. */
     confirmGiveUp: 'Haz clic de nuevo para rendirte',
+    /** Shown instead of Give up during a session when No giving up is on. */
+    noGiveUp: 'Sin rendirse. ¡Llega hasta el final!',
     encouragements: [
       '¡Sigue así!',
       '¡Nunca te rindas!',
@@ -38,7 +42,7 @@ export const es: Messages = {
       description:
         'Elige la apariencia, el idioma, los sonidos, las notificaciones y el bloqueo mientras te concentras.',
       locked:
-        'Hay una sesión de concentración en curso. La configuración de bloqueo se desbloquea cuando termine.',
+        'Hay una sesión de concentración en curso. La configuración de sesión y de bloqueo se desbloquea cuando termine.',
       language: {
         title: 'Idioma',
         description: 'Automático sigue el idioma de tu navegador.',
@@ -71,6 +75,14 @@ export const es: Messages = {
         finished: {
           label: 'Sesión terminada',
           description: 'Una notificación del sistema que te avisa que es hora de un descanso.',
+        },
+      },
+      session: {
+        title: 'Sesión',
+        noGiveUp: {
+          label: 'Sin rendirse',
+          description:
+            'Oculta el botón Rendirme mientras te concentras. Empezar pide un segundo clic, porque después no hay vuelta atrás.',
         },
       },
       blocking: {
@@ -133,6 +145,7 @@ export const es: Messages = {
     warning: 'Rendirte reinicia tu racha.',
     giveUp: 'Rendirme',
     confirmGiveUp: 'Haz clic de nuevo para rendirte',
+    noGiveUp: 'Rendirse está desactivado en esta sesión. Aguanta.',
   },
   notification: {
     title: '¡Sesión terminada!',

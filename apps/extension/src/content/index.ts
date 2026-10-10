@@ -8,6 +8,7 @@ import { hideOverlay, setOverlayTheme, showOverlay, updateOverlayTime } from './
 let blocklist: string[] = [];
 let allowlist: string[] = [];
 let allowlistMode = false;
+let noGiveUp = false;
 let selectedTime = 0;
 let locale: Locale = resolveLocale('auto');
 let theme: ThemeSetting | undefined;
@@ -35,6 +36,7 @@ function applyFocusMode(timer: number) {
     totalSeconds: selectedTime,
     locale,
     theme,
+    noGiveUp,
     onGiveUp: giveUp,
   });
 }
@@ -53,6 +55,7 @@ function initialize() {
     blocklist = res.blocklist ?? [];
     allowlist = res.allowlist ?? [];
     allowlistMode = Boolean(res.options?.['allowlist-mode']);
+    noGiveUp = Boolean(res.options?.['no-give-up']);
     selectedTime = res.selectedTime;
     locale = resolveLocale(res.language);
     theme = res.theme;
@@ -64,7 +67,10 @@ function initialize() {
 onStorageChanged((changes) => {
   if (changes.blocklist) blocklist = changes.blocklist.newValue ?? [];
   if (changes.allowlist) allowlist = changes.allowlist.newValue ?? [];
-  if (changes.options) allowlistMode = Boolean(changes.options.newValue?.['allowlist-mode']);
+  if (changes.options) {
+    allowlistMode = Boolean(changes.options.newValue?.['allowlist-mode']);
+    noGiveUp = Boolean(changes.options.newValue?.['no-give-up']);
+  }
   if (changes.selectedTime?.newValue) selectedTime = changes.selectedTime.newValue;
   if (changes.language) locale = resolveLocale(changes.language.newValue);
   if (changes.theme) {

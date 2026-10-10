@@ -16,9 +16,13 @@ export const en = {
     sessionSettings: 'Session settings',
     modes: { blocklist: 'Blocklist', allowlist: 'Allowlist' },
     start: 'Start focusing',
+    /** Start focusing while it waits for the confirming click (No giving up is on). */
+    confirmStart: 'Click again to start',
     giveUp: 'Give up',
     /** The Give up button while it waits for the confirming click. */
     confirmGiveUp: 'Click again to give up',
+    /** Shown instead of Give up during a session when No giving up is on. */
+    noGiveUp: 'No giving up. See it through!',
     /** One is picked at random as the caption while a session runs. */
     encouragements: [
       'Keep going!',
@@ -41,7 +45,7 @@ export const en = {
       title: 'General',
       description:
         'Choose how FocusPocus looks, speaks, sounds, notifies and blocks while you focus.',
-      locked: 'A focus session is running. Blocking settings unlock when it ends.',
+      locked: 'A focus session is running. Session and blocking settings unlock when it ends.',
       language: {
         title: 'Language',
         description: 'Automatic follows your browser’s language.',
@@ -74,6 +78,14 @@ export const en = {
         finished: {
           label: 'Session finished',
           description: "A system notification telling you it's time for a break.",
+        },
+      },
+      session: {
+        title: 'Session',
+        noGiveUp: {
+          label: 'No giving up',
+          description:
+            'Hides Give up while you focus. Starting takes a second click, since there is no way out once it begins.',
         },
       },
       blocking: {
@@ -135,6 +147,8 @@ export const en = {
     giveUp: 'Give up',
     /** The Give up button while it waits for the confirming click. */
     confirmGiveUp: 'Click again to give up',
+    /** Shown instead of Give up and its warning when No giving up is on. */
+    noGiveUp: 'Giving up is off for this session. Hang in there.',
   },
   notification: {
     title: 'Finished a session!',
