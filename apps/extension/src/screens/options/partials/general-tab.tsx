@@ -1,11 +1,11 @@
 import type { ThemeSetting } from '@focus-pocus/ui/theme';
+import { SettingRow } from '@/components/setting-row';
+import { SettingsSection } from '@/components/settings-section';
+import { TabPage } from '@/components/tab-page';
 import type { LanguageSetting } from '@/lib/i18n';
 import { useMessages } from '@/lib/use-messages';
 import { LanguagePicker } from '@/screens/options/partials/language-picker';
 import { LockedNotice } from '@/screens/options/partials/locked-notice';
-import { SettingRow } from '@/screens/options/partials/setting-row';
-import { SettingsSection } from '@/screens/options/partials/settings-section';
-import { TabPage } from '@/screens/options/partials/tab-page';
 import { ThemePicker } from '@/screens/options/partials/theme-picker';
 
 type Options = Record<string, boolean>;

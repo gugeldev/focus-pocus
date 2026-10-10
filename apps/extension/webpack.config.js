@@ -12,6 +12,7 @@ module.exports = {
     background: './src/background',
     content: './src/content',
     options: './src/options',
+    welcome: './src/welcome',
   },
   module: {
     rules: [

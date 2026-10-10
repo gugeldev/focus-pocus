@@ -135,6 +135,23 @@ export const ptBR: Messages = {
     giveUp: 'Desistir',
     confirmGiveUp: 'Clique de novo para desistir',
   },
+  welcome: {
+    title: 'Boas-vindas ao FocusPocus',
+    lead: 'Escolha os sites que tiram sua atenção. Enquanto uma sessão de foco roda, eles ficam cobertos pela tela de foco.',
+    sitesTitle: 'Sites sugeridos',
+    sitesHint: 'Você pode mudar seus sites bloqueados quando quiser nas configurações.',
+    block: (count: number) => (count === 1 ? 'Bloquear 1 site' : `Bloquear ${count} sites`),
+    pickOne: 'Escolha um site para bloquear',
+    skip: 'Pular por agora',
+    doneTitle: 'Tudo pronto',
+    doneText: (count: number) =>
+      count === 0
+        ? 'Sua lista de bloqueio está vazia por enquanto. Adicione sites quando quiser.'
+        : `${count === 1 ? '1 site está' : `${count} sites estão`} na sua lista de bloqueio.`,
+    pinTip:
+      'Abra o FocusPocus pela barra de ferramentas para começar sua primeira sessão. Fixe-o pelo menu de extensões para deixá-lo a um clique.',
+    openSettings: 'Abrir configurações',
+  },
   notification: {
     title: 'Sessão concluída!',
     message: 'Agora você pode fazer uma pausa!',

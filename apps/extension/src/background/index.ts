@@ -49,4 +49,10 @@ function clearTickInterval() {
   if (interval) clearInterval(interval);
 }
 
+// The welcome screen, once: on a fresh install, not on updates.
+browser.runtime.onInstalled.addListener(({ reason }) => {
+  if (reason === 'install')
+    browser.tabs.create({ url: browser.runtime.getURL('welcome/index.html') });
+});
+
 seedStorageDefaults();
