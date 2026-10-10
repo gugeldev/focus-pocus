@@ -1,12 +1,12 @@
+import { EmptyState } from '@/components/empty-state';
 import { type ListType, siteListIcons } from '@/components/site-lists';
+import { TabPage } from '@/components/tab-page';
 import { toast } from '@/lib/toast';
 import { useMessages } from '@/lib/use-messages';
 import { ActiveModeBadge } from '@/screens/options/partials/active-mode-badge';
 import { AddSiteForm } from '@/screens/options/partials/add-site-form';
-import { EmptyList } from '@/screens/options/partials/empty-list';
 import { LockedNotice } from '@/screens/options/partials/locked-notice';
 import { SiteList } from '@/screens/options/partials/site-list';
-import { TabPage } from '@/screens/options/partials/tab-page';
 
 type Props = {
   type: ListType;
@@ -48,7 +48,7 @@ export function SiteListTab({ type, urls, onChange, isActiveMode, isRunning }: P
         isRunning={isRunning}
         onRemove={(url) => onChange(urls.filter((entry) => entry !== url))}
         empty={
-          <EmptyList icon={siteListIcons[type]} title={copy.emptyTitle} text={copy.emptyText} />
+          <EmptyState icon={siteListIcons[type]} title={copy.emptyTitle} text={copy.emptyText} />
         }
       />
     </TabPage>

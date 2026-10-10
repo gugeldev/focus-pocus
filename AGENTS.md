@@ -84,7 +84,7 @@ They live in the **General** tab of the options. All start **off**, because `opt
 | Session › No giving up            | `no-give-up`              | hides Give up during a session (popup and focus screen) and makes starting take two clicks (see 2.1) |
 | Blocking › Allowlist mode         | `allowlist-mode`          | toggles blocklist/allowlist (see 2.2)               |
 
-Each switch is a `<SettingRow optionKey="...">` in `src/screens/options/partials/general-tab.tsx` (a `<label>` wrapping a `<Switch>`). **`optionKey` is the key** saved in `options`, so adding a new option only takes a new row and reading `options[key]`.
+Each switch is a `<SettingRow>` (`src/components/setting-row.tsx`, a `<label>` wrapping a `<Switch>`) in `src/screens/options/partials/general-tab.tsx`, bound with `bind('<key>')`. **That key is the one** saved in `options`, so adding a new option only takes a new row and reading `options[key]`.
 
 ### 2.5 Options page (Settings)
 Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in its own tab. The layout is a **sidebar** on the canvas next to a **content pane** (modeled on the maintainer's heysusi desktop settings). Below 760px wide the sidebar becomes a top bar. The page fills the window and never scrolls: the content pane scrolls on its own, so the sidebar (or top bar) stays put.
@@ -100,8 +100,14 @@ Opened from the popup gear (`runtime.openOptionsPage()`). In Firefox it opens in
 - The running lock is the stored `isRunning`, passed down as a prop: the list inputs, add/remove buttons and the No giving up and Allowlist mode switches are disabled while it is `true`.
 - Toasts come from `src/lib/toast.ts` (no dependency): `toast(message, error?)` from anywhere, drawn by the `<Toaster />` (`src/components/toaster.tsx`) that `mount()` adds to every page. Bottom center, 2.4 s, red for errors.
 
+### 2.5.1 Welcome screen
+- Opened once, in a new tab, when the extension is **installed** (`runtime.onInstalled` with `reason === 'install'` in `src/background/index.ts`; updates do not open it). It is `welcome/index.html`, a React page like the options page (`src/screens/welcome/`).
+- It suggests distracting sites to block (`src/screens/welcome/suggested-sites.ts`), all picked at first, as setting rows (the site's icon, name and address, and a switch). It is laid out like the settings page below its `wide` breakpoint, from the same pieces (`TabPage`, `SettingsSection`, `SettingRow`, `EmptyState` in `src/components/`). **Block N sites** adds the picks to `blocklist` (skipping any already there); **Skip for now** adds nothing. Both then show an "all set" card with how many sites the blocklist holds, a hint to pin the extension and an **Open settings** button.
+- Its rows load the suggested sites' own favicons (`SiteIcon`, see 2.5), so opening it contacts those eight sites even before any is blocked.
+- Suggestions are saved as substrings like any blocklist entry (2.2), so none may be part of an unrelated address: X is left out because `x.com` is inside `netflix.com`.
+
 ### 2.6 Languages (i18n)
-- The UI speaks **English** (`en`), **Brazilian Portuguese** (`pt-BR`) and **Spanish** (`es`): the popup, the options page, the toasts, the focus screen, the share text and the notification.
+- The UI speaks **English** (`en`), **Brazilian Portuguese** (`pt-BR`) and **Spanish** (`es`): the popup, the options page, the welcome screen, the toasts, the focus screen, the share text and the notification.
 - The **Language** section of the General tab is a segmented control: **Automatic** (the default) and each language, named in its own words. It writes `language` (table 3.1); every open page and every page's focus screen switch live through `storage.onChanged` (a focus screen already on screen keeps its text until it is shown again).
 - **Automatic** follows `browser.i18n.getUILanguage()`: any `pt-*` gets `pt-BR`, any `es-*` gets `es`, everything else English (`src/lib/i18n.ts`, on top of `findLocaleForTag` from `packages/locales`).
 - **The copy lives in `packages/locales/src/`** (shared with the website's drawings of the extension): `en.ts` is the source and its shape is the `Messages` type; `pt-br.ts` and `es.ts` are typed `Messages`, so a missing or extra key fails `typecheck`. Text that interpolates is a function (`remove: (url) => ...`).
@@ -133,20 +139,25 @@ apps/extension/src/
 │   └── overlay.css       # focus screen styles, bundled as a string
 ├── popup/index.tsx       # "popup" entry: mount(<PopupScreen />), nothing else
 ├── options/index.tsx     # "options" entry: mount(<OptionsScreen />), nothing else
+├── welcome/index.tsx     # "welcome" entry: mount(<WelcomeScreen />), nothing else
 ├── screens/              # one folder per page (see 5.2)
 │   ├── popup/
 │   │   ├── page.tsx      # PopupScreen: reads storage, composes the partials
 │   │   ├── parse-custom-time.ts
 │   │   └── partials/     # top-bar, streak-button, dial, time-field, session-settings, start-button,
 │   │                     # no-give-up-note
-│   └── options/
+│   ├── options/
 │       ├── page.tsx      # OptionsScreen: tab state + location hash, sidebar + the open tab
 │       ├── tabs.ts       # the tabs and getTabFromHash
-│       └── partials/     # sidebar, nav-tabs, nav-item, sidebar-footer, tab-page, settings-section,
-│                         # setting-row, locked-notice, active-mode-badge, general-tab,
-│                         # language-picker, theme-picker, site-list-tab, add-site-form, site-list, site-row,
-│                         # site-icon, empty-list
-├── components/           # used by two or more screens: toaster, site-lists (ListType, list icons)
+│       └── partials/     # sidebar, nav-tabs, nav-item, sidebar-footer, locked-notice, active-mode-badge,
+│                         # general-tab, language-picker, theme-picker, site-list-tab, add-site-form,
+│                         # site-list, site-row
+│   └── welcome/
+│       ├── page.tsx      # WelcomeScreen: the picks, then the "all set" card (see 2.5.1)
+│       ├── suggested-sites.ts
+│       └── partials/     # site-picker, all-set
+├── components/           # used by two or more screens: toaster, site-lists (ListType, list icons), site-icon,
+│                         # content-pane, tab-page, settings-section, setting-row (optional leading icon), empty-state
 ├── styles/theme.css      # Tailwind entry: Tailwind, the design system (packages/ui) and the font (see 5.1)
 ├── types/css.d.ts        # `import css from './x.css?raw'` is a string; plain `.css` imports are side effects
 └── lib/                  # logic and hooks, shared by every context
@@ -164,6 +175,7 @@ static/                   # copied as-is to dist/<browser>/
 ├── _locales/             # en, pt_BR, es: the manifest's name and description (see 2.6)
 ├── popup/index.html      # just #root, ../popup.css and ../popup.js (320px wide popup)
 ├── options/index.html    # just #root, ../options.css and ../options.js
+├── welcome/index.html    # just #root, ../welcome.css and ../welcome.js
 └── assets/
     ├── logo/  icon-16/32/64/128.png, icon-32-active.png
     └── sounds/ finished.mp3, lose.wav, press.mp3 (web-accessible, for the focus screen's give up)
@@ -186,7 +198,7 @@ packages/locales/src/     # @focus-pocus/locales: en.ts (source + Messages type)
                           # index.ts (the languages table, getMessages, findLocaleForTag) (see 2.6)
 ```
 
-- **The popup and the options page are React 19 + Tailwind CSS 4.** The background and the content script (including the focus screen) stay plain TypeScript: the focus screen lives in a shadow root on every page, where Tailwind 4 does not work (it relies on `@property`, which only registers at document level) and React would be dead weight.
+- **The popup, the options page and the welcome screen are React 19 + Tailwind CSS 4.** The background and the content script (including the focus screen) stay plain TypeScript: the focus screen lives in a shadow root on every page, where Tailwind 4 does not work (it relies on `@property`, which only registers at document level) and React would be dead weight.
 - Pages read storage through `useStorage(...keys)` (`src/lib/use-storage.ts`): `null` until the first read, then kept in sync by `storage.onChanged`. Its `update(values)` writes storage and the local copy at once.
 - Icons come from [Phosphor](https://phosphoricons.com) (`@phosphor-icons/react`), re-exported with domain names by `packages/ui/src/icons.ts`: `<IconSettings size={18} />` or `<IconStreak weight="fill" />`. Never hand-write SVG icons. The only inline SVGs are the progress rings (the popup's and the focus screen's) and, on the website, the Chrome and Firefox marks (paths from Simple Icons).
 - Every extension API goes through **`webextension-polyfill`** (`import browser from 'webextension-polyfill'`), which provides a Promise-based API. **It does not unify `action`/`browserAction`:** the code calls `browser.action.*`, which only exists in Chrome MV3. In Firefox MV2 those calls throw `TypeError`.
@@ -276,10 +288,10 @@ bun run lint:fix        # biome check --write .
 - How webpack works here (`apps/extension/webpack.config.js`):
   - the `BROWSER_TARGET` variable (`chrome` | `firefox`) picks the manifest, which is copied as `manifest.json`;
   - output goes to **`apps/extension/dist/<browser>/`**;
-  - four bundles are generated: `popup.js`, `background.js`, `content.js` and `options.js`, all at the root of `dist`;
-  - the HTML pages reference them as `../popup.js` and `../options.js`;
+  - five bundles are generated: `popup.js`, `background.js`, `content.js`, `options.js` and `welcome.js`, all at the root of `dist`;
+  - the HTML pages reference them as `../popup.js`, `../options.js` and `../welcome.js`;
   - `static/` is copied whole, plus the Plus Jakarta Sans `latin` and `latin-ext` woff2 files into `assets/fonts/`;
-  - `import './x.css'` goes through Tailwind (`postcss.config.mjs`; `packages/ui/src/theme.css` adds its own folder as a Tailwind `@source`, so the kit's classes are generated) and is extracted next to its bundle as `popup.css` / `options.css`. css-loader runs with `url: false`, so the font URLs (`/assets/fonts/...`, absolute from the extension root) stay as written. CSS is minified in `production` mode only;
+  - `import './x.css'` goes through Tailwind (`postcss.config.mjs`; `packages/ui/src/theme.css` adds its own folder as a Tailwind `@source`, so the kit's classes are generated) and is extracted next to its bundle as `popup.css` / `options.css` / `welcome.css`. css-loader runs with `url: false`, so the font URLs (`/assets/fonts/...`, absolute from the extension root) stay as written. CSS is minified in `production` mode only;
   - `import css from './x.css?raw'` is the file as a string (`type: 'asset/source'`), which is how the focus screen gets its styles into a shadow root;
   - `performance.hints` is off: the extension loads from disk, so the web bundle-size warnings do not apply;
   - `output.clean` empties `dist/<browser>/` before every build, so removed files do not linger;
@@ -381,6 +393,7 @@ Same rules as the maintainer's `obd` project.
 - [x] Allowlist mode
 - [x] Support for other browsers (Firefox)
 - [ ] Groups for the blocklist
+- [x] Welcome screen with suggested sites to block
 - [x] Confirmation before giving up
 - [x] Languages: English, Brazilian Portuguese and Spanish
 
