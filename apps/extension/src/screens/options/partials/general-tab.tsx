@@ -17,11 +17,17 @@ type Props = {
   onLanguageChange: (language: LanguageSetting) => void;
   theme: ThemeSetting;
   onThemeChange: (theme: ThemeSetting) => void;
-  /** Locks the allowlist mode: the content scripts already decided what to block. */
+  /**
+   * Locks No giving up (turning it off would bring Give up back mid-session) and
+   * the allowlist mode (the content scripts already decided what to block).
+   */
   isRunning: boolean;
 };
 
-/** The appearance, language, sounds, notifications and the blocking mode. Every switch starts off. */
+/**
+ * The appearance, language, sounds, notifications, session and the blocking
+ * mode. Every switch starts off.
+ */
 export function GeneralTab({
   options,
   onChange,
@@ -74,6 +80,15 @@ export function GeneralTab({
           {...bind('victorious-notification')}
           label={copy.notifications.finished.label}
           description={copy.notifications.finished.description}
+        />
+      </SettingsSection>
+
+      <SettingsSection title={copy.session.title}>
+        <SettingRow
+          {...bind('no-give-up')}
+          label={copy.session.noGiveUp.label}
+          description={copy.session.noGiveUp.description}
+          disabled={isRunning}
         />
       </SettingsSection>
 

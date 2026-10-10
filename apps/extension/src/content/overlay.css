@@ -295,7 +295,8 @@ h1 {
   animation: label-in 220ms var(--ease-fluid) both;
 }
 
-.warning {
+.warning,
+.note {
   color: var(--text-faint);
   font-size: 13px;
 }
