@@ -9,7 +9,7 @@ Guide for AI agents (and humans) working in this repository. It describes **how 
 **FocusPocus** ("Stay focused as if under a magical spell") is an open source browser extension for **Chrome (Manifest V3)** and **Firefox (Manifest V2)**. It helps users stay focused with a **focus timer**: while the timer runs, distracting websites are covered by a blocking screen. Completing sessions builds a **streak**; giving up resets the whole streak.
 
 - Published name: `FocusPocus: Block Distractions & Stay Focused`
-- Current version: `3.0.0` (in `apps/extension/package.json` and both manifests; keep the three in sync)
+- Current version: `3.1.0` (in `apps/extension/package.json` and both manifests; keep the three in sync)
 - Original author: `@jotavetech`. Current remote: `gugeldev/focus-pocus`
 - Published on the [Chrome Web Store](https://chromewebstore.google.com/detail/focuspocus-in-magical-foc/mhfhegccdlndlipjicelombmchnpdebc) and [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/focuspocus-in-magical-focus/)
 - License: **MIT** (`LICENSE`).
