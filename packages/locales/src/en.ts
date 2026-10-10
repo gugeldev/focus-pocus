@@ -137,7 +137,6 @@ export const en = {
     confirmGiveUp: 'Click again to give up',
   },
   welcome: {
-    pageTitle: 'Welcome to FocusPocus',
     title: 'Welcome to FocusPocus',
     lead: 'Pick the sites that pull you away. While a focus session runs, they are covered by the focus screen.',
     sitesTitle: 'Suggested sites',
@@ -147,7 +146,7 @@ export const en = {
     pickOne: 'Pick a site to block',
     skip: 'Skip for now',
     doneTitle: 'You are all set',
-    /** After adding the picks; 0 when the user skipped. */
+    /** The blocklist's size once the picks are in (0 when it is empty). */
     doneText: (count: number) =>
       count === 0
         ? 'Your blocklist is empty for now. Add sites whenever you are ready.'

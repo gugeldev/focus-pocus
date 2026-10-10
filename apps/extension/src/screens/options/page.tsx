@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ContentPane } from '@/components/content-pane';
 import { useMessages } from '@/lib/use-messages';
 import { useStorage } from '@/lib/use-storage';
 import { GeneralTab } from '@/screens/options/partials/general-tab';
@@ -51,7 +52,7 @@ export default function OptionsScreen() {
         streak={streak}
       />
 
-      <main className="min-w-0 overflow-y-auto overscroll-contain rounded-xl scrollbar-thin bg-surface shadow-card">
+      <ContentPane>
         {activeTab === 'general' && (
           <GeneralTab
             options={options}
@@ -74,7 +75,7 @@ export default function OptionsScreen() {
             isRunning={isRunning}
           />
         )}
-      </main>
+      </ContentPane>
     </div>
   );
 }

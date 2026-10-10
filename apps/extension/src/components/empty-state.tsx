@@ -9,7 +9,7 @@ type Props = {
   children?: ReactNode;
 };
 
-/** An icon, a title and a line of text: what an empty list shows, or the welcome screen once done. */
+/** A centered icon, title and line of text, with optional content below. */
 export function EmptyState({ icon: Icon, title, text, children }: Props) {
   return (
     <div className="flex animate-page-in flex-col items-center px-6 py-10 text-center">

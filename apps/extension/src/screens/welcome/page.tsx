@@ -1,6 +1,7 @@
 import { Brand } from '@focus-pocus/ui/brand';
 import { useEffect, useState } from 'react';
 import browser from 'webextension-polyfill';
+import { ContentPane } from '@/components/content-pane';
 import { TabPage } from '@/components/tab-page';
 import { useMessages } from '@/lib/use-messages';
 import { useStorage } from '@/lib/use-storage';
@@ -21,7 +22,7 @@ export default function WelcomeScreen() {
   const t = useMessages();
 
   useEffect(() => {
-    document.title = t.welcome.pageTitle;
+    document.title = t.welcome.title;
   }, [t]);
 
   if (!state) return null;
@@ -37,7 +38,7 @@ export default function WelcomeScreen() {
   return (
     <div className="grid h-screen grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] gap-3 p-3">
       <Brand logoSrc="../assets/logo/icon-64.png" size="md" className="px-1 pt-3 pb-3" />
-      <main className="min-w-0 overflow-y-auto overscroll-contain rounded-xl scrollbar-thin bg-surface shadow-card">
+      <ContentPane>
         <TabPage id="welcome-page" title={t.welcome.title} description={t.welcome.lead}>
           {isDone ? (
             <AllSet
@@ -53,7 +54,7 @@ export default function WelcomeScreen() {
             />
           )}
         </TabPage>
-      </main>
+      </ContentPane>
     </div>
   );
 }

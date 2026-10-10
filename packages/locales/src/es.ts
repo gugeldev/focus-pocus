@@ -135,7 +135,6 @@ export const es: Messages = {
     confirmGiveUp: 'Haz clic de nuevo para rendirte',
   },
   welcome: {
-    pageTitle: 'Te damos la bienvenida a FocusPocus',
     title: 'Te damos la bienvenida a FocusPocus',
     lead: 'Elige los sitios que te distraen. Mientras dura una sesión de concentración, la pantalla de concentración los cubre.',
     sitesTitle: 'Sitios sugeridos',

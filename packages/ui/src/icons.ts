@@ -13,7 +13,6 @@
 
 export type { Icon as IconComponent } from '@phosphor-icons/react';
 export { ArrowUpRightIcon as IconExternal } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
-export { CheckIcon as IconSelected } from '@phosphor-icons/react/dist/csr/Check';
 export {
   CheckCircleIcon as IconAllowlist,
   CheckCircleIcon as IconSuccess,

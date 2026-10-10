@@ -136,7 +136,6 @@ export const ptBR: Messages = {
     confirmGiveUp: 'Clique de novo para desistir',
   },
   welcome: {
-    pageTitle: 'Boas-vindas ao FocusPocus',
     title: 'Boas-vindas ao FocusPocus',
     lead: 'Escolha os sites que tiram sua atenção. Enquanto uma sessão de foco roda, eles ficam cobertos pela tela de foco.',
     sitesTitle: 'Sites sugeridos',
